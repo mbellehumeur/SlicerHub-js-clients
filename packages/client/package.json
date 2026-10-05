@@ -1,0 +1,40 @@
+{
+  "name": "@slicer-hub/client",
+  "version": "0.1.0",
+  "description": "Standalone Hub (FHIRcast) hub client for browser and Node (fetch/WebSocket)",
+  "type": "module",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/client"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "main": "./dist/hub-client.cjs",
+  "module": "./dist/hub-client.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/hub-client.js",
+      "require": "./dist/hub-client.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "sync:inference-info": "node tools/sync_inference_info.js",
+    "build": "node tools/sync_inference_info.js && vite build && node tools/copy_types.js",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

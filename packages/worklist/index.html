@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en" data-theme="slicerlive">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SlicerWorklist</title>
+  <link rel="icon" type="image/png" href="./3DSlicer-DesktopIcon.png">
+  <link rel="stylesheet" href="themes.css">
+</head>
+<body>
+  <div id="app">
+    <header class="wl-header">
+      <div class="wl-header-start">
+        <div class="wl-brand">SlicerWorklist</div>
+      </div>
+      <div class="wl-header-actions">
+        <button
+          type="button"
+          id="startConferenceBtn"
+          class="wl-viewer-btn"
+          title="Subscribe to the hub first"
+          disabled
+          data-i18n="chrome:conferencing"
+        >
+          Conferencing
+        </button>
+        <button
+          type="button"
+          id="endConferenceBtn"
+          class="wl-conference-leave-badge"
+          title="End conference"
+          hidden
+          disabled
+        >
+          End conference
+        </button>
+        <button
+          type="button"
+          id="stopFollowingBtn"
+          class="wl-viewer-btn"
+          title="Stop following the conference leader"
+          hidden
+        >
+          Stop following
+        </button>
+        <button
+          type="button"
+          id="resumeFollowingBtn"
+          class="wl-viewer-btn"
+          title="Resume following the conference leader"
+          hidden
+        >
+          Resume following
+        </button>
+        <button
+          type="button"
+          id="takeOverConferenceBtn"
+          class="wl-viewer-btn"
+          title="Take over as conference leader"
+          hidden
+        >
+          Take over
+        </button>
+        <button
+          type="button"
+          id="castHelpBtn"
+          class="wl-icon-btn"
+          aria-label="Help"
+          title="Help"
+        >
+          ?
+        </button>
+      </div>
+    </header>
+
+    <main class="wl-main">
+      <div class="wl-capsule-row">
+        <section class="wl-panel wl-panel-compact wl-capsule" aria-labelledby="worklistContext">
+          <div class="wl-panel-header">
+            <h1 id="worklistContext" aria-live="polite">Current context: none</h1>
+            <div class="wl-panel-header-end">
+              <button
+                type="button"
+                id="closeContextBtn"
+                class="wl-viewer-btn"
+                data-i18n="chrome:close"
+                data-i18n-title="chrome:closeContext"
+                title="Close current context"
+                hidden
+                disabled
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <section class="wl-apps" aria-label="Clients and viewers">
+        <div class="wl-viewer-btns">
+          <span class="wl-viewer-label wl-viewer-label-first" data-i18n="chrome:viewers">Image Displays:</span>
+          <button
+            type="button"
+            id="openSlicerBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            SlicerDesktop
+          </button>
+          <button
+            type="button"
+            id="openIraBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            SlicerLive
+          </button>
+          <button
+            type="button"
+            id="openHubMirrorBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            SlicerMirror
+          </button>
+          <button
+            type="button"
+            id="openOhifBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            OHIF
+          </button>
+          <button
+            type="button"
+            id="openSlimBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            Slim
+          </button>
+          <button
+            type="button"
+            id="openVolviewBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            VolView
+          </button>
+          <span class="wl-viewer-label" data-i18n="chrome:reportingClients">Report Creators:</span>
+          <button
+            type="button"
+            id="openReportingBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            DICOM SR
+          </button>
+          <span class="wl-viewer-label" data-i18n="chrome:classroom">Courses:</span>
+          <button
+            type="button"
+            id="openSt444Btn"
+            class="wl-viewer-btn"
+            title="ST-444"
+            disabled
+          >
+            ST-444
+          </button>
+          <button
+            type="button"
+            id="openSceneviewsBtn"
+            class="wl-viewer-btn wl-viewer-btn-end"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            Scene Views
+          </button>
+        </div>
+        <div class="wl-viewer-btns">
+          <span class="wl-viewer-label wl-viewer-label-first" data-i18n="chrome:localAi">Evidence Creators:</span>
+          <button
+            type="button"
+            id="openFlexRayBtn"
+            class="wl-viewer-btn"
+            title="FleXray · WebGPU"
+          >
+            FleXray
+            <span class="wl-webgpu-badge">WebGPU</span>
+          </button>
+          <button
+            type="button"
+            id="openTorchXrayVisionBtn"
+            class="wl-viewer-btn"
+            title="TorchXRayVision"
+          >
+            TorchXRayVision
+          </button>
+          <button
+            type="button"
+            id="openMhubBtn"
+            class="wl-viewer-btn"
+            title="MHub models"
+          >
+            MHub models
+          </button>
+          <button
+            type="button"
+            id="openTotalSegmentatorBtn"
+            class="wl-viewer-btn"
+            title="Total Segmentator"
+          >
+            Total Segmentator
+          </button>
+          <button
+            type="button"
+            id="openSubcorticalSegmentationBtn"
+            class="wl-viewer-btn"
+            title="Subcortical Segmentation"
+          >
+            Subcortical Segmentation
+          </button>
+          <button
+            type="button"
+            id="openLungScreeningBtn"
+            class="wl-viewer-btn"
+            title="Lung Screening"
+          >
+            Lung Screening
+          </button>
+          <button
+            type="button"
+            id="openDentalSegmentatorBtn"
+            class="wl-viewer-btn"
+            title="Dental Segmentator"
+          >
+            Dental Segmentator
+          </button>
+        </div>
+      </section>
+      <section class="wl-panel" aria-labelledby="worklistTitle">
+        <div class="wl-panel-header">
+          <h1 id="worklistTitle" data-i18n="chrome:worklist">Worklist</h1>
+          <select
+            id="worklistOrgSelect"
+            class="wl-org-select"
+            aria-label="Worklist filter"
+          >
+            <option value="mine">My Worklist</option>
+            <option value="">All</option>
+            <option value="3d-slicer">3D Slicer</option>
+            <option value="slicer-scenes">Slicer scenes</option>
+            <option value="cbct-dental">CBCT Dental</option>
+            <option value="torchxrayvision">TorchXRayVision</option>
+            <option value="idc-wsi">IDC - Whole Slide Imaging</option>
+            <option value="idc-category:ABDOMEN:CT">IDC · ABDOMEN · CT</option>
+            <option value="idc-category:ABDOMEN:PT">IDC · ABDOMEN · PT</option>
+            <option value="idc-category:ABDOMEN:MR">IDC · ABDOMEN · MR</option>
+            <option value="idc-category:ADRENAL">IDC · ADRENAL</option>
+            <option value="idc-category:BRAIN">IDC · BRAIN</option>
+            <option value="idc-category:BREAST:MR">IDC · BREAST · MR</option>
+            <option value="idc-category:BREAST:PT">IDC · BREAST · PT</option>
+            <option value="idc-category:CHEST:NODULES_LIDC">IDC · CHEST · Nodules (LIDC)</option>
+            <option value="idc-category:CHEST:MEDIASTINAL_LN">IDC · CHEST · Mediastinal LN</option>
+            <option value="idc-category:CHEST:NLST_TOTALSEG">IDC · CHEST · NLST (TotalSeg)</option>
+            <option value="idc-category:CHEST:AIMI_LUNG_FDG:CT">IDC · CHEST · AIMI · CT</option>
+            <option value="idc-category:CHEST:AIMI_LUNG_FDG:PT">IDC · CHEST · AIMI · PT</option>
+            <option value="idc-category:CHEST:OTHER:CT">IDC · CHEST · Other · CT</option>
+            <option value="idc-category:CHEST:OTHER:PT">IDC · CHEST · Other · PT</option>
+            <option value="idc-category:KIDNEY">IDC · KIDNEY</option>
+            <option value="idc-category:KIDNEY:KITS">IDC · KIDNEY · KiTS</option>
+            <option value="idc-category:LIVER:CT" selected>IDC · LIVER · CT</option>
+            <option value="idc-category:LIVER:MR">IDC · LIVER · MR</option>
+            <option value="idc-category:LUNG:CT">IDC · LUNG · CT</option>
+            <option value="idc-category:LUNG:PT">IDC · LUNG · PT</option>
+            <option value="idc-category:PANCREAS">IDC · PANCREAS</option>
+            <option value="idc-category:PELVIS">IDC · PELVIS</option>
+            <option value="idc-category:PROSTATE">IDC · PROSTATE</option>
+            <option value="idc-category:WHOLEBODY">IDC · WHOLEBODY</option>
+          </select>
+          <button
+            type="button"
+            id="downloadWorklistBtn"
+            class="wl-icon-btn"
+            aria-label="Download My Worklist as JSON"
+            title="Download My Worklist as JSON"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M8 1.5a.75.75 0 0 1 .75.75v6.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06l2.22 2.22V2.25A.75.75 0 0 1 8 1.5ZM2.75 12a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            id="uploadWorklistBtn"
+            class="wl-icon-btn"
+            aria-label="Upload My Worklist from JSON"
+            title="Upload My Worklist from JSON"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M8 14.5a.75.75 0 0 1-.75-.75V7.56L5.03 9.78a.75.75 0 1 1-1.06-1.06l3.5-3.5a.75.75 0 0 1 1.06 0l3.5 3.5a.75.75 0 1 1-1.06 1.06L8.75 7.56v6.19a.75.75 0 0 1-.75.75ZM2.75 2.5a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
+              />
+            </svg>
+          </button>
+          <div class="wl-panel-header-end">
+            <span class="wl-panel-label" data-i18n="chrome:exploreIdc">Explore the NCI Imaging Data Commons:</span>
+            <a
+              href="https://portal.imaging.datacommons.cancer.gov/explore/"
+              class="wl-viewer-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="chrome:searchPortal"
+              data-i18n-title="chrome:searchPortalTitle"
+              title="Open the IDC search portal"
+            >
+              Search portal
+            </a>
+            <button
+              type="button"
+              id="openIdcAgentBtn"
+              class="wl-viewer-btn"
+              title="Search IDC via the public REST API (no AI)"
+            >
+              REST API
+            </button>
+            <button
+              type="button"
+              id="openIdcNlBtn"
+              class="wl-viewer-btn"
+              title="Search IDC via Anthropic on the Slicer hub"
+            >
+              Claude
+            </button>
+          </div>
+        </div>
+        <div class="wl-table-wrap">
+          <table class="wl-table">
+            <thead>
+              <tr>
+                <th data-i18n="chrome:colStudy">Study</th>
+                <th data-i18n="chrome:colModalities">Modalities</th>
+                <th data-i18n="chrome:colFormat">Format</th>
+                <th class="wl-th-sort" id="worklistSizeSortTh" aria-sort="ascending">
+                  <button
+                    type="button"
+                    id="worklistSizeSortBtn"
+                    class="wl-th-sort-btn"
+                    title="Sort by size"
+                  >
+                    <span data-i18n="chrome:colSize">Size</span>
+                    <span class="wl-th-sort-ind" aria-hidden="true">▲</span>
+                  </button>
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="worklistBody"></tbody>
+          </table>
+          <div id="worklistEmpty" class="wl-empty" hidden>No studies in this worklist.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="uploadWorklistModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal" role="dialog" aria-labelledby="uploadWorklistTitle">
+      <div class="wl-modal-header">
+        <h2 id="uploadWorklistTitle">Upload My Worklist</h2>
+        <button
+          type="button"
+          class="wl-modal-close"
+          data-close-upload-worklist
+          aria-label="Close"
+        >×</button>
+      </div>
+      <div class="wl-modal-body">
+        <p class="wl-muted">
+          Choose a JSON file previously downloaded from My Worklist.
+        </p>
+        <label class="wl-idc-nl-label" for="uploadWorklistFile">JSON file</label>
+        <input
+          type="file"
+          id="uploadWorklistFile"
+          class="wl-upload-file"
+          accept=".json,application/json"
+        />
+        <p id="uploadWorklistStatus" class="wl-muted" aria-live="polite"></p>
+        <div class="wl-upload-actions">
+          <button type="button" id="uploadWorklistConfirmBtn" class="wl-viewer-btn" disabled>
+            Upload
+          </button>
+          <button type="button" class="wl-viewer-btn" data-close-upload-worklist>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sessionModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal" role="dialog" aria-labelledby="sessionTitle">
+      <div class="wl-modal-header">
+        <h2 id="sessionTitle">Session info</h2>
+        <button type="button" class="wl-modal-close" data-close-modal aria-label="Close">×</button>
+      </div>
+      <div class="wl-modal-body">
+        <div class="wl-session-identity">
+          <div class="wl-session-identity-row">
+            <label for="sessionUserNameInput">Change user name:</label>
+            <input
+              type="text"
+              id="sessionUserNameInput"
+              class="wl-session-user-input"
+              autocomplete="username"
+            />
+            <button type="button" id="sessionChangeUserBtn" class="wl-viewer-btn">
+              OK
+            </button>
+          </div>
+          <p id="sessionChangeUserNote" class="wl-muted" hidden>
+            Saved. Reload the page to apply.
+          </p>
+        </div>
+        <dl id="sessionDl" class="wl-kv"></dl>
+        <button
+          type="button"
+          id="openConferenceTestWorklistBtn"
+          class="wl-viewer-btn"
+          title="Open another user session to test conferencing"
+          hidden
+        >
+          Open another user
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="helpModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal wl-help-modal" role="dialog" aria-labelledby="helpTitle">
+      <div class="wl-modal-header wl-help-header">
+        <div class="wl-help-header-text">
+          <h2 id="helpTitle">SlicerWorklist</h2>
+          <p id="helpQuickStart" class="wl-help-quick-start"></p>
+        </div>
+        <button type="button" class="wl-modal-close" data-close-modal aria-label="Close">×</button>
+      </div>
+      <div id="helpModalContent" class="wl-modal-body wl-help-body"></div>
+    </div>
+  </div>
+
+  <div id="inferenceInfoModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal wl-inference-info-modal" role="dialog" aria-labelledby="inferenceInfoTitle">
+      <div class="wl-modal-header">
+        <h2 id="inferenceInfoTitle">Evidence Creators</h2>
+        <button type="button" class="wl-modal-close" data-close-inference-info aria-label="Close">×</button>
+      </div>
+      <div id="inferenceInfoBody" class="wl-modal-body wl-inference-info-body"></div>
+    </div>
+  </div>
+
+  <div id="segrouletteModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal wl-slot-modal" role="dialog" aria-labelledby="segrouletteTitle">
+      <div class="wl-modal-header">
+        <h2 id="segrouletteTitle">SEG Roulette</h2>
+        <button type="button" class="wl-modal-close" data-close-segroulette aria-label="Close">×</button>
+      </div>
+      <div class="wl-modal-body">
+        <p class="wl-slot-lead">Reels spin on open — scroll or click each column to change region, collection, or series.</p>
+        <div class="wl-slot-machine">
+          <div class="wl-slot-col">
+            <div class="wl-slot-label">Region</div>
+            <div id="segrouletteWindowRegion" class="wl-slot-window">
+              <div id="segrouletteReelRegion" class="wl-slot-strip">
+                <div class="wl-slot-item">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="wl-slot-col">
+            <div class="wl-slot-label">Collection</div>
+            <div id="segrouletteWindowCollection" class="wl-slot-window">
+              <div id="segrouletteReelCollection" class="wl-slot-strip">
+                <div class="wl-slot-item">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="wl-slot-col">
+            <div class="wl-slot-label">Series</div>
+            <div id="segrouletteWindowSeries" class="wl-slot-window">
+              <div id="segrouletteReelSeries" class="wl-slot-strip">
+                <div class="wl-slot-item">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="wl-slot-payline" aria-hidden="true"></div>
+        </div>
+        <p id="segrouletteStatus" class="wl-slot-status">Ready</p>
+        <div class="wl-slot-actions">
+          <button type="button" id="segrouletteSpinBtn" class="wl-viewer-btn" disabled>Spin again</button>
+          <button type="button" id="segrouletteOpenBtn" class="wl-viewer-btn" disabled>Open</button>
+          <button type="button" id="segrouletteAddBtn" class="wl-viewer-btn" disabled>Add to worklist</button>
+          <button type="button" class="wl-viewer-btn" data-close-segroulette>Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="idcNlModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal wl-idc-nl-modal" role="dialog" aria-labelledby="idcNlDialogTitle">
+      <div class="wl-modal-header">
+        <h2 id="idcNlDialogTitle">Search IDC with Claude</h2>
+        <button type="button" class="wl-modal-close" data-close-idc-nl aria-label="Close">×</button>
+      </div>
+      <div class="wl-modal-body">
+        <p class="wl-muted">
+          Natural-language query for NCI Imaging Data Commons via Anthropic.
+        </p>
+        <label class="wl-idc-nl-label" for="idcNlPrompt">IDC query</label>
+        <textarea
+          id="idcNlPrompt"
+          class="wl-idc-nl-prompt"
+          rows="4"
+          placeholder="Natural-language IDC query"
+        ></textarea>
+        <label class="wl-idc-nl-label" for="idcNlOrgLabel">Worklist label</label>
+        <input
+          type="text"
+          id="idcNlOrgLabel"
+          class="wl-idc-nl-org"
+          placeholder="e.g. test worklist"
+        />
+        <div class="wl-idc-nl-search-bar">
+          <button type="button" id="idcNlSearchBtn" class="wl-viewer-btn" disabled>Search</button>
+          <p id="idcNlAvailability" class="wl-idc-nl-availability" aria-live="polite"></p>
+        </div>
+        <div id="idcNlStatusRow" class="wl-idc-nl-status-row">
+          <span id="idcNlStatusSpinner" class="wl-idc-nl-spinner" hidden aria-hidden="true"></span>
+          <p id="idcNlStatus" class="wl-idc-nl-status" aria-live="polite"></p>
+        </div>
+        <div id="idcNlResultsSection" class="wl-idc-nl-results-section" hidden>
+          <p class="wl-idc-nl-label">Matching studies</p>
+          <div id="idcNlResults" class="wl-idc-nl-results"></div>
+        </div>
+        <pre id="idcNlJobLog" class="wl-idc-nl-log" hidden aria-live="polite"></pre>
+        <p id="idcNlCitation" class="wl-idc-nl-citation"></p>
+        <div id="idcNlSqlSection" class="wl-idc-nl-sql-section" hidden>
+          <button
+            type="button"
+            id="idcNlToggleSqlBtn"
+            class="wl-idc-nl-sql-toggle"
+            aria-expanded="false"
+            aria-controls="idcNlSqlPanel"
+            hidden
+          >Show IDC index query</button>
+          <pre id="idcNlSqlPanel" class="wl-idc-nl-sql-panel" hidden></pre>
+        </div>
+        <p class="wl-idc-nl-ack">
+          Natural-language search uses
+          <strong>Anthropic on the Slicer hub</strong>
+          (<code>ANTHROPIC_API_KEY</code>) to build a structured query, then runs it
+          against the
+          <a
+            href="https://learn.canceridc.dev/data/organization-of-data/data-retrieval-with-the-idc-api"
+            target="_blank"
+            rel="noopener noreferrer"
+          >IDC REST API</a>.
+          See
+          <a
+            href="https://learn.canceridc.dev/ai-assistants/agents"
+            target="_blank"
+            rel="noopener noreferrer"
+          >IDC AI assistants</a>.
+          If you use IDC data in research, cite Fedorov A, et al.,
+          <em>Radiographics</em>
+          (<a
+            href="https://doi.org/10.1148/rg.230180"
+            target="_blank"
+            rel="noopener noreferrer"
+          >2023</a>).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="idcSearchModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal wl-idc-search-modal" role="dialog" aria-labelledby="idcSearchDialogTitle">
+      <div class="wl-modal-header">
+        <h2 id="idcSearchDialogTitle">Search Imaging Data Commons</h2>
+        <button type="button" class="wl-modal-close" data-close-idc-search aria-label="Close">×</button>
+      </div>
+      <div class="wl-modal-body">
+        <p class="wl-muted">
+          Public IDC index via REST (no AI). For free-text queries, use Claude.
+        </p>
+        <div id="idcSearchFilterRows" class="wl-idc-search-filters"></div>
+        <div class="wl-idc-search-add-bar">
+          <button type="button" id="idcSearchAddFilterBtn" class="wl-viewer-btn">+ Add filter</button>
+        </div>
+        <div id="idcSearchAddFilterPanel" class="wl-idc-search-add-panel" hidden></div>
+        <p id="idcSearchMatching" class="wl-idc-search-matching" aria-live="polite">
+          Matching: select at least one filter to see counts
+        </p>
+        <label class="wl-idc-search-org-label" for="idcSearchOrgLabel">Worklist label</label>
+        <input
+          type="text"
+          id="idcSearchOrgLabel"
+          class="wl-idc-search-org"
+          placeholder="e.g. IDC REST search"
+        />
+        <div class="wl-idc-search-actions-bar">
+          <button type="button" id="idcSearchShowResultsBtn" class="wl-viewer-btn" disabled>
+            Show Results
+          </button>
+          <span id="idcSearchStatusSpinner" class="wl-idc-search-spinner" hidden aria-hidden="true"></span>
+          <p id="idcSearchStatus" class="wl-idc-search-status" aria-live="polite"></p>
+        </div>
+        <div id="idcSearchResultsSection" class="wl-idc-search-results" hidden>
+          <div class="wl-idc-search-table-wrap">
+            <table class="wl-idc-search-table">
+              <thead>
+                <tr>
+                  <th>Collection</th>
+                  <th>Patient</th>
+                  <th>Study</th>
+                  <th>Series</th>
+                  <th>Modality</th>
+                  <th>Size</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="idcSearchResultsBody"></tbody>
+            </table>
+          </div>
+          <div id="idcSearchPager" class="wl-idc-search-pager" hidden>
+            <button type="button" id="idcSearchPrevBtn" class="wl-viewer-btn">Previous</button>
+            <span id="idcSearchPageLabel"></span>
+            <button type="button" id="idcSearchNextBtn" class="wl-viewer-btn">Next</button>
+          </div>
+        </div>
+        <p class="wl-idc-search-footer">
+          <a href="https://portal.imaging.datacommons.cancer.gov/explore/" target="_blank" rel="noopener noreferrer">IDC Explore</a>
+          ·
+          <a href="https://api.imaging.datacommons.cancer.gov/v3/docs" target="_blank" rel="noopener noreferrer">REST docs</a>
+        </p>
+        <p class="wl-idc-search-ack">
+          Queries the public
+          <a
+            href="https://api.imaging.datacommons.cancer.gov/v3/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+          >IDC REST API</a>
+          (NCI Imaging Data Commons). If you use IDC data in research, cite Fedorov A, et al.,
+          <em>Radiographics</em>
+          (<a
+            href="https://doi.org/10.1148/rg.230180"
+            target="_blank"
+            rel="noopener noreferrer"
+          >2023</a>).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="worklist.js?v=rpt-overlap"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "slicer-hub-js-clients",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Slicer Hub browser clients and shared JS hub client",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @slicer-hub/client && npm run build -w @slicer-hub/worklist && npm run build -w @slicer-hub/reporting && npm run build -w @slicer-hub/classroom",
+    "build:client": "npm run build -w @slicer-hub/client",
+    "build:apps": "npm run build -w @slicer-hub/worklist && npm run build -w @slicer-hub/reporting && npm run build -w @slicer-hub/classroom",
+    "serve:worklist": "npm run build -w @slicer-hub/worklist && npm run serve -w @slicer-hub/worklist",
+    "serve:reporting": "npm run build -w @slicer-hub/reporting && npm run serve -w @slicer-hub/reporting",
+    "serve:classroom": "npm run build -w @slicer-hub/classroom && npm run serve -w @slicer-hub/classroom",
+    "serve:worklist:watch": "npm run serve:watch -w @slicer-hub/worklist"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

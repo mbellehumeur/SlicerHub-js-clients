@@ -1,0 +1,23 @@
+{
+  "name": "@slicer-hub/classroom",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild classroom.ts --bundle --format=esm --outfile=classroom.js",
+    "serve": "python -m http.server 8160"
+  },
+  "dependencies": {
+    "@slicer-hub/client": "*",
+    "@slicer-hub/i18n": "*",
+    "@slicer-hub/context-identity": "*"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/classroom"
+  }
+}

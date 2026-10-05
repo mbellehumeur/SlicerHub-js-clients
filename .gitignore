@@ -1,0 +1,27 @@
+# deps
+node_modules/
+
+# build
+dist/
+**/dist/
+packages/worklist/worklist.js
+packages/worklist/about.js
+packages/reporting/reporting.js
+packages/classroom/classroom.js
+
+# caches / env / OS / IDE
+*.tsbuildinfo
+.npm
+.eslintcache
+.env
+.env.*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+coverage/
+*.tgz
+
+# local migrate helper
+tools/_migrate_from_cast.py

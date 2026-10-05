@@ -1,0 +1,23 @@
+{
+  "name": "@slicer-hub/i18n",
+  "version": "0.1.0",
+  "description": "Shared locale strings for Slicer Hub JS clients",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/i18n"
+  },
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "*.ts",
+    "segment-labels"
+  ],
+  "sideEffects": false
+}

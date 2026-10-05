@@ -1,0 +1,25 @@
+{
+  "name": "@slicer-hub/context-identity",
+  "version": "0.1.0",
+  "description": "ImagingStudy context identity helpers for Slicer Hub JS clients",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/context-identity"
+  },
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.ts"
+  ],
+  "dependencies": {
+    "@slicer-hub/client": "*"
+  },
+  "sideEffects": false
+}

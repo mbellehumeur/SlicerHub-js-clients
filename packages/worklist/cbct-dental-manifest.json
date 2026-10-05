@@ -1,0 +1,21 @@
+{
+  "organization": "cbct-dental",
+  "organizationLabel": "CBCT Dental",
+  "studies": [
+    {
+      "id": "cbct-mg-test-scan",
+      "name": "MG test scan",
+      "description": "AMASSS CBCT sample · Maxlo24/AMASSS_CBCT v1.0.1",
+      "format": "NIfTI",
+      "modalities": ["CT"],
+      "openMode": "files",
+      "files": [
+        {
+          "url": "https://github.com/Maxlo24/AMASSS_CBCT/releases/download/v1.0.1/MG_test_scan.nii.gz",
+          "fileName": "MG_test_scan.nii.gz",
+          "label": "MG_test_scan"
+        }
+      ]
+    }
+  ]
+}
