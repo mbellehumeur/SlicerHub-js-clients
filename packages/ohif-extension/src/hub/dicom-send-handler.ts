@@ -1,6 +1,6 @@
 import type { CastMessage } from '@slicer-hub/client';
 import { LOG_PREFIX } from './constants';
-import { addCastDicomToMetadataStore } from './ingest-hub-dicom';
+import { addHubDicomToMetadataStore } from './ingest-hub-dicom';
 import {
   extractFilePayloadsForEvent,
   filePayloadToArrayBuffer,
@@ -21,7 +21,7 @@ export async function ingestDicomArrayBuffer(
   callbacks: DicomIngestCallbacks
 ): Promise<void> {
   try {
-    const ingested = addCastDicomToMetadataStore(arrayBuffer);
+    const ingested = addHubDicomToMetadataStore(arrayBuffer);
     if (!ingested) {
       return;
     }
@@ -69,7 +69,7 @@ export async function handleNiftiSendMessage(message: CastMessage): Promise<void
     const fileName =
       'fileName' in payload && payload.fileName
         ? payload.fileName
-        : `cast-nifti-send-${idx + 1}.nii.gz`;
+        : `hub-nifti-send-${idx + 1}.nii.gz`;
     const file = new File([arrayBuffer], fileName, {
       type:
         'mimeType' in payload && payload.mimeType

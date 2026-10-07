@@ -30,6 +30,8 @@ export const TORCHXRAYVISION_PRODUCT_ALIASES = [
   'TORCH-XRAY-VISION',
 ];
 
+export const FLEXRAY_PRODUCT_ALIASES = ['FLEXRAY', 'FLEX_RAY', 'FLEX-RAY'];
+
 export const MHUB_PRODUCT_ALIASES = ['MHUB', 'MHUB_AI', 'MHUBAI'];
 
 export function normalizeProductToken(name) {
@@ -71,6 +73,10 @@ export function isTorchXrayVisionProduct(name) {
   return productMatchesAliases(name, TORCHXRAYVISION_PRODUCT_ALIASES);
 }
 
+export function isFlexrayProduct(name) {
+  return productMatchesAliases(name, FLEXRAY_PRODUCT_ALIASES);
+}
+
 export function isMhubProduct(name) {
   return productMatchesAliases(name, MHUB_PRODUCT_ALIASES);
 }
@@ -82,7 +88,8 @@ export function isInferenceProduct(name) {
     isLungScreeningProduct(name) ||
     isNeuroSegProduct(name) ||
     isDentalSegProduct(name) ||
-    isTorchXrayVisionProduct(name)
+    isTorchXrayVisionProduct(name) ||
+    isFlexrayProduct(name)
   );
 }
 

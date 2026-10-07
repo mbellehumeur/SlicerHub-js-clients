@@ -4,7 +4,7 @@ import {
   resolveImagingStudyOpenPlan,
   type CastMessage,
 } from '@slicer-hub/client';
-import type { CastEvent, ServicesManagerLike } from './types';
+import type { HubEvent, ServicesManagerLike } from './types';
 
 function publisherLabel(message: CastMessage): string {
   const subscriberName = message['subscriber.name'];
@@ -19,7 +19,7 @@ function publisherLabel(message: CastMessage): string {
 }
 
 export function buildImagingStudyOpenNotificationMessage(
-  event: CastEvent,
+  event: HubEvent,
   message: CastMessage
 ): string {
   const normalized = normalizeImagingStudyContext(event.context);
@@ -51,7 +51,7 @@ export function buildImagingStudyOpenNotificationMessage(
 }
 
 export function shouldShowImagingStudyOpenLoadingNotification(
-  event: CastEvent | undefined
+  event: HubEvent | undefined
 ): boolean {
   if (!event?.context) {
     return true;
@@ -63,7 +63,7 @@ export function shouldShowImagingStudyOpenLoadingNotification(
 }
 
 export type ImagingStudyOpenResult = {
-  event: CastEvent;
+  event: HubEvent;
   message: CastMessage;
 };
 
@@ -76,26 +76,34 @@ export function showImagingStudyOpenLoadingNotification(
     return;
   }
 
-  uiNotificationService.show({
+  // Show loading only — OHIF's promise helper also pops a green success toast;
+  // that second popup is noisy for study open, so dismiss loading on settle
+  // and surface errors alone.
+  const loadingId = uiNotificationService.show({
     title: 'Imaging study open',
     message: 'Downloading and opening imaging study…',
-    promise,
-    promiseMessages: {
-      loading: 'Downloading and opening imaging study…',
-      success: data => {
-        if (!data?.event) {
-          return 'Imaging study open completed';
-        }
-        return buildImagingStudyOpenNotificationMessage(data.event, data.message);
-      },
-      error: error => {
-        const detail =
-          error instanceof Error ? error.message : String(error ?? '').trim();
-        return detail || 'Failed to open imaging study';
-      },
-    },
-    id: 'cast-imagingstudy-open',
+    type: 'loading',
+    autoClose: false,
+    id: 'hub-imagingstudy-open',
     allowDuplicates: false,
-    duration: 4000,
   });
+
+  promise.then(
+    () => {
+      uiNotificationService.hide?.(loadingId);
+    },
+    error => {
+      uiNotificationService.hide?.(loadingId);
+      const detail =
+        error instanceof Error ? error.message : String(error ?? '').trim();
+      uiNotificationService.show({
+        title: 'Imaging study open',
+        message: detail || 'Failed to open imaging study',
+        type: 'error',
+        id: 'hub-imagingstudy-open-error',
+        allowDuplicates: false,
+        duration: 4000,
+      });
+    }
+  );
 }

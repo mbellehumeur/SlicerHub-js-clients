@@ -12,6 +12,7 @@ JavaScript monorepo for **Slicer Hub** browser apps and the shared hub client li
 | `packages/worklist` | `@slicer-hub/worklist` |
 | `packages/reporting` | `@slicer-hub/reporting` |
 | `packages/classroom` | `@slicer-hub/classroom` |
+| `packages/ohif-extension` | `@slicer-hub/ohif-extension` |
 
 ## Setup
 

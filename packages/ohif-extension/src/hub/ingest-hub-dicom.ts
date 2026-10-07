@@ -14,7 +14,7 @@ function hubDicomFileName(
   if (fileName?.trim()) {
     return fileName.trim();
   }
-  return `cast-${index + 1}.dcm`;
+  return `hub-${index + 1}.dcm`;
 }
 
 /**
@@ -27,7 +27,7 @@ export type HubDicomIngestResult = {
   sopInstanceUID?: string;
 };
 
-export function addCastDicomToMetadataStore(
+export function addHubDicomToMetadataStore(
   arrayBuffer: ArrayBuffer,
   options?: { fileName?: string; index?: number; sourceUrl?: string }
 ): HubDicomIngestResult | null {

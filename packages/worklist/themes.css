@@ -926,9 +926,10 @@ button {
 }
 
 .wl-context-label {
-  color: var(--wl-fg-muted);
-  font-weight: 600;
-  font-size: 12px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
 }
 
 .wl-context-value {
@@ -1393,11 +1394,21 @@ a.wl-viewer-btn {
 
 /* ---- Remote AI info card ---- */
 .wl-inference-info-modal {
-  width: min(420px, 100%);
+  width: min(340px, 100%);
 }
 
 .wl-inference-info-modal.wl-inference-info-modal-wide {
-  width: min(560px, 100%);
+  width: min(400px, 100%);
+}
+
+.wl-inference-drag-handle {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.wl-inference-drag-handle.wl-dragging {
+  cursor: grabbing;
 }
 
 .wl-inference-info-body {
@@ -1547,6 +1558,21 @@ a.wl-viewer-btn {
 .hub-inference-info-summary {
   margin: 0;
   color: var(--wl-fg-muted);
+}
+
+.hub-inference-info-license {
+  margin: 0;
+  font-size: 12px;
+  color: var(--wl-fg-muted);
+}
+
+.hub-inference-info-restriction {
+  font-weight: 700;
+  color: var(--wl-fg);
+}
+
+.hub-inference-info-license-link {
+  color: var(--wl-accent, #3b82f6);
 }
 
 .hub-inference-info-links {

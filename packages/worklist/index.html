@@ -257,6 +257,7 @@
             <option value="slicer-scenes">Slicer scenes</option>
             <option value="cbct-dental">CBCT Dental</option>
             <option value="torchxrayvision">TorchXRayVision</option>
+            <option value="flexray" selected>FleXray</option>
             <option value="idc-wsi">IDC - Whole Slide Imaging</option>
             <option value="idc-category:ABDOMEN:CT">IDC · ABDOMEN · CT</option>
             <option value="idc-category:ABDOMEN:PT">IDC · ABDOMEN · PT</option>
@@ -274,7 +275,7 @@
             <option value="idc-category:CHEST:OTHER:PT">IDC · CHEST · Other · PT</option>
             <option value="idc-category:KIDNEY">IDC · KIDNEY</option>
             <option value="idc-category:KIDNEY:KITS">IDC · KIDNEY · KiTS</option>
-            <option value="idc-category:LIVER:CT" selected>IDC · LIVER · CT</option>
+            <option value="idc-category:LIVER:CT">IDC · LIVER · CT</option>
             <option value="idc-category:LIVER:MR">IDC · LIVER · MR</option>
             <option value="idc-category:LUNG:CT">IDC · LUNG · CT</option>
             <option value="idc-category:LUNG:PT">IDC · LUNG · PT</option>
@@ -459,7 +460,7 @@
 
   <div id="inferenceInfoModal" class="wl-modal-backdrop" hidden>
     <div class="wl-modal wl-inference-info-modal" role="dialog" aria-labelledby="inferenceInfoTitle">
-      <div class="wl-modal-header">
+      <div class="wl-modal-header wl-inference-drag-handle" data-wl-inference-drag>
         <h2 id="inferenceInfoTitle">Evidence Creators</h2>
         <button type="button" class="wl-modal-close" data-close-inference-info aria-label="Close">×</button>
       </div>

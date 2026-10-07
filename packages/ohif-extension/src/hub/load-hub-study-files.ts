@@ -1,12 +1,12 @@
 import JSZip from 'jszip';
 import type { CastMessage } from '@slicer-hub/client';
-import { navigateToCastViewer } from './hub-navigate';
+import { navigateToHubViewer } from './hub-navigate';
 import { HUB_IDC_DATA_SOURCE, LOG_PREFIX } from './constants';
 import {
   filePayloadToArrayBuffer,
   type ImagingStudyOpenPlan,
 } from '@slicer-hub/client';
-import { addCastDicomToMetadataStore } from './ingest-hub-dicom';
+import { addHubDicomToMetadataStore } from './ingest-hub-dicom';
 import { ingestNiftiFile, ingestNiftiFromUrl } from './ingest-hub-nifti';
 import type { FilePayload } from './types';
 
@@ -80,13 +80,19 @@ async function expandArchiveToFiles(file: File): Promise<File[]> {
   return entries;
 }
 
+/** DICOM UIDs are dotted decimals; IDC CRDC series ids are UUID-shaped — not valid SeriesInstanceUIDs. */
+function isLikelyDicomUid(value: string | undefined | null): boolean {
+  const uid = String(value || '').trim();
+  return /^\d+(?:\.\d+)+$/.test(uid);
+}
+
 async function ingestDicomFile(
   file: File,
   callbacks: DicomIngestCallbacks,
   sourceUrl?: string
-): Promise<string | null> {
+): Promise<{ studyUID: string; seriesInstanceUID?: string } | null> {
   const arrayBuffer = await file.arrayBuffer();
-  const ingested = addCastDicomToMetadataStore(arrayBuffer, {
+  const ingested = addHubDicomToMetadataStore(arrayBuffer, {
     fileName: file.name,
     sourceUrl,
   });
@@ -97,10 +103,13 @@ async function ingestDicomFile(
     SeriesInstanceUID: ingested.seriesInstanceUID,
     SOPInstanceUID: ingested.sopInstanceUID,
   });
-  return ingested.studyUID;
+  return {
+    studyUID: ingested.studyUID,
+    seriesInstanceUID: ingested.seriesInstanceUID,
+  };
 }
 
-export async function ingestCastFiles(
+export async function ingestHubFiles(
   files: File[],
   callbacks: DicomIngestCallbacks,
   remoteUrlByFile?: Map<File, string>
@@ -122,13 +131,13 @@ export async function ingestCastFiles(
     if (!isLikelyDicomFileName(file.name)) {
       continue;
     }
-    const studyUID = await ingestDicomFile(
+    const ingested = await ingestDicomFile(
       file,
       callbacks,
       remoteUrlByFile?.get(file)
     );
-    if (studyUID) {
-      studyUIDs.add(studyUID);
+    if (ingested?.studyUID) {
+      studyUIDs.add(ingested.studyUID);
     }
   }
 
@@ -147,7 +156,7 @@ export async function fetchRemoteFile(url: string, fileName?: string): Promise<F
     const name =
       fileName?.trim() ||
       basename(new URL(url).pathname) ||
-      'cast-download';
+      'hub-download';
     return new File([blob], name, { type: blob.type || 'application/octet-stream' });
   } catch (err) {
     console.error(`${LOG_PREFIX} fetch failed`, url, err);
@@ -201,7 +210,7 @@ export function extractInlineOpenFilePayloads(
     const fileName =
       typeof typed.fileName === 'string' && typed.fileName.trim()
         ? typed.fileName.trim()
-        : `cast-open-${idx + 1}.zip`;
+        : `hub-open-${idx + 1}.zip`;
     const mimeType =
       typeof typed.mimeType === 'string' && typed.mimeType.trim()
         ? typed.mimeType.trim()
@@ -226,7 +235,7 @@ async function payloadsToFiles(payloads: FilePayload[]): Promise<File[]> {
     const fileName =
       'fileName' in payload && payload.fileName
         ? payload.fileName
-        : `cast-open-${idx + 1}.zip`;
+        : `hub-open-${idx + 1}.zip`;
     files.push(
       new File([arrayBuffer], fileName, {
         type:
@@ -266,29 +275,182 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
-export async function loadCastIdcStudyFiles(
+type IdcPlanFile = {
+  url: string;
+  fileName?: string;
+  label?: string;
+  role?: string;
+};
+
+/** Parse https://{bucket}.s3[.region].amazonaws.com/{crdc-prefix}/ as an IDC series prefix. */
+function parseIdcS3PrefixUrl(
+  url: string,
+  fileName?: string
+): { bucket: string; prefix: string; origin: string } | null {
+  try {
+    const u = new URL(url);
+    const hostMatch = u.hostname.match(
+      /^([^.]+)\.s3(?:[.-][a-z0-9-]+)?\.amazonaws\.com$/i
+    );
+    if (!hostMatch) {
+      return null;
+    }
+    const bucket = hostMatch[1];
+    let prefix = decodeURIComponent(u.pathname.replace(/^\/+/, '')).replace(
+      /\/+$/,
+      ''
+    );
+    if (!prefix) {
+      return null;
+    }
+    const leaf = basename(prefix);
+    const fileNameLooksPrefix = String(fileName || '').endsWith('/');
+    const pathLooksPrefix =
+      u.pathname.endsWith('/') || (!leaf.includes('.') && prefix.length > 0);
+    if (!fileNameLooksPrefix && !pathLooksPrefix) {
+      return null;
+    }
+    return { bucket, prefix, origin: u.origin };
+  } catch {
+    return null;
+  }
+}
+
+/** List DICOM object keys under a public IDC S3 series prefix (ListObjectsV2). */
+async function listIdcS3PrefixObjects(
+  bucket: string,
+  prefix: string,
+  origin: string
+): Promise<Array<{ url: string; fileName: string }>> {
+  const normalizedPrefix = prefix.endsWith('/') ? prefix : `${prefix}/`;
+  const out: Array<{ url: string; fileName: string }> = [];
+  let token: string | null = null;
+  let more = true;
+
+  while (more) {
+    const listUrl = new URL(`${origin.replace(/\/+$/, '')}/`);
+    listUrl.searchParams.set('list-type', '2');
+    listUrl.searchParams.set('prefix', normalizedPrefix);
+    if (token) {
+      listUrl.searchParams.set('continuation-token', token);
+    }
+    const response = await fetch(listUrl.toString());
+    if (!response.ok) {
+      console.error(
+        `${LOG_PREFIX} S3 list failed ${response.status}`,
+        listUrl.toString()
+      );
+      break;
+    }
+    const xml = new DOMParser().parseFromString(
+      await response.text(),
+      'application/xml'
+    );
+    for (const el of Array.from(xml.getElementsByTagName('Key'))) {
+      const key = el.textContent || '';
+      if (!key || key.endsWith('/')) {
+        continue;
+      }
+      const name = basename(key);
+      // Prefer .dcm; skip non-DICOM extensions (keep extensionless keys).
+      if (name.includes('.') && !/\.dcm$/i.test(name)) {
+        continue;
+      }
+      const encodedKey = key
+        .split('/')
+        .map(part => encodeURIComponent(part))
+        .join('/');
+      out.push({
+        url: `${origin.replace(/\/+$/, '')}/${encodedKey}`,
+        fileName: name,
+      });
+    }
+    more =
+      (xml.getElementsByTagName('IsTruncated')[0]?.textContent || '').trim() ===
+      'true';
+    token = more
+      ? xml.getElementsByTagName('NextContinuationToken')[0]?.textContent ||
+        null
+      : null;
+  }
+
+  console.info(`${LOG_PREFIX} listed IDC S3 prefix`, {
+    bucket,
+    prefix: normalizedPrefix,
+    objectCount: out.length,
+  });
+  return out;
+}
+
+/**
+ * Worklist open-mode `idc` now sends CRDC prefix URLs (not per-.dcm lists).
+ * Expand those prefixes to object URLs before download/ingest.
+ */
+async function expandIdcPlanFiles(files: IdcPlanFile[]): Promise<IdcPlanFile[]> {
+  const expanded: IdcPlanFile[] = [];
+  for (const entry of files) {
+    const parsed = parseIdcS3PrefixUrl(entry.url, entry.fileName);
+    if (!parsed) {
+      expanded.push(entry);
+      continue;
+    }
+    const objects = await listIdcS3PrefixObjects(
+      parsed.bucket,
+      parsed.prefix,
+      parsed.origin
+    );
+    if (!objects.length) {
+      console.warn(`${LOG_PREFIX} IDC prefix listed 0 objects`, entry.url);
+      continue;
+    }
+    for (const obj of objects) {
+      expanded.push({
+        url: obj.url,
+        fileName: obj.fileName,
+        label: entry.label,
+        role: entry.role,
+      });
+    }
+  }
+  return expanded;
+}
+
+export async function loadHubIdcStudyFiles(
   plan: ImagingStudyIdcOpen,
   callbacks: DicomIngestCallbacks
 ): Promise<void> {
   const studyUIDs = new Set<string>();
+  const seriesUIDs = new Set<string>();
+  const files = await expandIdcPlanFiles(plan.files || []);
 
   console.info(
-    `${LOG_PREFIX} imagingstudy-open IDC parallel download (${plan.files.length} file(s), concurrency ${IDC_DOWNLOAD_CONCURRENCY})`,
+    `${LOG_PREFIX} imagingstudy-open IDC parallel download (${files.length} file(s) after prefix expand, concurrency ${IDC_DOWNLOAD_CONCURRENCY})`,
     {
       studyInstanceUID: plan.studyInstanceUID,
       seriesInstanceUID: plan.seriesInstanceUID,
       sourceBucket: plan.sourceBucket,
+      prefixEntries: plan.files.length,
     }
   );
 
-  await mapWithConcurrency(plan.files, IDC_DOWNLOAD_CONCURRENCY, async entry => {
+  if (!files.length) {
+    console.warn(
+      `${LOG_PREFIX} imagingstudy-open: no IDC objects after prefix expand`
+    );
+    return;
+  }
+
+  await mapWithConcurrency(files, IDC_DOWNLOAD_CONCURRENCY, async entry => {
     const downloaded = await fetchRemoteFile(entry.url, entry.fileName);
     if (!downloaded || !isLikelyDicomFileName(downloaded.name)) {
       return;
     }
-    const studyUID = await ingestDicomFile(downloaded, callbacks, entry.url);
-    if (studyUID) {
-      studyUIDs.add(studyUID);
+    const ingested = await ingestDicomFile(downloaded, callbacks, entry.url);
+    if (ingested?.studyUID) {
+      studyUIDs.add(ingested.studyUID);
+    }
+    if (ingested?.seriesInstanceUID && isLikelyDicomUid(ingested.seriesInstanceUID)) {
+      seriesUIDs.add(ingested.seriesInstanceUID);
     }
   });
 
@@ -298,15 +460,28 @@ export async function loadCastIdcStudyFiles(
     return;
   }
 
-  navigateToCastViewer(studyList, {
-    seriesUID: plan.seriesInstanceUID,
+  // plan.seriesInstanceUID is often an IDC CRDC uuid, not a DICOM SeriesInstanceUID.
+  // Prefer series UIDs from ingested instances so OHIF series filter matches the study.
+  const seriesFromPlan = isLikelyDicomUid(plan.seriesInstanceUID)
+    ? plan.seriesInstanceUID
+    : undefined;
+  const seriesUID =
+    seriesUIDs.size === 1
+      ? [...seriesUIDs][0]
+      : seriesFromPlan && seriesUIDs.has(seriesFromPlan)
+        ? seriesFromPlan
+        : undefined;
+
+  navigateToHubViewer(studyList, {
+    seriesUID,
     dataSource: HUB_IDC_DATA_SOURCE,
     modeRoute: plan.ohifMode,
   });
 
   console.info(`${LOG_PREFIX} imagingstudy-open loaded IDC study`, {
     studyUIDs: studyList,
-    fileCount: plan.files.length,
+    seriesUID: seriesUID || '(all series)',
+    fileCount: files.length,
   });
 }
 
@@ -315,7 +490,7 @@ function isDirectNiftiUrl(url: string, fileName?: string): boolean {
   return isNiftiFileName(name);
 }
 
-export async function loadCastStudyFilesFromUrls(
+export async function loadHubStudyFilesFromUrls(
   fileEntries: Array<{ url: string; fileName?: string; label?: string }>,
   callbacks: DicomIngestCallbacks,
   options?: { ohifMode?: string }
@@ -351,7 +526,7 @@ export async function loadCastStudyFilesFromUrls(
     const expanded = await expandArchiveToFiles(downloaded);
     const remoteUrlByFile = new Map<File, string>();
     expanded.forEach(file => remoteUrlByFile.set(file, entry.url));
-    const studyUIDsFromArchive = await ingestCastFiles(
+    const studyUIDsFromArchive = await ingestHubFiles(
       expanded,
       callbacks,
       remoteUrlByFile
@@ -365,7 +540,7 @@ export async function loadCastStudyFilesFromUrls(
     return;
   }
 
-  navigateToCastViewer(studyList, {
+  navigateToHubViewer(studyList, {
     useLocalDataSource: true,
     modeRoute: options?.ohifMode,
   });
@@ -376,7 +551,7 @@ export async function loadCastStudyFilesFromUrls(
   });
 }
 
-export async function loadCastStudyFilesFromPayloads(
+export async function loadHubStudyFilesFromPayloads(
   payloads: FilePayload[],
   callbacks: DicomIngestCallbacks
 ): Promise<void> {
@@ -386,9 +561,9 @@ export async function loadCastStudyFilesFromPayloads(
     const inner = await expandArchiveToFiles(file);
     expanded.push(...inner);
   }
-  const studyUIDs = await ingestCastFiles(expanded, callbacks);
+  const studyUIDs = await ingestHubFiles(expanded, callbacks);
   if (!studyUIDs.length) {
     return;
   }
-  navigateToCastViewer(studyUIDs, { useLocalDataSource: true });
+  navigateToHubViewer(studyUIDs, { useLocalDataSource: true });
 }

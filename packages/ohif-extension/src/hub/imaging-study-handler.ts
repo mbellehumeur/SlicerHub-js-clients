@@ -3,10 +3,10 @@ import {
   deleteUsPleuraBLineAnnotations,
   importUsPleuraBLineAnnotations,
 } from './import-us-annotations';
-import { navigateToCastEmptyViewer, navigateToCastViewer } from './hub-navigate';
+import { navigateToHubEmptyViewer, navigateToHubViewer } from './hub-navigate';
 import { HUB_DICOMWEB_DATA_SOURCE, HUB_LOCAL_DATA_SOURCE, LOG_PREFIX } from './constants';
 import {
-  isAlreadyOnCastStudyViewer,
+  isAlreadyOnHubStudyViewer,
   resolveHubModeRoute,
 } from './resolve-hub-mode-route';
 import {
@@ -22,11 +22,11 @@ import {
 } from '@slicer-hub/client';
 import {
   extractInlineOpenFilePayloads,
-  loadCastIdcStudyFiles,
-  loadCastStudyFilesFromPayloads,
-  loadCastStudyFilesFromUrls,
+  loadHubIdcStudyFiles,
+  loadHubStudyFilesFromPayloads,
+  loadHubStudyFilesFromUrls,
 } from './load-hub-study-files';
-import type { CastEvent } from './types';
+import type { HubEvent } from './types';
 
 type DicomIngestCallbacks = {
   scheduleHubDicomSendLayer: (meta: {
@@ -51,10 +51,10 @@ export function navigateToStudy(
 ): void {
   const modeRoute = resolveHubModeRoute([studyUID], ohifMode);
   const dataSource = useLocalDataSource ? HUB_LOCAL_DATA_SOURCE : undefined;
-  if (isAlreadyOnCastStudyViewer(studyUID, modeRoute, dataSource)) {
+  if (isAlreadyOnHubStudyViewer(studyUID, modeRoute, dataSource)) {
     return;
   }
-  navigateToCastViewer([studyUID], {
+  navigateToHubViewer([studyUID], {
     seriesUID,
     useLocalDataSource,
     modeRoute: ohifMode,
@@ -69,7 +69,7 @@ export class ImagingStudyHandler {
   }
 
   async handleOpen(
-    event: CastEvent | undefined,
+    event: HubEvent | undefined,
     _message?: CastMessage
   ): Promise<void> {
     if (!event?.context) {
@@ -90,17 +90,17 @@ export class ImagingStudyHandler {
 
     const inlinePayloads = extractInlineOpenFilePayloads(event);
     if (inlinePayloads.length) {
-      await loadCastStudyFilesFromPayloads(inlinePayloads, this.dicomCallbacks);
+      await loadHubStudyFilesFromPayloads(inlinePayloads, this.dicomCallbacks);
       return;
     }
 
     if (plan?.mode === 'idc' && plan.files.length > 0) {
-      await loadCastIdcStudyFiles(plan, this.dicomCallbacks);
+      await loadHubIdcStudyFiles(plan, this.dicomCallbacks);
       return;
     }
 
     if (plan?.mode === 'dicom-url' && plan.files.length > 0) {
-      await loadCastStudyFilesFromUrls(plan.files, this.dicomCallbacks, {
+      await loadHubStudyFilesFromUrls(plan.files, this.dicomCallbacks, {
         ohifMode: plan.ohifMode,
       });
       return;
@@ -122,7 +122,7 @@ export class ImagingStudyHandler {
           source: entry.source,
         }))
       );
-      await loadCastStudyFilesFromUrls(
+      await loadHubStudyFilesFromUrls(
         toHubFileEntries(downloadEntries),
         this.dicomCallbacks,
         { ohifMode: plan?.ohifMode }
@@ -150,7 +150,7 @@ export class ImagingStudyHandler {
     }
 
     if (plan.mode === 'files' && plan.files.length > 0) {
-      await loadCastStudyFilesFromUrls(plan.files, this.dicomCallbacks, {
+      await loadHubStudyFilesFromUrls(plan.files, this.dicomCallbacks, {
         ohifMode: plan.ohifMode,
       });
       return;
@@ -187,7 +187,7 @@ export class ImagingStudyHandler {
         `${LOG_PREFIX} imagingstudy-open dicomweb: using IDC direct files (${idcFallbackPlan.files.length} URL(s))`,
         { studyInstanceUID: plan.studyInstanceUID }
       );
-      await loadCastIdcStudyFiles(idcFallbackPlan, this.dicomCallbacks);
+      await loadHubIdcStudyFiles(idcFallbackPlan, this.dicomCallbacks);
       return;
     }
 
@@ -199,7 +199,7 @@ export class ImagingStudyHandler {
           `${LOG_PREFIX} imagingstudy-open dicomweb: no dicomweb root in context; using configured server`
         );
       }
-      navigateToCastViewer([plan.studyInstanceUID], {
+      navigateToHubViewer([plan.studyInstanceUID], {
         seriesUID: plan.seriesInstanceUID,
         dataSource: HUB_DICOMWEB_DATA_SOURCE,
         modeRoute: plan.ohifMode,
@@ -210,7 +210,7 @@ export class ImagingStudyHandler {
   }
 
   handleClose(): void {
-    navigateToCastEmptyViewer({ replace: true });
+    navigateToHubEmptyViewer({ replace: true });
   }
 }
 

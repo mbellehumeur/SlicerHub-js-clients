@@ -38,7 +38,11 @@ export {
  * @property {string} [iconUrl] Brand / product icon shown on the info card.
  * @property {string} [cite] Citation / reference text shown on the info card.
  * @property {string} [citeUrl] Optional DOI / publication URL for the citation.
+ * @property {string} [license] Short license name shown on the info card.
+ * @property {string} [licenseUrl] Optional URL for the license text / deed.
+ * @property {string} [licenseRestriction] Optional usage restriction (e.g. not for commercial use).
  * @property {'dicom-send'|'nifti-send'} hubEvent Preferred publish event when running a job.
+ * @property {boolean} [localCapable] On-device / local runtime available (always Available in EC UIs).
  */
 
 /** @param {Record<string, unknown>} raw */
@@ -68,6 +72,13 @@ function normalizeInfo(raw) {
   if (cite) def.cite = cite;
   const citeUrl = String(raw.citeUrl || '').trim();
   if (citeUrl) def.citeUrl = citeUrl;
+  const license = String(raw.license || '').trim();
+  if (license) def.license = license;
+  const licenseUrl = String(raw.licenseUrl || '').trim();
+  if (licenseUrl) def.licenseUrl = licenseUrl;
+  const licenseRestriction = String(raw.licenseRestriction || '').trim();
+  if (licenseRestriction) def.licenseRestriction = licenseRestriction;
+  if (raw.localCapable === true) def.localCapable = true;
   return def;
 }
 
@@ -78,19 +89,23 @@ function isEnabledInfo(raw) {
 
 /** @type {readonly HubInferenceServerDef[]} */
 export const HUB_INFERENCE_SERVERS = Object.freeze(
-  [mhubInfo, lungInfo, totalsegInfo, neuroInfo, dentalInfo, txrvInfo]
+  [mhubInfo, lungInfo, totalsegInfo, neuroInfo, dentalInfo, txrvInfo, flexrayInfo]
     .filter(isEnabledInfo)
     .map(normalizeInfo)
 );
 
 /**
- * Local AI catalog (worklist Local AI row). Not probed via hub status-request
- * and not listed under Remote AI / IRA inference servers.
+ * Local-capable subset of ``HUB_INFERENCE_SERVERS`` (compat export).
  * @type {readonly HubInferenceServerDef[]}
  */
 export const LOCAL_AI_SERVERS = Object.freeze(
-  [flexrayInfo].filter(isEnabledInfo).map(normalizeInfo)
+  HUB_INFERENCE_SERVERS.filter((server) => server.localCapable === true)
 );
+
+/** @param {HubInferenceServerDef | null | undefined} def */
+export function isLocalCapableInferenceServer(def) {
+  return Boolean(def && def.localCapable === true);
+}
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -101,7 +116,7 @@ function escapeHtml(value) {
 }
 
 /**
- * Info card HTML (title, summary, links). No Status / Location.
+ * Info card HTML (title, summary, citation, license, links). No Status / Location.
  * @param {HubInferenceServerDef} def
  * @returns {string}
  */
@@ -139,6 +154,31 @@ export function renderInferenceServerInfoCardHtml(def) {
         `<p class="hub-inference-info-citation"><span class="hub-inference-info-citation-label">Citation:</span> ${citeBody}</p>`
       );
     }
+  }
+  const license = String(def.license || '').trim();
+  const licenseUrl = String(def.licenseUrl || '').trim();
+  const licenseRestriction = String(def.licenseRestriction || '').trim();
+  if (license || licenseRestriction) {
+    const licenseParts = [`<p class="hub-inference-info-license">`];
+    if (license) {
+      const licenseBody = escapeHtml(license);
+      const licenseName = licenseUrl
+        ? `<a class="hub-inference-info-license-link" href="${escapeHtml(licenseUrl)}" target="_blank" rel="noopener noreferrer">${licenseBody}</a>`
+        : licenseBody;
+      licenseParts.push(
+        `<span class="hub-inference-info-license-label">License:</span> ${licenseName}`
+      );
+    }
+    if (license && licenseRestriction) {
+      licenseParts.push(` `);
+    }
+    if (licenseRestriction) {
+      licenseParts.push(
+        `<span class="hub-inference-info-restriction">${escapeHtml(licenseRestriction)}</span>`
+      );
+    }
+    licenseParts.push(`</p>`);
+    parts.push(licenseParts.join(''));
   }
   parts.push(`<div class="hub-inference-info-links">`);
   const github = String(def.githubUrl || '').trim();
@@ -194,6 +234,14 @@ export function inferenceServerInfoText(def, status) {
   if (cite) {
     lines.push(`Citation: ${cite}`);
   }
+  const license = String(def.license || '').trim();
+  if (license) {
+    lines.push(`License: ${license}`);
+  }
+  const licenseRestriction = String(def.licenseRestriction || '').trim();
+  if (licenseRestriction) {
+    lines.push(licenseRestriction);
+  }
   const github = String(def.githubUrl || '').trim();
   if (github) {
     lines.push(github);
@@ -219,4 +267,62 @@ export function findInferenceServerByProduct(productName) {
       return product === needle || product.replace(/_/g, '') === compact;
     }) || null
   );
+}
+
+/**
+ * Human-readable availability label for a STATUS probe row.
+ * @param {{ online?: boolean, error?: string, job?: string } | null | undefined} probe
+ * @param {boolean} [probing]
+ * @returns {string}
+ */
+export function inferenceProbeAvailabilityLabel(probe, probing = false) {
+  if (probing) return 'Checking…';
+  if (!probe) return 'Unknown';
+  if (probe.error) return 'Error';
+  if (probe.online) {
+    const job = probe.job ? ` · job ${probe.job}` : '';
+    return `Online${job}`;
+  }
+  return 'Offline';
+}
+
+/**
+ * Sort probe rows: online first, then probing/unknown, then offline.
+ * Stable catalog order within each group.
+ * @template {{ server: HubInferenceServerDef, probe?: { online?: boolean } | null, probing?: boolean }} T
+ * @param {T[]} rows
+ * @param {readonly HubInferenceServerDef[]} [catalog=HUB_INFERENCE_SERVERS]
+ * @returns {T[]}
+ */
+export function orderInferenceServerProbeRows(rows, catalog = HUB_INFERENCE_SERVERS) {
+  const list = Array.isArray(rows) ? [...rows] : [];
+  const catalogIndex = (server) => {
+    const id = String(server?.id || '').trim();
+    const idx = catalog.findIndex((s) => s.id === id);
+    return idx < 0 ? Number.MAX_SAFE_INTEGER : idx;
+  };
+  const sortKey = (row) => {
+    if (row?.probe?.online) return 0;
+    if (row?.probing || !row?.probe) return 1;
+    return 2;
+  };
+  return list.sort((a, b) => {
+    const d = sortKey(a) - sortKey(b);
+    if (d !== 0) return d;
+    return catalogIndex(a.server) - catalogIndex(b.server);
+  });
+}
+
+/**
+ * Extra ``event.context`` fields for a Run publish, keyed by catalog server id.
+ * @param {HubInferenceServerDef | null | undefined} server
+ * @param {{ totalSegmentator?: Record<string, unknown> } | null | undefined} [options]
+ * @returns {Record<string, unknown>}
+ */
+export function buildInferenceRunContextExtras(server, options) {
+  const id = String(server?.id || '').trim();
+  if (id === 'totalseg' && options?.totalSegmentator) {
+    return { totalSegmentator: options.totalSegmentator };
+  }
+  return {};
 }

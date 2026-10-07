@@ -60,7 +60,7 @@ export function selectHubFromHubExtensionConfig(
 export function resolveHubFromConfig(hubExtensionConfig: HubExtensionConfig): ConfigHubEntry {
   const defaultHubName = hubExtensionConfig.defaultHubName?.trim();
   if (!defaultHubName) {
-    throw new Error('HubService: cast.defaultHubName is required');
+    throw new Error('HubService: hub.defaultHubName is required');
   }
 
   const hubs = hubExtensionConfig.hubs ?? [];
@@ -71,7 +71,7 @@ export function resolveHubFromConfig(hubExtensionConfig: HubExtensionConfig): Co
   );
 
   if (!selectedHub) {
-    throw new Error(`HubService: default hub "${defaultHubName}" not found in cast.hubs`);
+    throw new Error(`HubService: default hub "${defaultHubName}" not found in hub.hubs`);
   }
 
   return selectedHub;

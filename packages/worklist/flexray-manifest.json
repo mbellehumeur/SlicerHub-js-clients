@@ -1,0 +1,326 @@
+{
+  "organization": "flexray",
+  "organizationLabel": "FleXray",
+  "studies": [
+    {
+      "id": "flexray-chest-pa-dx",
+      "name": "Chest PA · DX",
+      "description": "IDC lidc_idri · DX chest PA",
+      "format": "DICOM",
+      "modalities": [
+        "DX"
+      ],
+      "openMode": "idc",
+      "size": "7 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6279.6001.335762893035822624752861355820",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6279.6001.187709112896708878656939174714",
+      "ctCrdc": "9eba094e-3c7f-4613-ac51-20ef76e6e57d",
+      "bucket": "idc-open-data",
+      "collection": "lidc_idri"
+    },
+    {
+      "id": "flexray-chest-pa-cr",
+      "name": "Chest PA · CR",
+      "description": "IDC covid_19_ar · CR chest PA",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "8 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.9999.103.2737687167184593557868468670465",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.9999.103.1512423617544653288050453805249",
+      "ctCrdc": "888015e1-221a-47c7-9101-fdfe62c6b314",
+      "bucket": "idc-open-data",
+      "collection": "covid_19_ar"
+    },
+    {
+      "id": "flexray-chest-ap-portable-cr",
+      "name": "Chest AP portable · CR",
+      "description": "IDC covid_19_ar · CR chest AP portable",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "6 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.9999.103.1440529507365620961029596952895",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.9999.103.3144050301958868320974875419705",
+      "ctCrdc": "7efc4433-cd5b-459d-9c3b-5234c9fbdcad",
+      "bucket": "idc-open-data",
+      "collection": "covid_19_ar"
+    },
+    {
+      "id": "flexray-chest-ap-dx",
+      "name": "Chest AP · DX",
+      "description": "IDC midrc_ricord_1c · DX chest AP",
+      "format": "DICOM",
+      "modalities": [
+        "DX"
+      ],
+      "openMode": "idc",
+      "size": "5 MB",
+      "studyInstanceUID": "1.2.826.0.1.3680043.10.474.419639.312527524281942205006129693895",
+      "seriesInstanceUID": "1.2.826.0.1.3680043.10.474.419639.490394676872980770053518639110",
+      "ctCrdc": "5d3b4277-81d2-46f9-b62c-a2a57f62a10a",
+      "bucket": "idc-open-data-cr",
+      "collection": "midrc_ricord_1c"
+    },
+    {
+      "id": "flexray-chest-lat-cr",
+      "name": "Chest LAT · CR",
+      "description": "IDC acrin_nsclc_fdg_pet · CR chest LAT",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "10 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.7009.2403.234350005050865375030280504205",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.7009.2403.673273233684732453221595108227",
+      "ctCrdc": "a6aecea0-458a-465d-9274-8c1a3384b130",
+      "bucket": "idc-open-data-two",
+      "collection": "acrin_nsclc_fdg_pet"
+    },
+    {
+      "id": "flexray-ribs-oblique-cr",
+      "name": "Ribs oblique · CR",
+      "description": "IDC acrin_nsclc_fdg_pet · CR ribs",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "13 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.7009.2403.295491693297546990308222616927",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.7009.2403.300804611861055200353954643843",
+      "ctCrdc": "7d5c0e6c-45d3-494b-8d42-fb643c3030f8",
+      "bucket": "idc-open-data-two",
+      "collection": "acrin_nsclc_fdg_pet"
+    },
+    {
+      "id": "flexray-peds-chest-ap-cr",
+      "name": "Pediatric chest AP · CR",
+      "description": "IDC midrc_ricord_1c · CR pediatric chest AP",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "7 MB",
+      "studyInstanceUID": "1.2.826.0.1.3680043.10.474.419639.111679639227347737228323721140",
+      "seriesInstanceUID": "1.2.826.0.1.3680043.10.474.419639.235138638022890231510670024250",
+      "ctCrdc": "4fe942f7-ec91-4b18-859f-c9c463006e8b",
+      "bucket": "idc-open-data-cr",
+      "collection": "midrc_ricord_1c"
+    },
+    {
+      "id": "flexray-abdomen-kub-cr",
+      "name": "Abdomen KUB AP · CR",
+      "description": "IDC covid_19_ny_sbu · CR abdomen supine KUB",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "12 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.99.1071.15467861913584598091247729595164",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.99.1071.79148015103371851221343818516332",
+      "ctCrdc": "80fd7ec1-4872-41d3-87ba-688220d9838d",
+      "bucket": "idc-open-data",
+      "collection": "covid_19_ny_sbu"
+    },
+    {
+      "id": "flexray-abdomen-erect-dx",
+      "name": "Abdomen erect · DX",
+      "description": "IDC cmb_crc · DX abdomen erect",
+      "format": "DICOM",
+      "modalities": [
+        "DX"
+      ],
+      "openMode": "idc",
+      "size": "12 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.1.72676004837811732094654967144898077554",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.1.71452352239981503299742866043807355468",
+      "ctCrdc": "4b56aaf2-1bd9-45d3-aefb-d04ba79e8648",
+      "bucket": "idc-open-data",
+      "collection": "cmb_crc"
+    },
+    {
+      "id": "flexray-pelvis-ap-cr",
+      "name": "Pelvis AP · CR",
+      "description": "IDC varepop_apollo · CR pelvis AP",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "13 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.227865002419703278386385449999008725556",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.52074850767840254444897033408469830656",
+      "ctCrdc": "cc2d7c3e-146d-4308-b5b6-4edadcbde76d",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-hip-ap-cr",
+      "name": "Hip AP · CR",
+      "description": "IDC varepop_apollo · CR hip AP",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "8 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.247567440451569069593271013355059351151",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.128850096444023968786753633176004989729",
+      "ctCrdc": "c2efd3d1-07fc-4240-84f7-dbd255c61d04",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-cspine-lat-dx",
+      "name": "C-spine LAT · DX",
+      "description": "IDC varepop_apollo · DX cervical spine LAT",
+      "format": "DICOM",
+      "modalities": [
+        "DX"
+      ],
+      "openMode": "idc",
+      "size": "6 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.282368646068022917863399885366138058060",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.73900938011349362074372472838916033455",
+      "ctCrdc": "e555e54c-721e-45e3-bb61-dd96d5f8699b",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-cspine-ap-dx",
+      "name": "C-spine AP · DX",
+      "description": "IDC varepop_apollo · DX cervical spine AP",
+      "format": "DICOM",
+      "modalities": [
+        "DX"
+      ],
+      "openMode": "idc",
+      "size": "5 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.282368646068022917863399885366138058060",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.214152294924872190272765167585125541108",
+      "ctCrdc": "9591a745-60c6-41f8-812b-53454509aa35",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-lspine-lat-cr",
+      "name": "L-spine LAT · CR",
+      "description": "IDC cmb_mml · CR lumbar spine LAT",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "11 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.109132742163931305780691716759",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.331833338608394213894274141691",
+      "ctCrdc": "7fa90904-b215-482d-8f69-6bb07bd3079d",
+      "bucket": "idc-open-data",
+      "collection": "cmb_mml"
+    },
+    {
+      "id": "flexray-tspine-lat-cr",
+      "name": "T-spine LAT · CR",
+      "description": "IDC cmb_mml · CR thoracic spine LAT",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "11 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.109132742163931305780691716759",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.585008086578161685590486585782",
+      "ctCrdc": "0793fb4d-c7d0-4f2f-b391-bea88cf33103",
+      "bucket": "idc-open-data",
+      "collection": "cmb_mml"
+    },
+    {
+      "id": "flexray-shoulder-ap-dx",
+      "name": "Shoulder AP · DX",
+      "description": "IDC varepop_apollo · DX shoulder AP",
+      "format": "DICOM",
+      "modalities": [
+        "DX"
+      ],
+      "openMode": "idc",
+      "size": "7 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.75089428302135582645170996871618273327",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.264610861504100422230930087614924821725",
+      "ctCrdc": "8b652d62-1d06-4cdd-a711-286c1ce4bb60",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-elbow-ap-cr",
+      "name": "Elbow AP · CR",
+      "description": "IDC varepop_apollo · CR elbow AP",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "39 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.228103635981786054347985760994782249539",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.164612601394804586403360289159666509839",
+      "ctCrdc": "56b8477c-4621-42b7-a08a-81fc4a0704fc",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-knee-ap-cr",
+      "name": "Knee AP · CR",
+      "description": "IDC varepop_apollo · CR knee",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "79 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.26042986751353543241559186504978113124",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.21941318645131582935505228063531101134",
+      "ctCrdc": "cb164fbb-dee9-4f5d-8fe5-54d6807121a8",
+      "bucket": "idc-open-data",
+      "collection": "varepop_apollo"
+    },
+    {
+      "id": "flexray-femur-cr",
+      "name": "Femur · CR",
+      "description": "IDC cmb_mml · CR femur",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "10 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.172035942529730393049564623526",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.236953365119625415173352206913",
+      "ctCrdc": "44c13f70-1c66-42a5-8d0b-f32530df7be9",
+      "bucket": "idc-open-data",
+      "collection": "cmb_mml"
+    },
+    {
+      "id": "flexray-skull-lat-cr",
+      "name": "Skull LAT · CR",
+      "description": "IDC cmb_mml · CR skull LAT",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "9 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.109132742163931305780691716759",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.317880575274973369413463905008",
+      "ctCrdc": "6e966d14-c11d-4b98-8daf-40fc7a1ac451",
+      "bucket": "idc-open-data",
+      "collection": "cmb_mml"
+    }
+  ]
+}

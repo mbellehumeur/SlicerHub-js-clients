@@ -45,7 +45,7 @@ function syncHubDicomwebAppConfig(
 }
 
 /**
- * Point OHIF's cast-dicomweb data source at the root from imagingstudy-open
+ * Point OHIF's hub-dicomweb data source at the root from imagingstudy-open
  * (urn:cast:dicomweb-root). Registered by HubService via ohif-hub-runtime.
  */
 export async function applyHubDicomwebRoot(root: string): Promise<void> {

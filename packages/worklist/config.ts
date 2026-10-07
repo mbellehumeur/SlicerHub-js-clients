@@ -29,6 +29,7 @@ export const WORKLIST_ORG_IDC_WSI = 'idc-wsi';
 export const WORKLIST_ORG_SLICER_SCENES = 'slicer-scenes';
 export const WORKLIST_ORG_CBCT_DENTAL = 'cbct-dental';
 export const WORKLIST_ORG_TXRV = 'torchxrayvision';
+export const WORKLIST_ORG_FLEXRAY = 'flexray';
 export const WORKLIST_ORG_3D_SLICER = '3d-slicer';
 
 // Worklist filter values for IDC segmentation category worklists.

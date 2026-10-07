@@ -61,6 +61,7 @@ import {
   VIEWER_OPEN_TITLE_DISABLED,
   VIEWER_OPEN_TITLE_REPORTING,
   VIEWER_OPEN_TITLE_CLASSROOM,
+  VIEWER_OPEN_TITLE_OHIF,
   VIEWER_OPEN_TITLE_SCENEVIEWS,
   VIEWER_OPEN_TITLE_SEGROULETTE,
   VIEWER_OPEN_TITLE_HUB_MIRROR,
@@ -75,12 +76,12 @@ import {
   WORKLIST_ORG_SLICER_SCENES,
   WORKLIST_ORG_CBCT_DENTAL,
   WORKLIST_ORG_TXRV,
+  WORKLIST_ORG_FLEXRAY,
   WORKLIST_ORG_3D_SLICER,
 } from './config';
 import { conferenceStrings } from './i18n';
 import {
   INFERENCE_SERVERS,
-  LOCAL_AI_WORKLIST_SERVERS,
 } from './inference-servers';
 import {
   buildIdcDirectImagingStudyOpenContext,
@@ -95,11 +96,13 @@ import {
   liveSceneDocFromSample,
   loadCbctDentalStudies,
   loadTxrvStudies,
+  loadFlexrayStudies,
   loadIdcSegmentationStudies,
   loadIdcWsiStudies,
   loadSlicerSceneStudies,
   replaceCbctDentalStudies,
   replaceTxrvStudies,
+  replaceFlexrayStudies,
   replaceIdcSegmentationStudies,
   replaceIdcWsiStudies,
   replaceSlicerSceneStudies,
@@ -543,10 +546,10 @@ function selectThreeDSlicerOrg(): void {
 }
 
 function defaultWorklistOrgFilter(): string {
-  return 'idc-category:LIVER:CT';
+  return WORKLIST_ORG_FLEXRAY;
 }
 
-function selectDefaultWorklistOrg(): void {
+export function selectDefaultWorklistOrg(): void {
   const orgSelect = document.getElementById(
     'worklistOrgSelect'
   ) as HTMLSelectElement | null;
@@ -791,14 +794,17 @@ function updateInferenceServerButtons(state: AppState): void {
     ) as HTMLButtonElement | null;
     if (!btn) continue;
     const status = state.inferenceStatus.get(server.id) || 'unknown';
-    const online = status === 'online';
+    // Local-capable (e.g. FleXray) is always available / enabled chrome.
+    const online = server.localCapable === true || status === 'online';
     btn.classList.toggle('wl-viewer-btn-connected', online && !btn.disabled);
     const label =
-      status === 'online'
-        ? 'Online'
-        : status === 'offline'
-          ? 'Offline'
-          : undefined;
+      server.localCapable === true
+        ? 'Available'
+        : status === 'online'
+          ? 'Online'
+          : status === 'offline'
+            ? 'Offline'
+            : undefined;
     btn.title = inferenceServerInfoText(server, label);
   }
 }
@@ -1024,11 +1030,16 @@ const REPORTING_WINDOW_NAME = HUB_REPORTING_WINDOW_NAME;
 const CLASSROOM_WINDOW_NAME = HUB_CLASSROOM_WINDOW_NAME;
 
 let slicerLiveWindow: Window | null = null;
+let ohifWindow: Window | null = null;
 let reportingWindow: Window | null = null;
 let classroomWindow: Window | null = null;
 
 function iraWindowName(state: AppState): string {
   return `hubViewer-ira-${String(state.topic || 'anon').replace(/[^\w.-]+/g, '_')}`;
+}
+
+function ohifWindowName(state: AppState): string {
+  return `hubViewer-ohif-${String(state.topic || 'anon').replace(/[^\w.-]+/g, '_')}`;
 }
 
 function hasOpenSlicerLive(): boolean {
@@ -1071,6 +1082,41 @@ function focusExistingSlicerLiveWindow(state: AppState): boolean {
   return true;
 }
 
+/**
+ * Focus an already-open OHIF tab (same named-tab pattern as IRA).
+ */
+function focusExistingOhifWindow(state: AppState): boolean {
+  if (ohifWindow && !ohifWindow.closed) {
+    try {
+      ohifWindow.focus();
+    } catch {
+      /* ignore */
+    }
+    return true;
+  }
+  ohifWindow = null;
+  let existing: Window | null = null;
+  try {
+    existing = window.open('', ohifWindowName(state));
+  } catch {
+    return false;
+  }
+  if (!existing || existing.closed) return false;
+  try {
+    const href = String(existing.location?.href || '');
+    if (!href || href === 'about:blank') return false;
+  } catch {
+    // Cross-origin OHIF tab — still focus if we got a handle.
+  }
+  try {
+    existing.focus();
+  } catch {
+    /* ignore */
+  }
+  ohifWindow = existing;
+  return true;
+}
+
 function viewerPopupFeatures(kind: ViewerKind): string {
   const place =
     kind === 'reporting' || kind === 'classroom'
@@ -1083,15 +1129,6 @@ function viewerPopupFeatures(kind: ViewerKind): string {
             left: Math.max(0, Math.floor((window.screen.width - 800) / 2)),
             top: Math.max(0, Math.floor((window.screen.height - 600) / 2)),
           };
-  if (kind === 'ohif') {
-    const gap = 16;
-    const pairWidth = place.width * 2 + gap;
-    const pairStart = Math.max(
-      0,
-      Math.floor((window.screen.width - pairWidth) / 2)
-    );
-    place.left = pairStart + place.width + gap;
-  }
   const parts = [
     'popup',
     `width=${place.width}`,
@@ -1281,8 +1318,8 @@ export function openHubViewer(state: AppState, kind: ViewerKind): boolean {
       url.searchParams.set('followHost', '1');
     }
   }
-  // IRA: normal browser tab (no popup features). Named per Hub topic so two
-  // worklist users in the same browser each keep their own IRA tab.
+  // IRA / OHIF: normal browser tab (no popup features). Named per Hub topic so
+  // two worklist users in the same browser each keep their own viewer tab.
   if (kind === 'ira') {
     if (focusExistingSlicerLiveWindow(state)) return true;
     const iraName = iraWindowName(state);
@@ -1301,6 +1338,26 @@ export function openHubViewer(state: AppState, kind: ViewerKind): boolean {
     );
     showHubInfoToast(
       'Browser blocked opening SlicerLive — click SlicerLive or allow popups'
+    );
+    return false;
+  }
+  if (kind === 'ohif') {
+    if (focusExistingOhifWindow(state)) return true;
+    const win = window.open(url.toString(), ohifWindowName(state));
+    if (win) {
+      ohifWindow = win;
+      try {
+        win.focus();
+      } catch {
+        /* ignore */
+      }
+      return true;
+    }
+    console.warn(
+      `${LOG_PREFIX} OHIF window.open blocked (popup blocker or no user gesture)`
+    );
+    showHubInfoToast(
+      'Browser blocked opening OHIF — click OHIF or allow popups'
     );
     return false;
   }
@@ -1384,11 +1441,56 @@ export function ensureSlicerLiveViewer(
   return openHubViewer(state, 'ira');
 }
 
+/** Projection radiography — prefer OHIF over SlicerLive after Open. */
+function prefersOhifForModality(modality: unknown): boolean {
+  const tokens = Array.isArray(modality) ? modality : [modality];
+  return tokens.some((t) => {
+    const m = String(t || '')
+      .trim()
+      .toUpperCase();
+    return m === 'CR' || m === 'DX';
+  });
+}
+
+function samplePrefersOhif(sample: {
+  modalities?: string[];
+  segroulette?: { m?: string };
+}): boolean {
+  if (Array.isArray(sample.modalities) && sample.modalities.length) {
+    return prefersOhifForModality(sample.modalities);
+  }
+  return prefersOhifForModality(sample.segroulette?.m);
+}
+
+/** Open OHIF for CR/DX; otherwise SlicerLive (same rules as ensureSlicerLiveViewer). */
+function ensureViewerAfterOpen(
+  state: AppState,
+  sampleOrModality:
+    | { modalities?: string[]; segroulette?: { m?: string } }
+    | string
+    | null
+    | undefined,
+  opts?: { reason?: string }
+): boolean {
+  const prefersOhif =
+    sampleOrModality && typeof sampleOrModality === 'object'
+      ? samplePrefersOhif(sampleOrModality)
+      : prefersOhifForModality(sampleOrModality);
+  if (prefersOhif) {
+    const reason = opts?.reason || 'open';
+    console.info(
+      `${LOG_PREFIX} ensure OHIF (${reason}): CR/DX → open OHIF instead of SlicerLive`
+    );
+    return openHubViewer(state, 'ohif');
+  }
+  return ensureSlicerLiveViewer(state, opts);
+}
+
 export function setViewerButtonsEnabled(
   enabled: boolean,
   state?: AppState
 ): void {
-  const infoServers = [...INFERENCE_SERVERS, ...LOCAL_AI_WORKLIST_SERVERS];
+  const infoServers = INFERENCE_SERVERS;
   const inferenceTitles = new Map(
     infoServers.map((server) => [
       server.worklistButtonId,
@@ -1404,7 +1506,7 @@ export function setViewerButtonsEnabled(
     { id: 'openSlicerBtn', title: VIEWER_OPEN_TITLE_SLICER },
     { id: 'openHubMirrorBtn', title: VIEWER_OPEN_TITLE_HUB_MIRROR },
     { id: 'openIraBtn', title: VIEWER_OPEN_TITLE_IRA },
-    { id: 'openOhifBtn', title: 'OHIF' },
+    { id: 'openOhifBtn', title: VIEWER_OPEN_TITLE_OHIF },
     { id: 'openSlimBtn', title: 'Slim' },
     { id: 'openVolviewBtn', title: 'VolView' },
     { id: 'openSceneviewsBtn', title: VIEWER_OPEN_TITLE_SCENEVIEWS },
@@ -1441,15 +1543,7 @@ export function setViewerButtonsEnabled(
       continue;
     }
     if (id === 'openOhifBtn') {
-      // Keep OHIF non-interactive but visually like an enabled viewer button
-      // when the hub is connected (no greyed-out :disabled look).
-      btn.disabled = true;
-      btn.setAttribute('disabled', '');
-      btn.classList.toggle('wl-viewer-btn-inert', enabled);
-      btn.title = enabled
-        ? 'OHIF viewer is temporarily unavailable'
-        : VIEWER_OPEN_TITLE_DISABLED;
-      continue;
+      btn.classList.remove('wl-viewer-btn-inert');
     }
     if (id === 'openSlicerBtn') {
       setSlicerDependentViewerButton(
@@ -1847,6 +1941,42 @@ export async function ensureTxrvLoaded(
   return txrvLoadPromise;
 }
 
+let flexrayLoadPromise: Promise<void> | null = null;
+let flexrayLoaded = false;
+
+/** Load builtin FleXray CR/DX studies once (org: flexray). */
+export async function ensureFlexrayLoaded(
+  state: AppState,
+  onStatus?: (msg: string) => void
+): Promise<void> {
+  if (flexrayLoaded) return;
+  if (flexrayLoadPromise) return flexrayLoadPromise;
+  flexrayLoadPromise = (async () => {
+    onStatus?.('Loading FleXray…');
+    try {
+      const samples = await loadFlexrayStudies();
+      state.allStudies = replaceFlexrayStudies(state.allStudies, samples);
+      flexrayLoaded = true;
+      notifyWorklist(state);
+      onStatus?.(
+        `FleXray · ${samples.length.toLocaleString()} studies`
+      );
+      console.info(
+        `${LOG_PREFIX} loaded FleXray`,
+        samples.length,
+        WORKLIST_ORG_FLEXRAY
+      );
+    } catch (err) {
+      flexrayLoadPromise = null;
+      onStatus?.(
+        err instanceof Error ? err.message : 'Failed to load FleXray'
+      );
+      throw err;
+    }
+  })();
+  return flexrayLoadPromise;
+}
+
 function buildPublishPayload(
   state: AppState,
   hubEvent: string,
@@ -2088,8 +2218,9 @@ export async function handleWorklistSampleOpen(
     state.lastImagingStudyOpenContext.length &&
     state.openWorklistSampleId === sampleId
   ) {
-    // Same study already open — still switch to the IRA tab.
-    ensureSlicerLiveViewer(state, { reason: 'reopen-focus' });
+    // Same study already open — still switch to the viewer tab (OHIF for CR/DX).
+    const openSample = findWorklistSample(sampleId, state.allStudies);
+    ensureViewerAfterOpen(state, openSample, { reason: 'reopen-focus' });
     return;
   }
   if (state.lastImagingStudyOpenContext.length) {
@@ -2174,12 +2305,12 @@ export async function handleWorklistSampleOpen(
     context = attachLiveSceneToContext(context, liveScene);
   }
 
-  // Store + publish before opening IRA so STATUS / ImagingStudy-open are ready.
+  // Store + publish before opening viewer so STATUS / ImagingStudy-open are ready.
   state.lastImagingStudyOpenContext = cloneContextArray(context);
   syncOpenSampleId(state);
   notifyWorklist(state);
   await publishImagingStudyOpen(state, context);
-  ensureSlicerLiveViewer(state);
+  ensureViewerAfterOpen(state, sample);
 }
 
 export async function handleWorklistClose(state: AppState): Promise<void> {
@@ -2213,12 +2344,12 @@ export async function publishSegrouletteOpen(
       ''
   ).trim();
   const labeled = attachImagingStudyDescription(context, displayName);
-  // Store + publish before opening IRA so STATUS / ImagingStudy-open are ready.
+  // Store + publish before opening viewer so STATUS / ImagingStudy-open are ready.
   state.lastImagingStudyOpenContext = cloneContextArray(labeled);
   state.openWorklistSampleId = onList ? sampleId : null;
   notifyWorklist(state);
   const ok = await publishImagingStudyOpen(state, labeled);
-  ensureSlicerLiveViewer(state);
+  ensureViewerAfterOpen(state, entry.m);
   if (ok) {
     console.info(
       `${LOG_PREFIX} SegRoulette ImagingStudy-open`,
@@ -2275,7 +2406,7 @@ export async function publishIdcRestSeriesOpen(
   state.openWorklistSampleId = onList ? sampleId : null;
   notifyWorklist(state);
   const ok = await publishImagingStudyOpen(state, labeled);
-  ensureSlicerLiveViewer(state);
+  ensureViewerAfterOpen(state, entry.m);
   if (ok) {
     console.info(`${LOG_PREFIX} IDC REST ImagingStudy-open`, sampleId, crdc);
   }

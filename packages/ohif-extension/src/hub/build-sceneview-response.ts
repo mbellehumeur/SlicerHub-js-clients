@@ -110,7 +110,7 @@ function findViewportElement(viewportId: string): Element | null {
     document.querySelector(`[data-viewport-uid="${CSS.escape(viewportId)}"]`) ||
     document.querySelector(`[data-viewport-id="${CSS.escape(viewportId)}"]`) ||
     document.querySelector(`[data-viewportid="${CSS.escape(viewportId)}"]`) ||
-    document.querySelector(`[data-cast-view-id="${CSS.escape(viewportId)}"]`)
+    document.querySelector(`[data-hub-view-id="${CSS.escape(viewportId)}"]`)
   );
 }
 

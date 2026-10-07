@@ -26,7 +26,7 @@ export function studyHasUltrasoundModality(studyInstanceUID: string): boolean {
 }
 
 /**
- * Pick OHIF mode route segment: explicit Cast `ohifMode` wins; else US studies
+ * Pick OHIF mode route segment: explicit Hub `ohifMode` wins; else US studies
  * open in the ultrasound annotation mode (same intent as `/local` → microscopy for SM).
  */
 export function resolveHubModeRoute(
@@ -45,7 +45,7 @@ export function resolveHubModeRoute(
   return 'viewer';
 }
 
-export function isAlreadyOnCastStudyViewer(
+export function isAlreadyOnHubStudyViewer(
   studyUID: string,
   modeRoute: string,
   dataSource?: string

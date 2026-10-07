@@ -343,7 +343,7 @@ function ConferenceDialog({
               ) : (
                 <div className="border-input bg-background max-h-[132px] space-y-1 overflow-y-auto rounded-md border p-2">
                   {availableTopics.map((entry) => {
-                    const topicId = `cast-conference-topic-${entry.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+                    const topicId = `hub-conference-topic-${entry.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
                     return (
                       <div
                         key={entry}

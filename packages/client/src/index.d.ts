@@ -447,6 +447,7 @@ export const LUNG_SCREENING_PRODUCT_ALIASES: readonly string[];
 export const NEURO_SEG_PRODUCT_ALIASES: readonly string[];
 export const DENTAL_SEG_PRODUCT_ALIASES: readonly string[];
 export const TORCHXRAYVISION_PRODUCT_ALIASES: readonly string[];
+export const FLEXRAY_PRODUCT_ALIASES: readonly string[];
 export const MHUB_PRODUCT_ALIASES: readonly string[];
 export const BINARY_PLACEHOLDER: string;
 
@@ -468,24 +469,51 @@ export interface HubInferenceServerDef {
   cite?: string;
   /** Optional DOI / publication URL for the citation. */
   citeUrl?: string;
+  /** Short license name shown on the info card. */
+  license?: string;
+  /** Optional URL for the license text / deed. */
+  licenseUrl?: string;
+  /** Optional usage restriction (e.g. not for commercial use). */
+  licenseRestriction?: string;
   hubEvent: 'dicom-send' | 'nifti-send';
+  /** On-device / local runtime; Evidence Creators UIs treat as always Available. */
+  localCapable?: boolean;
 }
 
 export const HUB_INFERENCE_SERVERS: readonly HubInferenceServerDef[];
-/** Local AI catalog (not hub-probed; not listed under Remote AI). */
+/** Local-capable subset of ``HUB_INFERENCE_SERVERS`` (compat). */
 export const LOCAL_AI_SERVERS: readonly HubInferenceServerDef[];
+
+export function isLocalCapableInferenceServer(
+  def: HubInferenceServerDef | null | undefined
+): boolean;
 
 export function inferenceServerInfoText(
   def: HubInferenceServerDef,
   status?: string
 ): string;
-/** Info card HTML: title, summary, links — no Status / Location. */
+/** Info card HTML: title, summary, citation, license, links — no Status / Location. */
 export function renderInferenceServerInfoCardHtml(
   def: HubInferenceServerDef
 ): string;
 export function findInferenceServerByProduct(
   productName: string
 ): HubInferenceServerDef | null;
+export function inferenceProbeAvailabilityLabel(
+  probe: { online?: boolean; error?: string; job?: string } | null | undefined,
+  probing?: boolean
+): string;
+export function orderInferenceServerProbeRows<
+  T extends {
+    server: HubInferenceServerDef;
+    probe?: { online?: boolean } | null;
+    probing?: boolean;
+  },
+>(rows: T[], catalog?: readonly HubInferenceServerDef[]): T[];
+export function buildInferenceRunContextExtras(
+  server: HubInferenceServerDef | null | undefined,
+  options?: { totalSegmentator?: Record<string, unknown> } | null
+): Record<string, unknown>;
 
 export type CastProductMatcherKind =
   | 'ira'
@@ -1091,6 +1119,7 @@ export function isLungScreeningProduct(name: string): boolean;
 export function isNeuroSegProduct(name: string): boolean;
 export function isDentalSegProduct(name: string): boolean;
 export function isTorchXrayVisionProduct(name: string): boolean;
+export function isFlexrayProduct(name: string): boolean;
 export function isMhubProduct(name: string): boolean;
 export function isInferenceProduct(name: string): boolean;
 export function normalizeProductToken(name: string): string;

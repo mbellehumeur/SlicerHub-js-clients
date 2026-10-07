@@ -8,11 +8,10 @@ import {
   renderInferenceServerInfoCardHtml,
 } from '@slicer-hub/client';
 import type { AppState } from './hub';
-import { WORKLIST_ORG_TXRV } from './config';
+import { WORKLIST_ORG_TXRV, WORKLIST_ORG_FLEXRAY } from './config';
 import {
   applyInferenceServerButtonVisibility,
   INFERENCE_SERVERS,
-  LOCAL_AI_WORKLIST_SERVERS,
 } from './inference-servers';
 import {
   findMhubModelsForAnatomy,
@@ -54,11 +53,7 @@ function renderViewerHintHtml(serverTitle: string): string {
 }
 
 function findWorklistServer(serverId: string) {
-  return (
-    INFERENCE_SERVERS.find((s) => s.id === serverId) ||
-    LOCAL_AI_WORKLIST_SERVERS.find((s) => s.id === serverId) ||
-    null
-  );
+  return INFERENCE_SERVERS.find((s) => s.id === serverId) || null;
 }
 
 function mhubModelRowHtml(model: MhubModelDef): string {
@@ -186,8 +181,8 @@ export function openInferenceInfoDialog(
   const bodyEl = document.getElementById('inferenceInfoBody');
   if (!server || !modal || !titleEl || !bodyEl) return;
 
-  const isLocalAi = LOCAL_AI_WORKLIST_SERVERS.some((s) => s.id === server.id);
-  const status = isLocalAi ? null : statusLabel(state, server.id);
+  const isLocalCapable = server.localCapable === true;
+  const status = isLocalCapable ? 'Available' : statusLabel(state, server.id);
   titleEl.textContent = status
     ? `${server.title} · ${status}`
     : server.title;
@@ -221,6 +216,98 @@ export function openInferenceInfoDialog(
   });
 }
 
+function clampDialogPos(
+  left: number,
+  top: number,
+  dialog: HTMLElement
+): { left: number; top: number } {
+  const margin = 8;
+  const w = dialog.offsetWidth || 340;
+  const h = dialog.offsetHeight || 200;
+  const maxL = Math.max(margin, window.innerWidth - w - margin);
+  const maxT = Math.max(margin, window.innerHeight - h - margin);
+  return {
+    left: Math.min(maxL, Math.max(margin, left)),
+    top: Math.min(maxT, Math.max(margin, top)),
+  };
+}
+
+function installInferenceInfoDrag(): void {
+  const modal = document.getElementById('inferenceInfoModal');
+  const handle = modal?.querySelector(
+    '[data-wl-inference-drag]'
+  ) as HTMLElement | null;
+  const dialog = modal?.querySelector(
+    '.wl-inference-info-modal'
+  ) as HTMLElement | null;
+  if (!modal || !handle || !dialog || handle.dataset.wlDragBound === '1') {
+    return;
+  }
+  handle.dataset.wlDragBound = '1';
+
+  let dragging = false;
+  let startX = 0;
+  let startY = 0;
+  let originLeft = 0;
+  let originTop = 0;
+
+  const onMove = (ev: PointerEvent) => {
+    if (!dragging) return;
+    const next = clampDialogPos(
+      originLeft + (ev.clientX - startX),
+      originTop + (ev.clientY - startY),
+      dialog
+    );
+    dialog.style.position = 'absolute';
+    dialog.style.margin = '0';
+    dialog.style.left = `${next.left}px`;
+    dialog.style.top = `${next.top}px`;
+    dialog.style.right = 'auto';
+  };
+
+  const onUp = (ev: PointerEvent) => {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('wl-dragging');
+    try {
+      handle.releasePointerCapture(ev.pointerId);
+    } catch {
+      /* ignore */
+    }
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+  };
+
+  handle.addEventListener('pointerdown', (ev) => {
+    if (ev.button !== 0) return;
+    const t = ev.target as HTMLElement | null;
+    if (t?.closest('button, a, input, select, textarea, label')) return;
+    dragging = true;
+    handle.classList.add('wl-dragging');
+    startX = ev.clientX;
+    startY = ev.clientY;
+    const rect = dialog.getBoundingClientRect();
+    originLeft = rect.left;
+    originTop = rect.top;
+    dialog.style.position = 'absolute';
+    dialog.style.margin = '0';
+    dialog.style.left = `${originLeft}px`;
+    dialog.style.top = `${originTop}px`;
+    dialog.style.right = 'auto';
+    modal.classList.add(INFERENCE_MODAL_ANCHORED);
+    try {
+      handle.setPointerCapture(ev.pointerId);
+    } catch {
+      /* ignore */
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    ev.preventDefault();
+  });
+}
+
 export function closeInferenceInfoDialog(): void {
   const modal = document.getElementById('inferenceInfoModal');
   if (!modal) return;
@@ -233,18 +320,21 @@ export function closeInferenceInfoDialog(): void {
 }
 
 export function wireInferenceInfoButtons(state: AppState): void {
+  installInferenceInfoDrag();
   applyInferenceServerButtonVisibility();
-  const servers = [...INFERENCE_SERVERS, ...LOCAL_AI_WORKLIST_SERVERS];
-  for (const server of servers) {
+  for (const server of INFERENCE_SERVERS) {
     const btn = document.getElementById(server.worklistButtonId);
     if (!btn) continue;
     btn.addEventListener('click', () => {
-      if (server.id === 'txrv') {
+      if (server.id === 'txrv' || server.id === 'flexray') {
         const orgSelect = document.getElementById(
           'worklistOrgSelect'
         ) as HTMLSelectElement | null;
         if (orgSelect) {
-          orgSelect.value = WORKLIST_ORG_TXRV;
+          orgSelect.value =
+            server.id === 'flexray'
+              ? WORKLIST_ORG_FLEXRAY
+              : WORKLIST_ORG_TXRV;
           orgSelect.dispatchEvent(new Event('change'));
         }
       }

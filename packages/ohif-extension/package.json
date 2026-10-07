@@ -1,0 +1,30 @@
+{
+  "name": "@slicer-hub/ohif-extension",
+  "version": "0.1.0",
+  "description": "OHIF Slicer Hub extension (Image Display) using @slicer-hub/client",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/ohif-extension"
+  },
+  "main": "src/index.tsx",
+  "module": "src/index.tsx",
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "echo \"Source extension — consumed by OHIF host bundler; no standalone build yet.\""
+  },
+  "dependencies": {
+    "@slicer-hub/client": "*",
+    "@slicer-hub/flexray-web": "*",
+    "dcmjs": "0.49.4",
+    "jszip": "3.10.1"
+  }
+}

@@ -1098,6 +1098,21 @@ button {
   line-height: 1.45;
 }
 
+.hub-inference-info-license {
+  margin: 0;
+  font-size: 12px;
+  color: var(--rp-fg-muted);
+}
+
+.hub-inference-info-restriction {
+  font-weight: 700;
+  color: var(--rp-fg);
+}
+
+.hub-inference-info-license-link {
+  color: var(--rp-accent);
+}
+
 .hub-inference-info-links {
   display: flex;
   flex-wrap: wrap;

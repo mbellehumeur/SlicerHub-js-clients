@@ -29,6 +29,7 @@ import {
   dismissOpenStartHint,
   ensureCbctDentalLoaded,
   ensureTxrvLoaded,
+  ensureFlexrayLoaded,
   ensureIdcSegmentationsLoaded,
   ensureIdcWsiLoaded,
   ensureSlicerLiveViewer,
@@ -43,6 +44,7 @@ import {
   setConferenceFollowHost,
   setConferenceHubHandler,
   setConferenceView,
+  selectDefaultWorklistOrg,
   setStatusListener,
   setViewerButtonsEnabled,
   setWorklistListener,
@@ -53,6 +55,7 @@ import {
   WORKLIST_ACTOR,
   WORKLIST_ORG_MINE,
   WORKLIST_ORG_TXRV,
+  WORKLIST_ORG_FLEXRAY,
   getStoredUserName,
   isIdcCategoryFilterValue,
   setStoredUserName,
@@ -224,6 +227,7 @@ function wireViewerButtons(state: AppState, onWorklistChanged: () => void): void
     { id: 'openReportingBtn', kind: 'reporting' },
     { id: 'openSt444Btn', kind: 'classroom' },
     { id: 'openIraBtn', kind: 'ira' },
+    { id: 'openOhifBtn', kind: 'ohif' },
     { id: 'openSlimBtn', kind: 'slim' },
   ];
   for (const { id, kind } of map) {
@@ -279,6 +283,7 @@ async function boot(): Promise<void> {
   ) as HTMLSelectElement;
   loadIdcCustomWorklistsFromSession();
   refreshOrgSelectWithCustomWorklists(orgSelect);
+  selectDefaultWorklistOrg();
 
   const refreshTable = () =>
     renderWorklistTable(tableBody, emptyRow, state, orgSelect.value);
@@ -641,6 +646,15 @@ async function boot(): Promise<void> {
           refreshTable();
         });
     }
+    if (orgSelect.value === WORKLIST_ORG_FLEXRAY) {
+      void ensureFlexrayLoaded(state, setFooter)
+        .then(() => {
+          refreshTable();
+        })
+        .catch(() => {
+          refreshTable();
+        });
+    }
     if (isIdcCategoryFilterValue(orgSelect.value)) {
       void ensureIdcSegmentationsLoaded(state, setFooter)
         .then(() => {
@@ -691,7 +705,7 @@ async function boot(): Promise<void> {
       refreshTable();
     });
 
-  void ensureTxrvLoaded(state, setFooter)
+  void ensureFlexrayLoaded(state, setFooter)
     .then(() => {
       refreshTable();
     })

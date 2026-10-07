@@ -103,7 +103,7 @@ export async function ingestNiftiFromUrl(
       BitsAllocated: pixel?.bitsAllocated,
       BitsStored: pixel?.bitsStored,
       PhotometricInterpretation: pixel?.photometricInterpretation || 'MONOCHROME2',
-      PatientName: 'Cast^NIfTI',
+      PatientName: 'Hub^NIfTI',
       PatientID: 'CAST-NIFTI',
     };
   });

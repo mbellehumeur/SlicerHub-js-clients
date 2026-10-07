@@ -3,13 +3,17 @@ import HubClient, {
   type HubClientConfig,
   type CastMessage,
   type HubConfig,
+  type HubInferenceServerDef,
+  type CastProductStatusProbe,
   applyCastPublishEnvelopeFields,
+  buildInferenceRunContextExtras,
   DEFAULT_CAST_PUBLISH_ENVELOPE_FIELDS,
   generateSubscriberName,
   getHubEventLower,
   isRequestEvent,
   isStatusRequestDataType,
   normalizeConferenceParticipants,
+  probeCastInferenceServers,
   requestEventFor,
   resolveHubConferenceState,
   resolveHubFileMessage,
@@ -47,6 +51,7 @@ import {
   handleAnnotationEvent,
   ImagingStudyHandler,
 } from '../../hub/imaging-study-handler';
+import { waitForHubRouter } from '../../hub/hub-navigate';
 import {
   handleDicomSendMessage,
   handleNiftiSendMessage,
@@ -87,7 +92,8 @@ import {
 } from '../../hub/types';
 type ExtensionManagerLike = {
   appConfig: {
-    cast?: HubExtensionConfig;
+    hub?: HubExtensionConfig;
+    /** @deprecated Prefer appConfig.hub */
     fhircast?: HubExtensionConfig;
   };
   updateDataSourceConfiguration?: (name: string, config: unknown) => void;
@@ -196,7 +202,7 @@ export default class HubService extends PubSubService {
   private _conferenceActive = false;
   private _conferenceTitle = '';
   private _conferenceParticipants: string[] = [];
-  private _lastBroadhubHeaderStatus: HubHeaderStatusState | null = null;
+  private _lastBroadcastHubHeaderStatus: HubHeaderStatusState | null = null;
   private _statusRequestedForSession = false;
 
   constructor(
@@ -210,7 +216,7 @@ export default class HubService extends PubSubService {
 
     const hubExtensionConfig = extensionManager.appConfig.hub || extensionManager.appConfig.fhircast;
     if (!hubExtensionConfig) {
-      throw new Error('HubService: missing cast configuration');
+      throw new Error('HubService: missing hub configuration (appConfig.hub)');
     }
 
     const selectedHub = resolveHubFromConfig(hubExtensionConfig);
@@ -265,12 +271,18 @@ export default class HubService extends PubSubService {
       if (wsState === 'connected') {
         if (!this._statusRequestedForSession) {
           this._statusRequestedForSession = true;
-          void this._requestStatus({
-            loadWorklistStudy: true,
-            clearTotalSegmentatorAvailability: true,
-            clearLungScreeningAvailability: true,
-            clearNeuroSegAvailability: true,
-            targetActor: WORKLIST_CLIENT_ACTOR_KEYWORD,
+          // Wait for React Router so study navigation stays SPA (no WS tear-down).
+          void waitForHubRouter().then(() => {
+            if (this._wsState !== 'connected') {
+              return;
+            }
+            void this._requestStatus({
+              loadWorklistStudy: true,
+              clearTotalSegmentatorAvailability: true,
+              clearLungScreeningAvailability: true,
+              clearNeuroSegAvailability: true,
+              targetActor: WORKLIST_CLIENT_ACTOR_KEYWORD,
+            });
           });
         }
         void this._syncConferenceActive();
@@ -418,21 +430,21 @@ export default class HubService extends PubSubService {
     return this._client.getToken(code);
   }
 
-  public async castSubscribe(): Promise<number | string> {
+  public async hubSubscribe(): Promise<number | string> {
     const subscribeResult = await this._client.subscribe();
-    console.info(`${LOG_PREFIX} castSubscribe result`, subscribeResult);
+    console.info(`${LOG_PREFIX} hubSubscribe result`, subscribeResult);
     return subscribeResult;
   }
 
-  public async castUnsubscribe(): Promise<void> {
+  public async hubUnsubscribe(): Promise<void> {
     return this._client.unsubscribe();
   }
 
-  public async castPublish(
-    castMessage: Record<string, unknown>,
+  public async hubPublish(
+    hubMessage: Record<string, unknown>,
     envelopeOverride?: Partial<CastPublishEnvelopeFields>
   ): Promise<Response | null> {
-    const message = { ...castMessage } as CastMessage;
+    const message = { ...hubMessage } as CastMessage;
     const fields = resolveHubPublishEnvelopeFields(
       { ...this._publishEnvelopeFields, ...envelopeOverride },
       { subscriberName: this._subscriberName }
@@ -486,6 +498,70 @@ export default class HubService extends PubSubService {
   }
 
   /**
+   * Probe all enabled catalog Evidence Creators with one collated STATUS request.
+   */
+  public async probeInferenceServers(): Promise<
+    Array<{ server: HubInferenceServerDef; probe: CastProductStatusProbe }>
+  > {
+    const session = this._client.getSessionConfig();
+    const subscriberName =
+      this._subscriberName.trim() || session.subscriberName?.trim() || '';
+    return probeCastInferenceServers(this._client, {
+      subscriberName,
+      subscriberProductName: session.productName,
+      subscriberActor: this._publishEnvelopeFields.subscriberActor,
+      topic: session.topic,
+    });
+  }
+
+  /**
+   * Send the active series to a catalog Evidence Creator via URL-only publish.
+   */
+  public async publishInferenceServerSend(
+    server: HubInferenceServerDef,
+    options: {
+      totalSegmentator?: Partial<TotalSegmentatorOptions>;
+    } = {}
+  ): Promise<Response | null> {
+    const topic = this._client.getSessionConfig().topic?.trim() ?? '';
+    if (!topic) {
+      throw new Error('Hub topic is not configured');
+    }
+    const product = String(server?.product || '').trim();
+    if (!product) {
+      throw new Error('Inference server has no product name');
+    }
+
+    const manifest = buildHubUrlSendManifestFromActiveSeries(this._servicesManager);
+    const runOptions =
+      server.id === 'totalseg'
+        ? {
+            totalSegmentator: normalizeTotalSegmentatorOptions(
+              options.totalSegmentator
+            ),
+          }
+        : options;
+    const contextExtras = buildInferenceRunContextExtras(server, runOptions);
+
+    return this.hubPublish(
+      {
+        event: {
+          'hub.topic': topic,
+          'hub.event': manifest.hubEvent,
+          context: {
+            files: manifest.files,
+            ...contextExtras,
+          },
+        },
+      },
+      {
+        targetActor: DEFAULT_TARGET_ACTOR_KEYWORD,
+        targetProductName: product,
+      }
+    );
+  }
+
+  /**
    * Send the active series to TotalSegmentator via URL-only publish (no binary batch).
    */
   public async publishTotalSegmentatorSend(
@@ -499,7 +575,7 @@ export default class HubService extends PubSubService {
     const manifest = buildHubUrlSendManifestFromActiveSeries(this._servicesManager);
     const totalSegmentator = normalizeTotalSegmentatorOptions(options);
 
-    return this.castPublish(
+    return this.hubPublish(
       {
         event: {
           'hub.topic': topic,
@@ -537,7 +613,7 @@ export default class HubService extends PubSubService {
 
     const manifest = buildHubUrlSendManifestFromActiveSeries(this._servicesManager);
 
-    return this.castPublish(
+    return this.hubPublish(
       {
         event: {
           'hub.topic': topic,
@@ -577,7 +653,7 @@ export default class HubService extends PubSubService {
 
     const manifest = buildHubUrlSendManifestFromActiveSeries(this._servicesManager);
 
-    return this.castPublish(
+    return this.hubPublish(
       {
         event: {
           'hub.topic': topic,
@@ -614,7 +690,7 @@ export default class HubService extends PubSubService {
     if (!topic) {
       throw new Error('Hub topic is not configured');
     }
-    return this.castPublish({
+    return this.hubPublish({
       event: {
         'hub.topic': topic,
         'hub.event': hubEvent,
@@ -1091,7 +1167,7 @@ export default class HubService extends PubSubService {
         return;
       }
     }
-    await this.castSubscribe();
+    await this.hubSubscribe();
     const topicAfterStart = this._client.getSessionConfig().topic?.trim() ?? '';
     if (topicAfterStart) {
       this._writeStoredTopic(topicAfterStart);
@@ -1104,12 +1180,12 @@ export default class HubService extends PubSubService {
     }
     const next = this.getHubHeaderStatus();
     if (
-      this._lastBroadhubHeaderStatus &&
-      hubHeaderStatusEqual(this._lastBroadhubHeaderStatus, next)
+      this._lastBroadcastHubHeaderStatus &&
+      hubHeaderStatusEqual(this._lastBroadcastHubHeaderStatus, next)
     ) {
       return;
     }
-    this._lastBroadhubHeaderStatus = next;
+    this._lastBroadcastHubHeaderStatus = next;
     this._broadcastEvent(HubService.EVENTS.STATUS_CHANGED, next);
   }
 

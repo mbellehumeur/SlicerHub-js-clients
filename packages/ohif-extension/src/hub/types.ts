@@ -6,7 +6,9 @@ export const ID_ACTOR_KEYWORD = 'ID';
 export const WORKLIST_CLIENT_ACTOR_KEYWORD = 'WORKLIST_CLIENT';
 export const DEFAULT_TARGET_ACTOR_KEYWORD = 'EC';
 
-export type CastEvent = NonNullable<CastMessage['event']>;
+export type HubEvent = NonNullable<CastMessage['event']>;
+/** @deprecated Use HubEvent */
+export type CastEvent = HubEvent;
 
 export type GetRequestDataType =
   | 'PNGFULLSIZE'
@@ -93,6 +95,7 @@ export type ServicesManagerLike = {
         message: string | ((data?: unknown) => string);
         type?: 'success' | 'error' | 'info' | 'warning' | 'loading';
         duration?: number;
+        autoClose?: boolean;
         promise?: Promise<unknown>;
         promiseMessages?: {
           loading?: string;
@@ -102,6 +105,7 @@ export type ServicesManagerLike = {
         id?: string;
         allowDuplicates?: boolean;
       }) => string;
+      hide?: (id: string) => void;
     };
   };
 };

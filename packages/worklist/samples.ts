@@ -13,6 +13,7 @@ import {
   WORKLIST_ORG_SLICER_SCENES,
   WORKLIST_ORG_CBCT_DENTAL,
   WORKLIST_ORG_TXRV,
+  WORKLIST_ORG_FLEXRAY,
   WORKLIST_ORG_3D_SLICER,
   IDC_CATEGORIES,
   IDC_KITS_CATEGORY,
@@ -107,7 +108,7 @@ export function attachImagingStudyDescription(
   });
 }
 
-/** Put ImagingStudy.modality coding on the study context item (CT / MR / PT). */
+/** Put ImagingStudy.modality coding on the study context item (CT / MR / PT / CR / DX). */
 export function attachImagingStudyModality(
   context: unknown[],
   modality: string | undefined
@@ -116,7 +117,14 @@ export function attachImagingStudyModality(
   if (mod === 'MRI') mod = 'MR';
   if (mod === 'PET') mod = 'PT';
   if (!mod || !Array.isArray(context)) return context;
-  if (mod !== 'CT' && mod !== 'MR' && mod !== 'PT' && mod !== 'NM') {
+  if (
+    mod !== 'CT' &&
+    mod !== 'MR' &&
+    mod !== 'PT' &&
+    mod !== 'NM' &&
+    mod !== 'CR' &&
+    mod !== 'DX'
+  ) {
     return context;
   }
   return context.map((item) => {
@@ -804,6 +812,80 @@ export async function loadTxrvStudies(): Promise<WorklistSample[]> {
       size: String(entry.size || '').trim() || undefined,
       format: String(entry.format || FORMAT_DICOM).trim() || FORMAT_DICOM,
       organization: WORKLIST_ORG_TXRV,
+      modalities,
+      studyInstanceUID: studyInstanceUID || undefined,
+      seriesInstanceUID: seriesInstanceUID || undefined,
+      openMode:
+        String(entry.openMode || HUB_OPEN_MODE_IDC).trim() ||
+        HUB_OPEN_MODE_IDC,
+      ctCrdc,
+      bucket,
+      files: [
+        {
+          url: idcBucketPrefixUrl(bucket, ctCrdc),
+          fileName: `${ctCrdc}/`,
+          role: 'volume',
+        },
+      ],
+    });
+  }
+  return out;
+}
+
+export function isFlexraySample(sample: WorklistSample | undefined): boolean {
+  return sample?.organization === WORKLIST_ORG_FLEXRAY;
+}
+
+export function withoutFlexraySamples(
+  studies: WorklistSample[]
+): WorklistSample[] {
+  return studies.filter((s) => !isFlexraySample(s));
+}
+
+/** Replace all FleXray rows with a fresh manifest mapping. */
+export function replaceFlexrayStudies(
+  studies: WorklistSample[],
+  flexraySamples: WorklistSample[]
+): WorklistSample[] {
+  return [...withoutFlexraySamples(studies), ...flexraySamples];
+}
+
+type FlexrayManifestStudy = TxrvManifestStudy;
+
+type FlexrayManifest = {
+  studies?: FlexrayManifestStudy[];
+};
+
+/** Load builtin FleXray CR/DX studies (org: flexray). */
+export async function loadFlexrayStudies(): Promise<WorklistSample[]> {
+  const res = await fetch('./flexray-manifest.json');
+  if (!res.ok) {
+    throw new Error(`Failed to load FleXray manifest (${res.status})`);
+  }
+  const data = (await res.json()) as FlexrayManifest;
+  const rows = Array.isArray(data.studies) ? data.studies : [];
+  const out: WorklistSample[] = [];
+  for (const entry of rows) {
+    const id = String(entry?.id || '').trim();
+    const studyInstanceUID = String(entry?.studyInstanceUID || '').trim();
+    const seriesInstanceUID = String(entry?.seriesInstanceUID || '').trim();
+    const ctCrdc =
+      String(entry?.ctCrdc || '').trim() || seriesInstanceUID;
+    if (!id || !ctCrdc) continue;
+    const modalities = Array.isArray(entry.modalities)
+      ? entry.modalities.map((m) => String(m).toUpperCase()).filter(Boolean)
+      : ['DX'];
+    const bucket =
+      String(entry.bucket || '').trim() || 'idc-open-data';
+    out.push({
+      id,
+      name: String(entry.name || id).trim() || id,
+      description:
+        String(entry.description || '').trim() ||
+        'FleXray CR/DX sample',
+      size: String(entry.size || '').trim() || undefined,
+      format: String(entry.format || FORMAT_DICOM).trim() || FORMAT_DICOM,
+      organization: WORKLIST_ORG_FLEXRAY,
       modalities,
       studyInstanceUID: studyInstanceUID || undefined,
       seriesInstanceUID: seriesInstanceUID || undefined,

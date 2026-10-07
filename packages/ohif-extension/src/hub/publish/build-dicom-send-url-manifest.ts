@@ -125,7 +125,7 @@ export function buildHubUrlSendManifest(
 
   if (!files.length) {
     throw new Error(
-      'No HTTP URLs for the active series — the resource server needs shared remote URLs (DICOMweb or IDC). Local blob or Cast-ingested data without _hubSourceUrl cannot be sent URL-only.'
+      'No HTTP URLs for the active series — the resource server needs shared remote URLs (DICOMweb or IDC). Local blob or Hub-ingested data without _hubSourceUrl cannot be sent URL-only.'
     );
   }
 

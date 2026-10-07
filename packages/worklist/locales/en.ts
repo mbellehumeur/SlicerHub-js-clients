@@ -39,8 +39,12 @@ export const en = {
         <p>
           The original purpose of this application is to be a "worklist client" actor in an open-source
           <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
-          system. The system is intended to support the promotion, training, development, and
-          demonstration of interoperability in medical imaging applications.
+          and
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          system that resides in a 3D Slicer extension called
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub provides the messaging infrastructure and aims to promote, train, develop, and
+          demonstrate interoperability in medical imaging applications.
         </p>
         <p>The application is therefore one component (<strong>WORKLIST_CLIENT actor</strong>) of a system that includes:</p>
         <ul class="wl-help-steps">
@@ -48,11 +52,11 @@ export const en = {
           <li>open-source medical imaging viewers (<strong>IMAGE_DISPLAY actors</strong>)</li>
           <li>open-source medical imaging inference models (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>a DICOM SR reporting example (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li>the <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> and the <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB as a read-only image archives (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>the <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> and the <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB as read-only image archives (<strong>IMAGE_ARCHIVE actor</strong>)</li>
           <li>an authentication / identity provider with integration to the hub OIDC endpoints or built-in hub anonymous/mock authentication</li>
         </ul>
         <p>
-          The application also includes features for anatomy and pathology education that are independent of the IHE
+          The system also includes features for education that are independent of the IHE
           Integrated Reporting workflow:
         </p>
         <ul class="wl-help-steps">
@@ -61,6 +65,19 @@ export const en = {
           <li>a vanishing brush tool for temporary annotations during conferencing</li>
           <li>export to STL for 3D printing</li>
         </ul>
+        <p>
+          Research and 3D Slicer functionalities, also independent of IHE, are provided:
+        </p>
+        <ul class="wl-help-steps">
+          <li>file transfer between applications</li>
+          <li>medical reality scenes</li>
+          <li>Slicer Qt Image Display client</li>
+          <li>Slicer DICOM DB access</li>
+        </ul>
+        <p>
+          File transfer allows inference servers to send their results directly back to the viewers
+          without storing them in PACS first. It also supports research file formats like NIfTI, NRRD, and Zarr.
+        </p>
     `,
     howto0Title: 'How to connect SlicerWorklist to 3D Slicer.',
     howto0Body: `

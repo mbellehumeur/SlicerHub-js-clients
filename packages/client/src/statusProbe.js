@@ -6,6 +6,7 @@ import {
 import { parseCollatedRequestResult } from './collatedRequest.js';
 import {
   isDentalSegProduct,
+  isFlexrayProduct,
   isLungScreeningProduct,
   isMhubProduct,
   isNeuroSegProduct,
@@ -221,6 +222,7 @@ function productMatchesInferenceServer(productName, server) {
   if (server.id === 'neuro') return isNeuroSegProduct(productName);
   if (server.id === 'dental') return isDentalSegProduct(productName);
   if (server.id === 'txrv') return isTorchXrayVisionProduct(productName);
+  if (server.id === 'flexray') return isFlexrayProduct(productName);
   return false;
 }
 

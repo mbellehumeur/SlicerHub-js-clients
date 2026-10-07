@@ -61,6 +61,11 @@ export const HUB_PRODUCT_MATCHERS = Object.freeze({
     p.startsWith('TORCH_XRAY_VISION') ||
     p === 'TORCH-XRAY-VISION' ||
     p.startsWith('TORCH-XRAY-VISION'),
+  flexray: (p) =>
+    p === 'FLEXRAY' ||
+    p.startsWith('FLEXRAY') ||
+    p === 'FLEX_RAY' ||
+    p.startsWith('FLEX_RAY'),
   reporting: (p) =>
     p === 'RPT' ||
     p.startsWith('RPT-') ||
