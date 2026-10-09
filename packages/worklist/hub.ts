@@ -167,8 +167,6 @@ export type DomRefs = {
   statusBtn: HTMLButtonElement;
   statusWrap: HTMLElement;
   statusMenu: HTMLElement;
-  sessionModal: HTMLElement;
-  sessionDl: HTMLElement;
   helpModal: HTMLElement;
   orgSelect: HTMLSelectElement;
   tableBody: HTMLElement;
@@ -2436,14 +2434,6 @@ export async function addSegrouletteToWorklist(
   state.allStudies = upsertSegrouletteSample(state.allStudies, sample);
   notifyWorklist(state);
   console.info(`${LOG_PREFIX} SegRoulette added to worklist`, sample.id);
-}
-
-/** Open a second worklist tab that authenticates as a new hub user (for conference testing). */
-export function openConferenceTestWorklist(): void {
-  const url = new URL(window.location.href);
-  url.searchParams.set('freshUser', '1');
-  url.searchParams.delete('topic');
-  window.open(url.href, '_blank', 'noopener,noreferrer');
 }
 
 /** Copy a catalog (or other org) row into My Worklist and switch the org filter. */

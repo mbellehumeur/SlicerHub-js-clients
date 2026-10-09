@@ -57,7 +57,6 @@ import {
  * @property {() => CastConferenceDialogSession} getSession
  * @property {(view: CastConferenceView | null) => void} [onConferenceChange]
  * @property {(followHost: boolean) => void} [onFollowChange]
- * @property {(button: HTMLElement) => void} [onSessionControlClick]
  * @property {Partial<import('./conferenceStrings.js').CastConferenceStrings>} [strings]
  */
 
@@ -106,10 +105,6 @@ export function createHubConferenceDialog(options) {
   const onFollowChange =
     typeof options?.onFollowChange === 'function'
       ? options.onFollowChange
-      : null;
-  const onSessionControlClick =
-    typeof options?.onSessionControlClick === 'function'
-      ? options.onSessionControlClick
       : null;
   const prefix = String(options?.classPrefix || 'hub-conference').trim();
   /** @type {'start' | 'end'} */
@@ -176,33 +171,31 @@ export function createHubConferenceDialog(options) {
         </div>
       </div>
       <div class="${cls(prefix, 'section')} ${cls(prefix, 'section-session')}" data-hub-conference-session>
+        <div class="${cls(prefix, 'user-row')}">
+          <label class="${cls(prefix, 'label')}" for="sessionUserNameInput">Change user name:</label>
+          <input
+            type="text"
+            id="sessionUserNameInput"
+            class="${cls(prefix, 'input')} ${cls(prefix, 'user-input')}"
+            autocomplete="username"
+          />
+          <button type="button" id="sessionChangeUserBtn" class="${cls(prefix, 'secondary')}">
+            OK
+          </button>
+        </div>
+        <p id="sessionChangeUserNote" class="${cls(prefix, 'muted')}" hidden>
+          Saved. Reload the page to apply.
+        </p>
         <div class="${cls(prefix, 'session-row')}">
           <button
             type="button"
-            class="${cls(prefix, 'topic-btn')}"
-            data-hub-conference-topic-btn
-            aria-label="Session info"
-            title="Session info"
+            id="openConferenceTestWorklistBtn"
+            class="${cls(prefix, 'secondary')} ${cls(prefix, 'open-another-user')}"
+            data-hub-conference-open-another-user
+            title="Open another user session to test conferencing"
           >
-            <span class="${cls(prefix, 'session-label')}" data-hub-conference-topic-label>—</span>
+            Open another user
           </button>
-          <div class="${cls(prefix, 'lang-wrap')}">
-            <button
-              type="button"
-              id="langPickerBtn"
-              class="${cls(prefix, 'lang-btn')}"
-              aria-label="Language"
-              title="Language"
-              aria-haspopup="listbox"
-              aria-expanded="false"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.25"/>
-                <path fill="none" stroke="currentColor" stroke-width="1.25" d="M2 8h12M8 2c1.8 1.8 2.7 3.7 2.7 6S9.8 12.2 8 14C6.2 12.2 5.3 10.3 5.3 8S6.2 3.8 8 2z"/>
-              </svg>
-            </button>
-            <ul id="langPickerMenu" class="${cls(prefix, 'lang-menu')}" role="listbox" hidden></ul>
-          </div>
           <button
             type="button"
             class="${cls(prefix, 'secondary')} ${cls(prefix, 'session-close')}"
@@ -218,8 +211,9 @@ export function createHubConferenceDialog(options) {
 
   const dialogEl = overlay.querySelector(`.${cls(prefix, 'dialog')}`);
   const statusEl = overlay.querySelector('[data-hub-conference-status]');
-  const topicBtn = overlay.querySelector('[data-hub-conference-topic-btn]');
-  const topicLabel = overlay.querySelector('[data-hub-conference-topic-label]');
+  const openAnotherUserBtn = overlay.querySelector(
+    '[data-hub-conference-open-another-user]'
+  );
   const createSection = overlay.querySelector('[data-hub-conference-create]');
   const createFormSection = overlay.querySelector(
     '[data-hub-conference-create-form]'
@@ -305,27 +299,18 @@ export function createHubConferenceDialog(options) {
     if (customTitle instanceof HTMLInputElement) {
       customTitle.placeholder = s.customTitlePlaceholder;
     }
-    if (topicBtn instanceof HTMLElement) {
-      const aria = currentView?.places?.length ? s.participantsAria : s.sessionInfo;
-      topicBtn.setAttribute('aria-label', aria);
-      topicBtn.title = aria;
-    }
     fillTitlePresets();
   }
 
   function syncSessionControl() {
-    const session = sessionSnapshot();
-    if (topicLabel instanceof HTMLElement) {
-      topicLabel.textContent = session.topic || '—';
-    }
-    if (topicBtn instanceof HTMLElement) {
-      const aria = currentView?.places?.length ? s.participantsAria : s.sessionInfo;
-      const tip = session.topic
-        ? `${aria} — ${session.topic}`
-        : aria;
-      topicBtn.setAttribute('aria-label', tip);
-      topicBtn.title = tip;
-    }
+    /* Topic/session control removed; keep for API compatibility. */
+  }
+
+  function openAnotherUserSession() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('freshUser', '1');
+    url.searchParams.delete('topic');
+    window.open(url.href, '_blank', 'noopener,noreferrer');
   }
 
   applyStaticLabels();
@@ -778,6 +763,14 @@ export function createHubConferenceDialog(options) {
     if (customGroup) {
       customGroup.hidden = true;
     }
+    const userInput = overlay.querySelector('#sessionUserNameInput');
+    if (userInput instanceof HTMLInputElement) {
+      userInput.value = String(sessionSnapshot().userName || '').trim();
+    }
+    const userNote = overlay.querySelector('#sessionChangeUserNote');
+    if (userNote instanceof HTMLElement) {
+      userNote.hidden = true;
+    }
     lastAnchor =
       anchor instanceof HTMLElement
         ? anchor
@@ -832,11 +825,9 @@ export function createHubConferenceDialog(options) {
   exitBtn?.addEventListener('click', () => {
     handleExit().catch(() => {});
   });
-  topicBtn?.addEventListener('click', (event) => {
+  openAnotherUserBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
-    if (topicBtn instanceof HTMLElement && onSessionControlClick) {
-      onSessionControlClick(topicBtn);
-    }
+    openAnotherUserSession();
   });
   overlay.querySelectorAll('[data-hub-conference-close]').forEach((node) => {
     node.addEventListener('click', () => close());
@@ -858,8 +849,8 @@ export function createHubConferenceDialog(options) {
     setStrings,
     syncSessionControl,
     getSessionControl: () => ({
-      button: topicBtn instanceof HTMLElement ? topicBtn : null,
-      label: topicLabel instanceof HTMLElement ? topicLabel : null,
+      button: null,
+      label: null,
     }),
     getView: () => currentView,
     get element() {

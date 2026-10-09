@@ -6,7 +6,6 @@ import {
 import type { AppState } from './hub';
 import {
   handleWorklistRowAction,
-  hubEndpoint,
   shouldShowOpenStartHint,
 } from './hub';
 import { conferenceStrings, t } from './i18n';
@@ -446,38 +445,6 @@ export function renderConferenceRoster(state: AppState): void {
     resumeFollowBtn,
     takeOverBtn,
   });
-}
-
-export function fillSessionInfo(dl: HTMLElement, state: AppState): void {
-  const hub = state.hubKey;
-  const endpoint =
-    state.client?.getHubConfig?.()?.hub_endpoint || hubEndpoint(state);
-  const rows: Array<[string, string]> = [
-    ['Hub', hub],
-    ['Endpoint', endpoint || '—'],
-    ['Subscriber', state.subscriberName || '—'],
-    ['Status', state.connectionDetail],
-  ];
-  const openUserBtn = document.getElementById(
-    'openConferenceTestWorklistBtn'
-  ) as HTMLButtonElement | null;
-  // Keep the button after the dl (not inside it) so replaceChildren is safe.
-  if (openUserBtn) {
-    if (openUserBtn.parentElement === dl) {
-      dl.after(openUserBtn);
-    } else if (openUserBtn.previousElementSibling !== dl) {
-      dl.after(openUserBtn);
-    }
-    openUserBtn.hidden = false;
-  }
-  dl.replaceChildren();
-  for (const [key, value] of rows) {
-    const dt = document.createElement('dt');
-    dt.textContent = key;
-    const dd = document.createElement('dd');
-    dd.textContent = value;
-    dl.append(dt, dd);
-  }
 }
 
 export function closeMenus(...menus: HTMLElement[]): void {

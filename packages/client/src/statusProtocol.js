@@ -1,4 +1,4 @@
-/** Wire product names used by TotalSegmentator resource servers. */
+/** Wire product names used by TotalSegmentator service providers. */
 export const TOTAL_SEGMENTATOR_PRODUCT_ALIASES = [
   'TOTALSEG',
   'TOTAL_SEGMENTATOR',

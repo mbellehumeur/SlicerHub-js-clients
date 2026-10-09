@@ -3,7 +3,7 @@
  * Source: products/mhub/MHubSkill/data/models_summary.json
  * (cache_date: 2025-01-29).
  * Enriched with GitHub / website / cite via:
- *   node cast_resource_servers/products/mhub/export_ira_catalog.mjs
+ *   node service_providers/products/mhub/export_ira_catalog.mjs
  */
 
 export type MhubModelDef = {

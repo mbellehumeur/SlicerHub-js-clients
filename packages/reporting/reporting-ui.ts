@@ -1080,37 +1080,6 @@ export function mountVolPresetButton(
   });
 }
 
-export function fillSessionInfo(dl: HTMLElement, state: AppState): void {
-  const hub = state.hubKey;
-  const endpoint =
-    state.client?.getHubConfig?.()?.hub_endpoint || hubEndpoint(state);
-  const rows: Array<[string, string]> = [
-    ['Hub', hub],
-    ['Endpoint', endpoint || '—'],
-    ['Subscriber', state.subscriberName || '—'],
-    ['User', state.userName || '—'],
-    ['Status', state.connectionDetail],
-    ['Open study', state.openStudy?.sampleId || '(none)'],
-    [
-      'SEG segments',
-      String(
-        state.segCatalog.segmentations.reduce(
-          (n, s) => n + (s.segments?.length || 0),
-          0
-        )
-      ),
-    ],
-  ];
-  dl.replaceChildren();
-  for (const [k, v] of rows) {
-    const dt = document.createElement('dt');
-    dt.textContent = k;
-    const dd = document.createElement('dd');
-    dd.textContent = v;
-    dl.append(dt, dd);
-  }
-}
-
 export function closeMenus(...menus: HTMLElement[]): void {
   for (const m of menus) m.hidden = true;
 }

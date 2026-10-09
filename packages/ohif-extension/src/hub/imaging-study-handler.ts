@@ -181,7 +181,7 @@ export class ImagingStudyHandler {
 
     // Prefer IDC direct HTTPS file URLs when present (e.g. lung-screening worklist).
     // Ingest sets instance._hubSourceUrl so URL-only dicom-send uses raw S3 objects
-    // instead of WADO-RS multipart responses that break Python resource servers.
+    // instead of WADO-RS multipart responses that break Python service providers.
     if (idcFallbackPlan) {
       console.info(
         `${LOG_PREFIX} imagingstudy-open dicomweb: using IDC direct files (${idcFallbackPlan.files.length} URL(s))`,

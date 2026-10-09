@@ -13,6 +13,9 @@ export const en = {
     reportingClients: 'Report Creators:',
     localAi: 'Evidence Creators:',
     remoteAi: 'Evidence Creators:',
+    omiFhir: 'OMI Registry',
+    omiFhirTitle:
+      'Open Medical Inference (OMI) registry for all inference models',
     classroom: 'Courses:',
     currentContext: 'Current context:',
     none: 'none',
@@ -70,7 +73,7 @@ export const en = {
         </p>
         <ul class="wl-help-steps">
           <li>file transfer between applications</li>
-          <li>medical reality scenes</li>
+          <li>medical reality scenes and communications</li>
           <li>Slicer Qt Image Display client</li>
           <li>Slicer DICOM DB access</li>
         </ul>

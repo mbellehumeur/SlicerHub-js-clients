@@ -161,6 +161,16 @@ SLOTS = [
         """,
     ),
     (
+        "lspine-ap-cr",
+        "L-spine AP · CR",
+        "IDC cmb_mml · CR lumbar spine AP",
+        """
+        collection_id='cmb_mml' AND Modality='CR' AND BodyPartExamined='LSPINE'
+        AND LOWER(COALESCE(SeriesDescription,'')) LIKE '%ap%'
+        AND instanceCount=1
+        """,
+    ),
+    (
         "tspine-lat-cr",
         "T-spine LAT · CR",
         "IDC cmb_mml · CR thoracic spine LAT",
@@ -186,14 +196,6 @@ SLOTS = [
         """
         collection_id='varepop_apollo' AND Modality='CR' AND BodyPartExamined='ELBOW'
         AND instanceCount=1
-        """,
-    ),
-    (
-        "knee-ap-cr",
-        "Knee AP · CR",
-        "IDC varepop_apollo · CR knee",
-        """
-        collection_id='varepop_apollo' AND Modality='CR' AND BodyPartExamined='KNEE'
         """,
     ),
     (

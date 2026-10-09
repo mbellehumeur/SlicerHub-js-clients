@@ -5,7 +5,6 @@ import {
   confirmHubConferenceTakeover,
   HUB_WORKLIST_WINDOW_NAME,
   deleteHubConference,
-  openHubConferenceParticipantsPopup,
   placeHubDialogNearAnchor,
   shouldShowConferenceInvite,
   showHubInfoToast,
@@ -38,7 +37,6 @@ import {
   hubEndpoint,
   openHubViewer,
   openHubMirrorViewer,
-  openConferenceTestWorklist,
   publishSegrouletteOpen,
   requestStatusFromHostWorklist,
   setConferenceFollowHost,
@@ -72,6 +70,7 @@ import {
   closeInferenceInfoDialog,
   wireInferenceInfoButtons,
 } from './inference-info-dialog';
+import { wireOmiFhirDialog } from './omi-fhir-dialog';
 import {
   loadIdcCustomWorklistsFromSession,
   refreshOrgSelectWithCustomWorklists,
@@ -83,7 +82,6 @@ import {
   parseMyWorklistFile,
 } from './samples';
 import {
-  fillSessionInfo,
   renderConferenceRoster,
   renderWorklistContext,
   renderWorklistTable,
@@ -100,47 +98,16 @@ function applyTheme(): void {
 
 const MODAL_ANCHORED = 'wl-modal-backdrop-anchored';
 
-function wireMenus(state: AppState): {
-  onSessionControlClick: (btn: HTMLElement) => void;
-} {
+function wireMenus(state: AppState): void {
   const helpBtn = document.getElementById(
     'castHelpBtn'
   ) as HTMLButtonElement | null;
-  const sessionModal = document.getElementById('sessionModal') as HTMLElement;
-  const sessionDialog = sessionModal.querySelector(
-    '.wl-modal'
-  ) as HTMLElement | null;
   const helpModal = document.getElementById('helpModal') as HTMLElement;
   const helpDialog = helpModal.querySelector('.wl-modal') as HTMLElement | null;
-  const sessionDl = document.getElementById('sessionDl') as HTMLElement;
-
-  const closeSessionModal = () => {
-    sessionModal.hidden = true;
-    clearHubDialogNearAnchor(sessionModal, sessionDialog, MODAL_ANCHORED);
-  };
 
   const closeHelpModal = () => {
     helpModal.hidden = true;
     clearHubDialogNearAnchor(helpModal, helpDialog, MODAL_ANCHORED);
-  };
-
-  const openSessionModal = (anchor?: HTMLElement | null) => {
-    fillSessionInfo(sessionDl, state);
-    const note = document.getElementById('sessionChangeUserNote');
-    if (note) note.hidden = true;
-    const input = document.getElementById(
-      'sessionUserNameInput'
-    ) as HTMLInputElement | null;
-    if (input) {
-      input.value = state.userName || getStoredUserName() || '';
-    }
-    sessionModal.hidden = false;
-    placeHubDialogNearAnchor({
-      overlay: sessionModal,
-      dialog: sessionDialog,
-      anchor: anchor ?? null,
-      anchoredClass: MODAL_ANCHORED,
-    });
   };
 
   const openHelpModal = () => {
@@ -152,20 +119,6 @@ function wireMenus(state: AppState): {
       anchoredClass: MODAL_ANCHORED,
       align: 'end',
     });
-  };
-
-  const onSessionControlClick = (btn: HTMLElement) => {
-    const view = state.conference;
-    if (view?.places?.length) {
-      openHubConferenceParticipantsPopup({
-        anchor: btn,
-        view,
-        followHost: Boolean(state.conferenceFollowHost),
-        classPrefix: 'wl-conference',
-      });
-      return;
-    }
-    openSessionModal(btn);
   };
 
   const saveSessionUserName = () => {
@@ -197,13 +150,8 @@ function wireMenus(state: AppState): {
 
   document.querySelectorAll('[data-close-modal]').forEach((el) => {
     el.addEventListener('click', () => {
-      closeSessionModal();
       closeHelpModal();
     });
-  });
-
-  sessionModal.addEventListener('click', (ev) => {
-    if (ev.target === sessionModal) closeSessionModal();
   });
 
   helpModal.addEventListener('click', (ev) => {
@@ -218,8 +166,6 @@ function wireMenus(state: AppState): {
     ?.addEventListener('click', (ev) => {
       if (ev.target === ev.currentTarget) closeInferenceInfoDialog();
     });
-
-  return { onSessionControlClick };
 }
 
 function wireViewerButtons(state: AppState, onWorklistChanged: () => void): void {
@@ -313,8 +259,6 @@ async function boot(): Promise<void> {
   let inviteController: ReturnType<
     typeof createHubConferenceInviteController
   > | null = null;
-  let sessionControlClick: ((btn: HTMLElement) => void) | null = null;
-
   let openConferenceDialog = (
     _anchor?: HTMLElement | null
   ): void => {
@@ -336,9 +280,6 @@ async function boot(): Promise<void> {
       },
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
-      },
-      onSessionControlClick: (btn) => {
-        sessionControlClick?.(btn);
       },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());
@@ -418,24 +359,6 @@ async function boot(): Promise<void> {
       const btn =
         ev.currentTarget instanceof HTMLElement ? ev.currentTarget : null;
       openConferenceDialog(btn);
-    });
-
-  document
-    .getElementById('openConferenceTestWorklistBtn')
-    ?.addEventListener('click', () => {
-      openConferenceTestWorklist();
-      const sessionModal = document.getElementById('sessionModal');
-      const sessionDialog = sessionModal?.querySelector(
-        '.wl-modal'
-      ) as HTMLElement | null;
-      if (sessionModal) {
-        sessionModal.hidden = true;
-        clearHubDialogNearAnchor(
-          sessionModal,
-          sessionDialog,
-          MODAL_ANCHORED
-        );
-      }
     });
 
   document.getElementById('endConferenceBtn')?.addEventListener('click', () => {
@@ -674,9 +597,10 @@ async function boot(): Promise<void> {
     setLocale,
   });
   applyChromeLabels();
-  sessionControlClick = wireMenus(state).onSessionControlClick;
+  wireMenus(state);
   wireViewerButtons(state, refreshTable);
   wireInferenceInfoButtons(state);
+  wireOmiFhirDialog();
   updateConnectionStatusUi(statusWrap, state);
   setViewerButtonsEnabled(state.connection === 'connected', state);
   refreshTable();

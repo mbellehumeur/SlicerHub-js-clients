@@ -668,7 +668,7 @@ export interface CastConferenceDialogController {
   setStrings(
     strings: Partial<CastConferenceStrings> | null | undefined
   ): void;
-  /** Refresh topic label / aria from getSession(). */
+  /** No-op kept for API compatibility (session control removed). */
   syncSessionControl(): void;
   getSessionControl(): {
     button: HTMLElement | null;
@@ -765,7 +765,6 @@ export function createHubConferenceDialog(options: {
   getSession: () => CastConferenceDialogSession;
   onConferenceChange?: (view: CastConferenceView | null) => void;
   onFollowChange?: (followHost: boolean) => void;
-  onSessionControlClick?: (button: HTMLElement) => void;
   strings?: Partial<CastConferenceStrings>;
 }): CastConferenceDialogController;
 

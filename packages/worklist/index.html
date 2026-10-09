@@ -24,6 +24,23 @@
         >
           Conferencing
         </button>
+        <div class="wl-lang-wrap">
+          <button
+            type="button"
+            id="langPickerBtn"
+            class="wl-icon-btn"
+            aria-label="Language"
+            title="Language"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.25"/>
+              <path fill="none" stroke="currentColor" stroke-width="1.25" d="M2 8h12M8 2c1.8 1.8 2.7 3.7 2.7 6S9.8 12.2 8 14C6.2 12.2 5.3 10.3 5.3 8S6.2 3.8 8 2z"/>
+            </svg>
+          </button>
+          <ul id="langPickerMenu" class="wl-lang-menu" role="listbox" hidden></ul>
+        </div>
         <button
           type="button"
           id="endConferenceBtn"
@@ -100,6 +117,15 @@
           <span class="wl-viewer-label wl-viewer-label-first" data-i18n="chrome:viewers">Image Displays:</span>
           <button
             type="button"
+            id="openOhifBtn"
+            class="wl-viewer-btn"
+            title="Subscribe to the hub first"
+            disabled
+          >
+            OHIF
+          </button>
+          <button
+            type="button"
             id="openSlicerBtn"
             class="wl-viewer-btn"
             title="Subscribe to the hub first"
@@ -124,15 +150,6 @@
             disabled
           >
             SlicerMirror
-          </button>
-          <button
-            type="button"
-            id="openOhifBtn"
-            class="wl-viewer-btn"
-            title="Subscribe to the hub first"
-            disabled
-          >
-            OHIF
           </button>
           <button
             type="button"
@@ -195,22 +212,6 @@
           </button>
           <button
             type="button"
-            id="openTorchXrayVisionBtn"
-            class="wl-viewer-btn"
-            title="TorchXRayVision"
-          >
-            TorchXRayVision
-          </button>
-          <button
-            type="button"
-            id="openMhubBtn"
-            class="wl-viewer-btn"
-            title="MHub models"
-          >
-            MHub models
-          </button>
-          <button
-            type="button"
             id="openTotalSegmentatorBtn"
             class="wl-viewer-btn"
             title="Total Segmentator"
@@ -241,106 +242,132 @@
           >
             Dental Segmentator
           </button>
+          <button
+            type="button"
+            id="openTorchXrayVisionBtn"
+            class="wl-viewer-btn"
+            title="TorchXRayVision"
+          >
+            TorchXRayVision
+          </button>
+          <button
+            type="button"
+            id="openMhubBtn"
+            class="wl-viewer-btn"
+            title="MHub models"
+          >
+            MHub models
+          </button>
+          <button
+            type="button"
+            id="openOmiFhirBtn"
+            class="wl-viewer-btn wl-viewer-btn-end"
+            data-i18n="chrome:omiFhir"
+            data-i18n-title="chrome:omiFhirTitle"
+            title="Open Medical Inference (OMI) registry for all inference models"
+          >
+            OMI Registry
+          </button>
         </div>
       </section>
       <section class="wl-panel" aria-labelledby="worklistTitle">
         <div class="wl-panel-header">
-          <h1 id="worklistTitle" data-i18n="chrome:worklist">Worklist</h1>
-          <select
-            id="worklistOrgSelect"
-            class="wl-org-select"
-            aria-label="Worklist filter"
+          <span class="wl-panel-label" data-i18n="chrome:exploreIdc">Explore the NCI Imaging Data Commons:</span>
+          <a
+            href="https://portal.imaging.datacommons.cancer.gov/explore/"
+            class="wl-viewer-btn"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="chrome:searchPortal"
+            data-i18n-title="chrome:searchPortalTitle"
+            title="Open the IDC search portal"
           >
-            <option value="mine">My Worklist</option>
-            <option value="">All</option>
-            <option value="3d-slicer">3D Slicer</option>
-            <option value="slicer-scenes">Slicer scenes</option>
-            <option value="cbct-dental">CBCT Dental</option>
-            <option value="torchxrayvision">TorchXRayVision</option>
-            <option value="flexray" selected>FleXray</option>
-            <option value="idc-wsi">IDC - Whole Slide Imaging</option>
-            <option value="idc-category:ABDOMEN:CT">IDC · ABDOMEN · CT</option>
-            <option value="idc-category:ABDOMEN:PT">IDC · ABDOMEN · PT</option>
-            <option value="idc-category:ABDOMEN:MR">IDC · ABDOMEN · MR</option>
-            <option value="idc-category:ADRENAL">IDC · ADRENAL</option>
-            <option value="idc-category:BRAIN">IDC · BRAIN</option>
-            <option value="idc-category:BREAST:MR">IDC · BREAST · MR</option>
-            <option value="idc-category:BREAST:PT">IDC · BREAST · PT</option>
-            <option value="idc-category:CHEST:NODULES_LIDC">IDC · CHEST · Nodules (LIDC)</option>
-            <option value="idc-category:CHEST:MEDIASTINAL_LN">IDC · CHEST · Mediastinal LN</option>
-            <option value="idc-category:CHEST:NLST_TOTALSEG">IDC · CHEST · NLST (TotalSeg)</option>
-            <option value="idc-category:CHEST:AIMI_LUNG_FDG:CT">IDC · CHEST · AIMI · CT</option>
-            <option value="idc-category:CHEST:AIMI_LUNG_FDG:PT">IDC · CHEST · AIMI · PT</option>
-            <option value="idc-category:CHEST:OTHER:CT">IDC · CHEST · Other · CT</option>
-            <option value="idc-category:CHEST:OTHER:PT">IDC · CHEST · Other · PT</option>
-            <option value="idc-category:KIDNEY">IDC · KIDNEY</option>
-            <option value="idc-category:KIDNEY:KITS">IDC · KIDNEY · KiTS</option>
-            <option value="idc-category:LIVER:CT">IDC · LIVER · CT</option>
-            <option value="idc-category:LIVER:MR">IDC · LIVER · MR</option>
-            <option value="idc-category:LUNG:CT">IDC · LUNG · CT</option>
-            <option value="idc-category:LUNG:PT">IDC · LUNG · PT</option>
-            <option value="idc-category:PANCREAS">IDC · PANCREAS</option>
-            <option value="idc-category:PELVIS">IDC · PELVIS</option>
-            <option value="idc-category:PROSTATE">IDC · PROSTATE</option>
-            <option value="idc-category:WHOLEBODY">IDC · WHOLEBODY</option>
-          </select>
+            Search portal
+          </a>
           <button
             type="button"
-            id="downloadWorklistBtn"
-            class="wl-icon-btn"
-            aria-label="Download My Worklist as JSON"
-            title="Download My Worklist as JSON"
+            id="openIdcAgentBtn"
+            class="wl-viewer-btn"
+            title="Search IDC via the public REST API (no AI)"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path
-                fill="currentColor"
-                d="M8 1.5a.75.75 0 0 1 .75.75v6.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06l2.22 2.22V2.25A.75.75 0 0 1 8 1.5ZM2.75 12a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
-              />
-            </svg>
+            REST API
           </button>
           <button
             type="button"
-            id="uploadWorklistBtn"
-            class="wl-icon-btn"
-            aria-label="Upload My Worklist from JSON"
-            title="Upload My Worklist from JSON"
+            id="openIdcNlBtn"
+            class="wl-viewer-btn"
+            title="Search IDC via Anthropic on the Slicer hub"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path
-                fill="currentColor"
-                d="M8 14.5a.75.75 0 0 1-.75-.75V7.56L5.03 9.78a.75.75 0 1 1-1.06-1.06l3.5-3.5a.75.75 0 0 1 1.06 0l3.5 3.5a.75.75 0 1 1-1.06 1.06L8.75 7.56v6.19a.75.75 0 0 1-.75.75ZM2.75 2.5a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
-              />
-            </svg>
+            Claude
           </button>
           <div class="wl-panel-header-end">
-            <span class="wl-panel-label" data-i18n="chrome:exploreIdc">Explore the NCI Imaging Data Commons:</span>
-            <a
-              href="https://portal.imaging.datacommons.cancer.gov/explore/"
-              class="wl-viewer-btn"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-i18n="chrome:searchPortal"
-              data-i18n-title="chrome:searchPortalTitle"
-              title="Open the IDC search portal"
-            >
-              Search portal
-            </a>
             <button
               type="button"
-              id="openIdcAgentBtn"
-              class="wl-viewer-btn"
-              title="Search IDC via the public REST API (no AI)"
+              id="downloadWorklistBtn"
+              class="wl-icon-btn"
+              aria-label="Download My Worklist as JSON"
+              title="Download My Worklist as JSON"
             >
-              REST API
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M8 1.5a.75.75 0 0 1 .75.75v6.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06l2.22 2.22V2.25A.75.75 0 0 1 8 1.5ZM2.75 12a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
+                />
+              </svg>
             </button>
             <button
               type="button"
-              id="openIdcNlBtn"
-              class="wl-viewer-btn"
-              title="Search IDC via Anthropic on the Slicer hub"
+              id="uploadWorklistBtn"
+              class="wl-icon-btn"
+              aria-label="Upload My Worklist from JSON"
+              title="Upload My Worklist from JSON"
             >
-              Claude
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M8 14.5a.75.75 0 0 1-.75-.75V7.56L5.03 9.78a.75.75 0 1 1-1.06-1.06l3.5-3.5a.75.75 0 0 1 1.06 0l3.5 3.5a.75.75 0 1 1-1.06 1.06L8.75 7.56v6.19a.75.75 0 0 1-.75.75ZM2.75 2.5a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
+                />
+              </svg>
             </button>
+            <h1 id="worklistTitle" data-i18n="chrome:worklist">Worklist</h1>
+            <select
+              id="worklistOrgSelect"
+              class="wl-org-select"
+              aria-label="Worklist filter"
+            >
+              <option value="mine">My Worklist</option>
+              <option value="">All</option>
+              <option value="3d-slicer">3D Slicer</option>
+              <option value="slicer-scenes">Slicer scenes</option>
+              <option value="cbct-dental">CBCT Dental</option>
+              <option value="torchxrayvision">TorchXRayVision</option>
+              <option value="flexray" selected>FleXray</option>
+              <option value="idc-wsi">IDC - Whole Slide Imaging</option>
+              <option value="idc-category:ABDOMEN:CT">IDC · ABDOMEN · CT</option>
+              <option value="idc-category:ABDOMEN:PT">IDC · ABDOMEN · PT</option>
+              <option value="idc-category:ABDOMEN:MR">IDC · ABDOMEN · MR</option>
+              <option value="idc-category:ADRENAL">IDC · ADRENAL</option>
+              <option value="idc-category:BRAIN">IDC · BRAIN</option>
+              <option value="idc-category:BREAST:MR">IDC · BREAST · MR</option>
+              <option value="idc-category:BREAST:PT">IDC · BREAST · PT</option>
+              <option value="idc-category:CHEST:NODULES_LIDC">IDC · CHEST · Nodules (LIDC)</option>
+              <option value="idc-category:CHEST:MEDIASTINAL_LN">IDC · CHEST · Mediastinal LN</option>
+              <option value="idc-category:CHEST:NLST_TOTALSEG">IDC · CHEST · NLST (TotalSeg)</option>
+              <option value="idc-category:CHEST:AIMI_LUNG_FDG:CT">IDC · CHEST · AIMI · CT</option>
+              <option value="idc-category:CHEST:AIMI_LUNG_FDG:PT">IDC · CHEST · AIMI · PT</option>
+              <option value="idc-category:CHEST:OTHER:CT">IDC · CHEST · Other · CT</option>
+              <option value="idc-category:CHEST:OTHER:PT">IDC · CHEST · Other · PT</option>
+              <option value="idc-category:KIDNEY">IDC · KIDNEY</option>
+              <option value="idc-category:KIDNEY:KITS">IDC · KIDNEY · KiTS</option>
+              <option value="idc-category:LIVER:CT">IDC · LIVER · CT</option>
+              <option value="idc-category:LIVER:MR">IDC · LIVER · MR</option>
+              <option value="idc-category:LUNG:CT">IDC · LUNG · CT</option>
+              <option value="idc-category:LUNG:PT">IDC · LUNG · PT</option>
+              <option value="idc-category:PANCREAS">IDC · PANCREAS</option>
+              <option value="idc-category:PELVIS">IDC · PELVIS</option>
+              <option value="idc-category:PROSTATE">IDC · PROSTATE</option>
+              <option value="idc-category:WHOLEBODY">IDC · WHOLEBODY</option>
+            </select>
           </div>
         </div>
         <div class="wl-table-wrap">
@@ -407,44 +434,6 @@
     </div>
   </div>
 
-  <div id="sessionModal" class="wl-modal-backdrop" hidden>
-    <div class="wl-modal" role="dialog" aria-labelledby="sessionTitle">
-      <div class="wl-modal-header">
-        <h2 id="sessionTitle">Session info</h2>
-        <button type="button" class="wl-modal-close" data-close-modal aria-label="Close">×</button>
-      </div>
-      <div class="wl-modal-body">
-        <div class="wl-session-identity">
-          <div class="wl-session-identity-row">
-            <label for="sessionUserNameInput">Change user name:</label>
-            <input
-              type="text"
-              id="sessionUserNameInput"
-              class="wl-session-user-input"
-              autocomplete="username"
-            />
-            <button type="button" id="sessionChangeUserBtn" class="wl-viewer-btn">
-              OK
-            </button>
-          </div>
-          <p id="sessionChangeUserNote" class="wl-muted" hidden>
-            Saved. Reload the page to apply.
-          </p>
-        </div>
-        <dl id="sessionDl" class="wl-kv"></dl>
-        <button
-          type="button"
-          id="openConferenceTestWorklistBtn"
-          class="wl-viewer-btn"
-          title="Open another user session to test conferencing"
-          hidden
-        >
-          Open another user
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div id="helpModal" class="wl-modal-backdrop" hidden>
     <div class="wl-modal wl-help-modal" role="dialog" aria-labelledby="helpTitle">
       <div class="wl-modal-header wl-help-header">
@@ -465,6 +454,16 @@
         <button type="button" class="wl-modal-close" data-close-inference-info aria-label="Close">×</button>
       </div>
       <div id="inferenceInfoBody" class="wl-modal-body wl-inference-info-body"></div>
+    </div>
+  </div>
+
+  <div id="omiFhirModal" class="wl-modal-backdrop" hidden>
+    <div class="wl-modal wl-omi-modal" role="dialog" aria-labelledby="omiFhirTitle">
+      <div class="wl-modal-header">
+        <h2 id="omiFhirTitle">OMI Registry</h2>
+        <button type="button" class="wl-modal-close" data-close-omi-fhir aria-label="Close">×</button>
+      </div>
+      <div id="omiFhirBody" class="wl-modal-body wl-omi-body"></div>
     </div>
   </div>
 

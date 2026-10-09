@@ -349,6 +349,31 @@ button {
   overflow: visible;
 }
 
+.hub-conference-user-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hub-conference-user-row .hub-conference-label {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.hub-conference-user-row .hub-conference-user-input {
+  flex: 1 1 auto;
+  width: 8.5rem;
+  max-width: 10rem;
+  min-width: 5.5rem;
+}
+
+.hub-conference-user-row #sessionChangeUserBtn {
+  flex: 0 0 auto;
+}
+
 .hub-conference-session-row {
   display: flex;
   align-items: center;
@@ -1500,6 +1525,207 @@ a.wl-viewer-btn {
 
 .wl-mhub-model-link:hover {
   text-decoration: underline;
+}
+
+/* ---- OMI FHIR algorithm registry ---- */
+.wl-omi-modal {
+  width: min(920px, 100%);
+  max-height: min(85vh, 720px);
+  display: flex;
+  flex-direction: column;
+}
+
+.wl-omi-body {
+  padding: 0;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.wl-omi-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  gap: 0;
+  min-height: 420px;
+  max-height: min(70vh, 600px);
+}
+
+.wl-omi-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-right: 1px solid var(--wl-border);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.wl-omi-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wl-omi-search,
+.wl-omi-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--wl-border);
+  background: var(--wl-surface, var(--wl-bg));
+  color: var(--wl-fg);
+  font-size: 12px;
+}
+
+.wl-omi-count {
+  margin: 0;
+  font-size: 11px;
+  color: var(--wl-fg-muted);
+}
+
+.wl-omi-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--wl-border);
+  border-radius: 5px;
+}
+
+.wl-omi-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--wl-border);
+  cursor: pointer;
+}
+
+.wl-omi-list-item:last-child {
+  border-bottom: 0;
+}
+
+.wl-omi-list-item:hover {
+  background: var(--wl-surface-hover, rgba(127, 127, 127, 0.08));
+}
+
+.wl-omi-list-item-active {
+  background: var(--wl-surface-hover, rgba(37, 99, 235, 0.12));
+}
+
+.wl-omi-list-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--wl-fg);
+  line-height: 1.3;
+}
+
+.wl-omi-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.wl-omi-pill {
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--wl-border);
+  color: var(--wl-fg-muted);
+  background: var(--wl-surface, var(--wl-bg));
+}
+
+.wl-omi-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.wl-omi-detail-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--wl-fg);
+}
+
+.wl-omi-detail-sub,
+.wl-omi-detail-desc,
+.wl-omi-detail-links,
+.wl-omi-detail-profiles {
+  margin: 0;
+  font-size: 12px;
+  color: var(--wl-fg-muted);
+  line-height: 1.4;
+}
+
+.wl-omi-detail-profiles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  word-break: break-all;
+}
+
+.wl-omi-detail-profiles code {
+  font-size: 11px;
+}
+
+.wl-omi-detail-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.wl-omi-copy-btn {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--wl-border);
+  background: var(--wl-surface, var(--wl-bg));
+  color: var(--wl-fg);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.wl-omi-copy-btn:hover {
+  border-color: var(--wl-accent, #2563eb);
+}
+
+.wl-omi-json {
+  margin: 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--wl-border);
+  background: var(--wl-surface, rgba(0, 0, 0, 0.04));
+  color: var(--wl-fg);
+  font-size: 11px;
+  line-height: 1.4;
+  overflow: auto;
+  white-space: pre;
+  max-height: none;
+}
+
+.wl-omi-empty {
+  margin: 0;
+  padding: 12px;
+  font-size: 12.5px;
+  color: var(--wl-fg-muted);
+}
+
+@media (max-width: 720px) {
+  .wl-omi-layout {
+    grid-template-columns: 1fr;
+    max-height: min(75vh, 640px);
+  }
+
+  .wl-omi-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--wl-border);
+    max-height: 40%;
+  }
 }
 
 .wl-mhub-empty {

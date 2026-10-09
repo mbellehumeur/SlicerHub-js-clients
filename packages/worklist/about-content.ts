@@ -58,11 +58,11 @@ const ABOUT_SAMPLE_DATA_ACK_HTML = `
 
 const ABOUT_RESOURCE_SERVERS_ACK_HTML = `
   <div class="about-disclaimer">
-    <h4>Resource servers acknowledgement</h4>
+    <h4>Service providers acknowledgement</h4>
     <p><strong>TotalSegmentator</strong> was created by the Department of Research and Analysis at University Hospital Basel. If you use it, please cite our Radiology: Artificial Intelligence paper (<a href="${escapeHtml(TOTALSEG_CT_PAPER_URL)}" target="_blank" rel="noopener noreferrer">free preprint</a>). If you use it for MR images, please cite the TotalSegmentator MRI <em>Radiology</em> paper (<a href="${escapeHtml(TOTALSEG_MRI_PAPER_URL)}" target="_blank" rel="noopener noreferrer">free preprint</a>).</p>
     <p><strong>nnU-Net</strong> &mdash; TotalSegmentator is heavily based on nnU-Net; (<a href="${escapeHtml(NNUNET_PAPER_URL)}" target="_blank" rel="noopener noreferrer">preprint</a>).</p>
     <p><strong>IDC Claude / NL search</strong> &mdash; Anthropic on the Slicer hub translates natural-language IDC requests into a structured SearchQuery; the worklist executes it against the public IDC REST API. Query guidance follows the <a href="${escapeHtml(IDC_AGENT_URL)}" target="_blank" rel="noopener noreferrer">IDC AI assistants</a> docs.</p>
-    <p><strong>idc-index</strong> &mdash; official Imaging Data Commons Python package for local DuckDB SQL against IDC metadata and DICOM series download URLs; used by the IDC Claude resource server. If you use it in research, cite Fedorov A, et al., <em>Radiographics</em> (<a href="${escapeHtml(IDC_PAPER_URL)}" target="_blank" rel="noopener noreferrer">2023</a>). See also <a href="${escapeHtml(IDC_INDEX_URL)}" target="_blank" rel="noopener noreferrer">idc-index</a>.</p>
+    <p><strong>idc-index</strong> &mdash; official Imaging Data Commons Python package for local DuckDB SQL against IDC metadata and DICOM series download URLs; used by the IDC Claude service provider. If you use it in research, cite Fedorov A, et al., <em>Radiographics</em> (<a href="${escapeHtml(IDC_PAPER_URL)}" target="_blank" rel="noopener noreferrer">2023</a>). See also <a href="${escapeHtml(IDC_INDEX_URL)}" target="_blank" rel="noopener noreferrer">idc-index</a>.</p>
   </div>`;
 
 const ABOUT_TRADEMARK_HTML = `

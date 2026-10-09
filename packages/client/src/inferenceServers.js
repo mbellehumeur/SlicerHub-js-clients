@@ -1,4 +1,4 @@
-/** Known Hub medical-inference / resource-server products (UI catalog + wire names). */
+/** Known Hub medical-inference / service-provider products (UI catalog + wire names). */
 
 import {
   DENTAL_SEG_PRODUCT_ALIASES,

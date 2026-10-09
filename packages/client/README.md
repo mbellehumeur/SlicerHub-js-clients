@@ -76,8 +76,8 @@ npm run build
 
 Output: `dist/hub-client.js` (ESM), `dist/hub-client.cjs` (CJS), `dist/index.d.ts`.
 
-Inference server catalog copy lives next to each resource-server script as
-`HubInterface/resource_servers/products/*.info.json`. `npm run build` (or
+Inference server catalog copy lives next to each service-provider script as
+`HubInterface/service_providers/products/*.info.json`. `npm run build` (or
 `npm run sync:inference-info`) copies those into `src/inferenceInfo/` for the published package.
 
 ## Protocol parity

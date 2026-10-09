@@ -307,6 +307,31 @@ button {
   overflow: visible;
 }
 
+.hub-conference-user-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hub-conference-user-row .hub-conference-label {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.hub-conference-user-row .hub-conference-user-input {
+  flex: 1 1 auto;
+  width: 8.5rem;
+  max-width: 10rem;
+  min-width: 5.5rem;
+}
+
+.hub-conference-user-row #sessionChangeUserBtn {
+  flex: 0 0 auto;
+}
+
 .hub-conference-session-row {
   display: flex;
   align-items: center;

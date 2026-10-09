@@ -10,6 +10,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientRoot = path.resolve(__dirname, '..');
 const repoRoot = path.resolve(clientRoot, '../..');
 const candidates = [
+  path.resolve(repoRoot, '../SlicerHub/HubInterface/service_providers/products'),
+  // Legacy fallbacks (pre-rename / Cast trees)
   path.resolve(repoRoot, '../SlicerHub/HubInterface/resource_servers/products'),
   path.resolve(repoRoot, '../slicer-cast-extension/CastInterface/cast_resource_servers/products'),
   path.resolve(repoRoot, '../cast-interface/slicer-cast-extension/CastInterface/cast_resource_servers/products'),

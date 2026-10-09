@@ -227,6 +227,22 @@
       "collection": "cmb_mml"
     },
     {
+      "id": "flexray-lspine-ap-cr",
+      "name": "L-spine AP · CR",
+      "description": "IDC cmb_mml · CR lumbar spine AP",
+      "format": "DICOM",
+      "modalities": [
+        "CR"
+      ],
+      "openMode": "idc",
+      "size": "8 MB",
+      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.109132742163931305780691716759",
+      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.289315498490798465477159944500",
+      "ctCrdc": "57bdf0c6-b647-4785-8873-74f1baa5ee9d",
+      "bucket": "idc-open-data",
+      "collection": "cmb_mml"
+    },
+    {
       "id": "flexray-tspine-lat-cr",
       "name": "T-spine LAT · CR",
       "description": "IDC cmb_mml · CR thoracic spine LAT",
@@ -271,22 +287,6 @@
       "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.228103635981786054347985760994782249539",
       "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.164612601394804586403360289159666509839",
       "ctCrdc": "56b8477c-4621-42b7-a08a-81fc4a0704fc",
-      "bucket": "idc-open-data",
-      "collection": "varepop_apollo"
-    },
-    {
-      "id": "flexray-knee-ap-cr",
-      "name": "Knee AP · CR",
-      "description": "IDC varepop_apollo · CR knee",
-      "format": "DICOM",
-      "modalities": [
-        "CR"
-      ],
-      "openMode": "idc",
-      "size": "79 MB",
-      "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.26042986751353543241559186504978113124",
-      "seriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.21941318645131582935505228063531101134",
-      "ctCrdc": "cb164fbb-dee9-4f5d-8fe5-54d6807121a8",
       "bucket": "idc-open-data",
       "collection": "varepop_apollo"
     },

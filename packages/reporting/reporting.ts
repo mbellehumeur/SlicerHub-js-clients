@@ -2,7 +2,6 @@ import {
   createHubConferenceDialog,
   createHubConferenceInviteController,
   deleteHubConference,
-  openHubConferenceParticipantsPopup,
   shouldShowConferenceInvite,
   showHubInfoToast,
 } from '@slicer-hub/client';
@@ -52,7 +51,6 @@ import {
 } from './hub';
 import {
   getStoredTheme,
-  getStoredUserName,
   REPORTING_ACTOR,
   setStoredTheme,
   setStoredUserName,
@@ -61,7 +59,6 @@ import {
 } from './config';
 import {
   closeMenus,
-  fillSessionInfo,
   mountSegOpacityChip,
   mountSegmentOpacityChips,
   mountVolOpacityChip,
@@ -259,46 +256,17 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
   });
 }
 
-function wireMenus(state: AppState): {
-  onSessionControlClick: (btn: HTMLElement) => void;
-} {
+function wireMenus(_state: AppState): void {
   const settingsBtn = document.getElementById(
     'castSettingsBtn'
   ) as HTMLButtonElement;
   const settingsMenu = document.getElementById(
     'castSettingsMenu'
   ) as HTMLElement;
-  const sessionModal = document.getElementById('sessionModal') as HTMLElement;
   const aboutModal = document.getElementById('aboutModal') as HTMLElement;
-  const sessionDl = document.getElementById('sessionDl') as HTMLElement;
 
   const closeAllMenus = () => {
     closeMenus(settingsMenu);
-  };
-
-  const onSessionControlClick = (btn: HTMLElement) => {
-    closeAllMenus();
-    settingsBtn.setAttribute('aria-expanded', 'false');
-    const view = state.conference;
-    if (view?.places?.length) {
-      openHubConferenceParticipantsPopup({
-        anchor: btn,
-        view,
-        followHost: Boolean(state.conferenceFollowHost),
-        classPrefix: 'rp-conference',
-      });
-      return;
-    }
-    fillSessionInfo(sessionDl, state);
-    const note = document.getElementById('sessionChangeUserNote');
-    if (note) note.hidden = true;
-    const input = document.getElementById(
-      'sessionUserNameInput'
-    ) as HTMLInputElement | null;
-    if (input) {
-      input.value = state.userName || getStoredUserName() || '';
-    }
-    sessionModal.hidden = false;
   };
 
   settingsBtn.addEventListener('click', (ev) => {
@@ -355,12 +323,9 @@ function wireMenus(state: AppState): {
 
   document.querySelectorAll('[data-close-modal]').forEach((el) => {
     el.addEventListener('click', () => {
-      sessionModal.hidden = true;
       aboutModal.hidden = true;
     });
   });
-
-  return { onSessionControlClick };
 }
 
 function boot(): void {
@@ -408,7 +373,6 @@ function boot(): void {
   let inviteController: ReturnType<
     typeof createHubConferenceInviteController
   > | null = null;
-  let sessionControlClick: ((btn: HTMLElement) => void) | null = null;
   let openConferenceDialog = (
     _anchor?: HTMLElement | null
   ): void => {
@@ -430,9 +394,6 @@ function boot(): void {
       },
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
-      },
-      onSessionControlClick: (btn) => {
-        sessionControlClick?.(btn);
       },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());
@@ -565,7 +526,7 @@ function boot(): void {
       });
   });
 
-  sessionControlClick = wireMenus(state).onSessionControlClick;
+  wireMenus(state);
   wireViewerButtons(state);
   wireReportDisplay(state, reportDisplay);
   updateConnectionStatusUi(statusWrap, state);
