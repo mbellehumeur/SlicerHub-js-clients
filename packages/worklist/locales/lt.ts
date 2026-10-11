@@ -41,31 +41,50 @@ export const lt: LocaleBundle = {
     aboutLinkSuffix: '— licencijos, padėkos ir prekių ženklai.',
     quickStartTitle: 'Greita pradžia:',
     quickStartBody:
-      'Dešinėje spustelėkite vieną mygtukų {{open}}, kad peržiūrėtumėte tyrimą 3D ir MPR.',
-    introHtml:
-      `
+      'Dešinėje spustelėkite vieną mygtukų {{open}}, kad atidarytumėte CR ir naudotumėte magijos lazdelės piktogramą {{magicWand}} FleXray paleisti.',
+    introHtml: `
         <p>
-          Pradinė šios programos paskirtis – būti «worklist client» aktoriumi atvirojo kodo 
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a> sistemoje. Sistema skirta skatinti, mokyti, kurti ir demonstruoti medicininio vaizdavimo programų sąveiką.
+          Pirminis šios programos tikslas – būti «worklist client» aktoriumi atvirojo kodo
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          ir
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          sistemoje, esančioje 3D Slicer plėtinyje pavadinimu
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub teikia pranešimų infrastruktūrą ir siekia skatinti, mokyti, plėtoti bei
+          demonstruoti sąveikumą medicininio vaizdinimo programose.
         </p>
-        <p>Todėl programa yra sistemos komponentas (<strong>WORKLIST_CLIENT actor</strong>), apimantis:</p>
+        <p>Todėl programa yra komponentas (<strong>WORKLIST_CLIENT actor</strong>) sistemoje, kuri apima:</p>
         <ul class="wl-help-steps">
-          <li>WebSub hubą (<strong>HUB actor</strong>) komunikacijai tarp programų ir naudotojų</li>
-          <li>atvirojo kodo medicininio vaizdavimo peržiūros programas (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>atvirojo kodo inferencijos modelius (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>WebSub centrą (<strong>HUB actor</strong>) ryšiui tarp programų ir naudotojų</li>
+          <li>atvirojo kodo medicininio vaizdinimo peržiūros programas (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>atvirojo kodo medicininio vaizdinimo inferencijos modelius (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>DICOM SR ataskaitų pavyzdį (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> ir <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB kaip tik skaitymo archyvus (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>autentifikavimo / tapatybės teikėją su integracija į hub OIDC galinius taškus arba įmontuotą hub anoniminę/mock autentifikaciją</li>
+          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> ir <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB kaip tik skaitymui skirtus archyvus (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>autentifikavimo / tapatybės teikėją su integracija į centro OIDC galinius taškus arba įmontuotą anoniminę/mock autentifikaciją</li>
         </ul>
         <p>
-          Programa taip pat turi anatomijos ir patologijos mokymo funkcijas, nepriklausomas nuo IHE darbo eigos:
+          Sistema taip pat apima švietimo funkcijas, nepriklausomas nuo IHE
+          Integrated Reporting darbo eigos:
         </p>
         <ul class="wl-help-steps">
-          <li>mokomųjų failų ir kohortų kūrimą, saugojimą ir įkėlimą</li>
-          <li>konferenciją bendram peržiūrėjimui ir mokymui</li>
-          <li>laikiną teptuką trumpoms pastaboms konferencijos metu</li>
-          <li>STL eksportą 3D spausdinimui</li>
+          <li>mokymo failų ir kohortų kūrimas, išsaugojimas ir įkėlimas pamokų ruošimui</li>
+          <li>konferencija bendram peržiūrėjimui ir mokymui</li>
+          <li>nykstančio teptuko įrankis laikinoms anotacijoms konferencijos metu</li>
+          <li>STL eksportas 3D spausdinimui</li>
         </ul>
+        <p>
+          Taip pat teikiamos tyrimų ir 3D Slicer funkcijos, nepriklausomos nuo IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>failų perdavimas tarp programų</li>
+          <li>medicininės realybės scenos ir komunikacija</li>
+          <li>Slicer Qt Image Display klientas</li>
+          <li>prieiga prie Slicer DICOM DB</li>
+        </ul>
+        <p>
+          Failų perdavimas leidžia inferencijos serveriams siųsti rezultatus tiesiai į peržiūros programas
+          neišsaugant jų iš pradžių PACS. Taip pat palaikomi tyrimų formatai, pvz., NIfTI, NRRD ir Zarr.
+        </p>
     `,
     howto0Title: 'Kaip prijungti SlicerWorklist prie 3D Slicer.',
     howto0Body:
@@ -115,14 +134,14 @@ export const lt: LocaleBundle = {
       <ol class="wl-help-steps">
         <li>Atidarykite worklist ir spustelėkite <strong>Konferencija</strong> viršuje dešinėje.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive antraštė su paryškinta konferencija" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive antraštė su paryškinta Konferencija" width="477" height="117" />
         </li>
         <li>Kaip šeimininkas spustelėkite <strong>Konferencija</strong> (worklist antraštė arba SlicerLive juosta). Pasirinkite pavadinimą ir sukurkite — tampate <strong>leading</strong> vieta.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Sukurti konferenciją: pavadinimo laukas ir mygtukas Sukurti" width="167" height="192" />
+          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Sukurti konferenciją: pavadinimo laukas ir mygtukas Sukurti konferenciją" width="167" height="192" />
         </li>
-        <li>Vadovaujant, SlicerLive pakeitimai (išdėstymas, langas/lygis, segmentų matomumas, kamera, MPR, laikinas markeris ir pan.) siunčiami sekėjams.</li>
-        <li>Vadovaujant naudokite klavišą <strong>B</strong>, kad įjungtumėte/išjungtumėte laikiną markerį.</li>
+        <li>Vadovaujant SlicerLive pakeitimai (išdėstymas, langas/lygis, segmentų matomumas, kamera, MPR slinkimas/pan/zoom, nykstantis rašalas ir panašūs scenos atnaujinimai) perduodami sekėjams.</li>
+        <li>Galite <strong>Baigti konferenciją</strong> visiems. Vadovaujant naudokite klavišą <strong>B</strong>, kad įjungtumėte/išjungtumėte nykstantį rašalą.</li>
         <li>Konferenciją galite išbandyti viename kompiuteryje mygtuku <strong>Open another user</strong>. Demonstracinis vaizdo įrašas: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

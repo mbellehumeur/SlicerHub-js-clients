@@ -41,31 +41,50 @@ export const pl: LocaleBundle = {
     aboutLinkSuffix: '— licencje, podziękowania i znaki towarowe.',
     quickStartTitle: 'Szybki start:',
     quickStartBody:
-      'Kliknij jeden z przycisków {{open}} po prawej, aby wyświetlić badanie w 3D i MPR.',
+      'Kliknij jeden z przycisków {{open}} po prawej, aby otworzyć CR i użyć ikony magicznej różdżki {{magicWand}}, aby uruchomić FleXray.',
     introHtml: `
         <p>
           Pierwotnym celem tej aplikacji jest bycie aktorem «worklist client» w open-source’owym systemie
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>.
-          System ma wspierać promocję, szkolenia, rozwój i demonstrację interoperacyjności w aplikacjach obrazowania medycznego.
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          oraz
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>,
+          który znajduje się w rozszerzeniu 3D Slicer o nazwie
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub zapewnia infrastrukturę komunikatów i ma na celu promowanie, szkolenie, rozwijanie oraz
+          demonstrowanie interoperacyjności w aplikacjach obrazowania medycznego.
         </p>
-        <p>Aplikacja jest więc komponentem (<strong>WORKLIST_CLIENT actor</strong>) systemu, który obejmuje:</p>
+        <p>Aplikacja jest zatem komponentem (<strong>WORKLIST_CLIENT actor</strong>) systemu, który obejmuje:</p>
         <ul class="wl-help-steps">
           <li>hub WebSub (<strong>HUB actor</strong>) do komunikacji między aplikacjami i użytkownikami</li>
           <li>open-source’owe przeglądarki obrazowania medycznego (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>open-source’owe modele wnioskowania (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>open-source’owe modele wnioskowania obrazowania medycznego (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>przykład reportingu DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
           <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> oraz bazę DICOM <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> jako archiwa tylko do odczytu (<strong>IMAGE_ARCHIVE actor</strong>)</li>
           <li>dostawcę uwierzytelniania / tożsamości z integracją z endpointami OIDC huba lub wbudowanym anonimowym/mock uwierzytelnianiem huba</li>
         </ul>
         <p>
-          Aplikacja zawiera także funkcje edukacji anatomii i patologii niezależne od workflow IHE:
+          System obejmuje także funkcje edukacyjne niezależne od przepływu IHE
+          Integrated Reporting:
         </p>
         <ul class="wl-help-steps">
-          <li>tworzenie, zapisywanie i przesyłanie plików dydaktycznych oraz kohort</li>
-          <li>konferencję do wspólnego przeglądania i nauczania</li>
-          <li>tymczasowy pędzel do krótkich adnotacji podczas konferencji</li>
+          <li>tworzenie, zapisywanie i przesyłanie plików dydaktycznych oraz kohort do przygotowania zajęć</li>
+          <li>konferencje do wspólnego przeglądania i nauczania</li>
+          <li>narzędzie znikającego pędzla do tymczasowych adnotacji podczas konferencji</li>
           <li>eksport STL do druku 3D</li>
         </ul>
+        <p>
+          Dostępne są także funkcje badawcze i 3D Slicer, również niezależne od IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>transfer plików między aplikacjami</li>
+          <li>sceny rzeczywistości medycznej i komunikacja</li>
+          <li>klient Slicer Qt Image Display</li>
+          <li>dostęp do bazy DICOM Slicera</li>
+        </ul>
+        <p>
+          Transfer plików pozwala serwerom wnioskowania odsyłać wyniki bezpośrednio do przeglądarek
+          bez wcześniejszego zapisu w PACS. Obsługuje też formaty badawcze takie jak NIfTI, NRRD i Zarr.
+        </p>
     `,
     howto0Title: 'Jak połączyć SlicerWorklist z 3D Slicer.',
     howto0Body: `
@@ -114,14 +133,14 @@ export const pl: LocaleBundle = {
       <ol class="wl-help-steps">
         <li>Otwórz worklistę i kliknij <strong>Konferencja</strong> w prawym górnym rogu.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Nagłówek SlicerLive z podświetloną konferencją" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Nagłówek SlicerLive z wyróżnioną Konferencją" width="477" height="117" />
         </li>
-        <li>Jako host kliknij <strong>Konferencja</strong> (nagłówek worklisty lub pasek SlicerLive). Wybierz tytuł i utwórz — stajesz się miejscem <strong>leading</strong>.</li>
+        <li>Jako gospodarz kliknij <strong>Konferencja</strong> (nagłówek worklisty lub pasek SlicerLive). Wybierz tytuł i utwórz — stajesz się miejscem <strong>leading</strong>.</li>
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Utwórz konferencję: pole tytułu i przycisk Utwórz konferencję" width="167" height="192" />
         </li>
-        <li>Gdy prowadzisz, zmiany w SlicerLive (układ, okno/poziom, widoczność segmentów, kamera, MPR, znikający marker itd.) są wysyłane do śledzących.</li>
-        <li>Gdy prowadzisz, użyj klawisza <strong>B</strong>, aby włączyć/wyłączyć znikający marker.</li>
+        <li>Podczas prowadzenia zmiany w SlicerLive (układ, okno/poziom, widoczność segmentów, kamera, przewijanie/pan/zoom MPR, znikający atrament i podobne aktualizacje sceny) są rozsyłane do obserwujących.</li>
+        <li>Możesz <strong>Zakończyć konferencję</strong> dla wszystkich. Podczas prowadzenia użyj klawisza <strong>B</strong>, aby włączyć/wyłączyć znikający atrament.</li>
         <li>Możesz przetestować konferencję na jednym pulpicie przyciskiem <strong>Open another user</strong>. Zobacz film demonstracyjny: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

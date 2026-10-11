@@ -41,31 +41,50 @@ export const lv: LocaleBundle = {
     aboutLinkSuffix: '— licences, pateicības un preču zīmes.',
     quickStartTitle: 'Ātrais sākums:',
     quickStartBody:
-      'Noklikšķiniet uz vienas no {{open}} pogām labajā pusē, lai skatītu pētījumu 3D un MPR.',
-    introHtml:
-      `
+      'Noklikšķiniet uz vienas no {{open}} pogām labajā pusē, lai atvērtu CR un izmantotu burvju nūjiņas ikonu {{magicWand}}, lai palaistu FleXray.',
+    introHtml: `
         <p>
-          Šīs lietotnes sākotnējais mērķis ir būt «worklist client» aktoram atvērtā pirmkoda 
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a> sistēmā. Sistēma atbalsta interoperabilitātes veicināšanu, apmācību, izstrādi un demonstrēšanu medicīniskās attēlošanas lietotnēs.
+          Šīs lietotnes sākotnējais mērķis ir būt «worklist client» aktoram atvērtā pirmkoda
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          un
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          sistēmā, kas atrodas 3D Slicer paplašinājumā ar nosaukumu
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub nodrošina ziņojumapmaiņas infrastruktūru un tiecas veicināt, apmācīt, attīstīt un
+          demonstrēt savietojamību medicīniskās attēlveidošanas lietotnēs.
         </p>
-        <p>Tādēļ lietotne ir sistēmas komponents (<strong>WORKLIST_CLIENT actor</strong>), kas ietver:</p>
+        <p>Tādēļ lietotne ir komponents (<strong>WORKLIST_CLIENT actor</strong>) sistēmā, kas ietver:</p>
         <ul class="wl-help-steps">
-          <li>WebSub hubu (<strong>HUB actor</strong>) komunikācijai starp lietotnēm un lietotājiem</li>
-          <li>atvērtā pirmkoda medicīniskās attēlošanas skatītājus (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>atvērtā pirmkoda secinājumu modeļus (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>WebSub centrmezglu (<strong>HUB actor</strong>) saziņai starp lietotnēm un lietotājiem</li>
+          <li>atvērtā pirmkoda medicīniskās attēlveidošanas skatītājus (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>atvērtā pirmkoda medicīniskās attēlveidošanas secinājumu modeļus (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>DICOM SR atskaišu piemēru (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> un <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM datubāzi kā tikai lasāmus arhīvus (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>autentifikācijas / identitātes sniedzēju ar integrāciju hub OIDC galapunktos vai iebūvētu hub anonīmo/mock autentifikāciju</li>
+          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> un <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB kā tikai lasāmus arhīvus (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>autentifikācijas / identitātes nodrošinātāju ar integrāciju hub OIDC galapunktos vai iebūvētu anonīmu/mock autentifikāciju</li>
         </ul>
         <p>
-          Lietotne ietver arī anatomijas un patoloģijas mācību funkcijas, kas nav saistītas ar IHE darbplūsmu:
+          Sistēma ietver arī izglītības funkcijas, kas ir neatkarīgas no IHE
+          Integrated Reporting darba plūsmas:
         </p>
         <ul class="wl-help-steps">
-          <li>mācību failu un kohortu izveidi, saglabāšanu un augšupielādi</li>
-          <li>konferenci kopīgai skatīšanai un mācībām</li>
-          <li>pagaidu otu īsām piezīmēm konferences laikā</li>
-          <li>STL eksportu 3D drukāšanai</li>
+          <li>mācību failu un kohortu izveide, saglabāšana un augšupielāde nodarbību sagatavošanai</li>
+          <li>konference kopīgai skatīšanai un mācīšanai</li>
+          <li>izzūdoša otas rīks īslaicīgām anotācijām konferences laikā</li>
+          <li>STL eksportēšana 3D drukai</li>
         </ul>
+        <p>
+          Tiek nodrošinātas arī pētniecības un 3D Slicer funkcijas, neatkarīgas no IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>failu pārsūtīšana starp lietotnēm</li>
+          <li>medicīniskās realitātes ainas un komunikācija</li>
+          <li>Slicer Qt Image Display klients</li>
+          <li>piekļuve Slicer DICOM DB</li>
+        </ul>
+        <p>
+          Failu pārsūtīšana ļauj secinājumu serveriem nosūtīt rezultātus tieši skatītājiem
+          bez iepriekšējas saglabāšanas PACS. Tā atbalsta arī pētniecības formātus, piemēram, NIfTI, NRRD un Zarr.
+        </p>
     `,
     howto0Title: 'Kā savienot SlicerWorklist ar 3D Slicer.',
     howto0Body:
@@ -113,16 +132,16 @@ export const lv: LocaleBundle = {
     howto2Title: 'Kā izveidot konferenci.',
     howto2Body: `
       <ol class="wl-help-steps">
-        <li>Atveriet worklist un noklikšķiniet uz <strong>Konference</strong> augšā pa labi.</li>
+        <li>Atveriet worklist un noklikšķiniet uz <strong>Konference</strong> augšējā labajā stūrī.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive galvene ar izceltu konferenci" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive galvene ar izcelto Konferenci" width="477" height="117" />
         </li>
-        <li>Kā saimnieks noklikšķiniet <strong>Konference</strong> (worklist galvene vai SlicerLive josla). Izvēlieties nosaukumu un izveidojiet — jūs kļūstat par <strong>leading</strong> vietu.</li>
+        <li>Kā saimnieks noklikšķiniet uz <strong>Konference</strong> (worklist galvene vai SlicerLive josla). Izvēlieties virsrakstu un izveidojiet — kļūstat par <strong>leading</strong> vietu.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Izveidot konferenci: nosaukuma lauks un poga Izveidot konferenci" width="167" height="192" />
+          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Izveidot konferenci: virsraksta lauks un poga Izveidot konferenci" width="167" height="192" />
         </li>
-        <li>Vadot, SlicerLive izmaiņas (izkārtojums, logs/līmenis, segmentu redzamība, kamera, MPR, pagaidu marķieris u.c.) tiek nosūtītas sekotājiem.</li>
-        <li>Vadot, izmantojiet taustiņu <strong>B</strong>, lai ieslēgtu/izslēgtu pagaidu marķieri.</li>
+        <li>Vadot izmaiņas SlicerLive (izkārtojums, logs/līmenis, segmentu redzamība, kamera, MPR ritināšana/pan/zoom, izzūdoša tinte un līdzīgi ainas atjauninājumi) tiek izplatītas sekotājiem.</li>
+        <li>Varat <strong>Beigt konferenci</strong> visiem. Vadot izmantojiet taustiņu <strong>B</strong>, lai ieslēgtu/izslēgtu izzūdošo tinti.</li>
         <li>Varat pārbaudīt konferenci vienā datorā ar pogu <strong>Open another user</strong>. Demonstrācijas video: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

@@ -41,31 +41,50 @@ export const ar: LocaleBundle = {
     aboutLinkSuffix: '— التراخيص والإقرارات والعلامات التجارية.',
     quickStartTitle: 'بداية سريعة:',
     quickStartBody:
-      'انقر أحد أزرار {{open}} على اليمين لعرض دراسة بتقنية 3D وMPR.',
+      'انقر أحد أزرار {{open}} على اليمين لفتح CR واستخدام أيقونة العصا السحرية {{magicWand}} لتشغيل FleXray.',
     introHtml: `
         <p>
-          الغرض الأصلي من هذا التطبيق أن يكون ممثلاً «عميل قائمة العمل» في نظام مفتوح المصدر لـ
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>.
-          يهدف النظام إلى دعم الترويج والتدريب والتطوير وإظهار قابلية التشغيل البيني في تطبيقات التصوير الطبي.
+          الغرض الأصلي من هذا التطبيق أن يكون ممثلاً «worklist client» في نظام مفتوح المصدر لـ
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          و
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          موجود في امتداد 3D Slicer يُدعى
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          يوفّر Slicer Hub بنية المراسلة ويهدف إلى تعزيز وتدريب وتطوير
+          وإظهار قابلية التشغيل البيني في تطبيقات التصوير الطبي.
         </p>
-        <p>لذلك يعد التطبيق مكوّناً (<strong>WORKLIST_CLIENT actor</strong>) من نظام يشمل:</p>
+        <p>لذلك يُعد التطبيق مكوّناً (<strong>WORKLIST_CLIENT actor</strong>) من نظام يشمل:</p>
         <ul class="wl-help-steps">
-          <li>مركزاً WebSub (<strong>HUB actor</strong>) للتواصل بين التطبيقات والمستخدمين</li>
+          <li>محور WebSub (<strong>HUB actor</strong>) للتواصل بين التطبيقات والمستخدمين</li>
           <li>عارضات تصوير طبي مفتوحة المصدر (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>نماذج استدلال مفتوحة المصدر (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>نماذج استدلال للتصوير الطبي مفتوحة المصدر (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>مثالاً لتقارير DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> وقاعدة DICOM في <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> كأرشيفات للقراءة فقط (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>موفّر مصادقة / هوية مع تكامل نقاط OIDC للمركز أو مصادقة مجهولة/وهمية مدمجة في المركز</li>
+          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> وقاعدة DICOM لـ <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> كأرشيفات للقراءة فقط (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>موفّر مصادقة / هوية مع تكامل لنقاط OIDC الخاصة بالمحور أو المصادقة المجهولة/الوهمية المدمجة</li>
         </ul>
         <p>
-          يتضمن التطبيق أيضاً ميزات لتعليم التشريح والأمراض مستقلة عن سير عمل IHE:
+          يتضمن النظام أيضاً ميزات تعليمية مستقلة عن سير عمل IHE
+          Integrated Reporting:
         </p>
         <ul class="wl-help-steps">
-          <li>إنشاء ملفات و مجموعات تعليمية وحفظها ورفعها</li>
-          <li>مؤتمرات للعرض والتعليم التعاوني</li>
-          <li>أداة فرشاة مؤقتة للتعليقات أثناء المؤتمر</li>
-          <li>تصدير إلى STL للطباعة ثلاثية الأبعاد</li>
+          <li>إنشاء ملفات تعليمية ومجموعات وحفظها ورفعها لتحضير الدروس</li>
+          <li>مؤتمر للعرض والتدريس التعاوني</li>
+          <li>أداة فرشاة متلاشية للتوضيحات المؤقتة أثناء المؤتمر</li>
+          <li>تصدير STL للطباعة ثلاثية الأبعاد</li>
         </ul>
+        <p>
+          كما تُوفَّر وظائف بحث و3D Slicer مستقلة عن IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>نقل الملفات بين التطبيقات</li>
+          <li>مشاهد وواقع طبي واتصالات</li>
+          <li>عميل Slicer Qt Image Display</li>
+          <li>الوصول إلى قاعدة DICOM في Slicer</li>
+        </ul>
+        <p>
+          يتيح نقل الملفات لخوادم الاستدلال إرسال نتائجها مباشرة إلى العارضات
+          دون تخزينها أولاً في PACS. ويدعم أيضاً تنسيقات بحث مثل NIfTI وNRRD وZarr.
+        </p>
     `,
     howto0Title: 'كيفية ربط SlicerWorklist بـ 3D Slicer.',
     howto0Body: `
@@ -112,16 +131,16 @@ export const ar: LocaleBundle = {
     howto2Title: 'كيفية إنشاء مؤتمر.',
     howto2Body: `
       <ol class="wl-help-steps">
-        <li>افتح قائمة العمل وانقر <strong>المؤتمرات</strong> أعلى اليمين.</li>
+        <li>افتح قائمة العمل وانقر <strong>المؤتمر</strong> في أعلى اليمين.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="شريط SlicerLive مع تمييز المؤتمرات" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="رأس SlicerLive مع تمييز المؤتمر" width="477" height="117" />
         </li>
-        <li>كمضيف، انقر <strong>المؤتمرات</strong> (شريط قائمة العمل أو شريط SlicerLive). اختر عنواناً وأنشئ — تصبح المكان <strong>القائد</strong>.</li>
+        <li>كمضيف، انقر <strong>المؤتمر</strong> (رأس قائمة العمل أو شريط SlicerLive). اختر عنواناً وأنشئه — تصبح المكان <strong>leading</strong>.</li>
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="إنشاء مؤتمر: حقل العنوان وزر إنشاء مؤتمر" width="167" height="192" />
         </li>
-        <li>أثناء القيادة، تُبث تغييراتك في SlicerLive (التخطيط، النافذة/المستوى، الأجزاء، الكاميرا، MPR، الحبر المؤقت، إلخ) إلى المتابعين.</li>
-        <li>أثناء القيادة، استخدم المفتاح <strong>B</strong> لتبديل الحبر المؤقت.</li>
+        <li>أثناء القيادة، تُبث تغييرات SlicerLive (التخطيط، النافذة/المستوى، رؤية الشرائح، الكاميرا، تمرير/تحريك/تكبير MPR، الحبر المتلاشي وتحديثات المشهد المشابهة) إلى المتابعين.</li>
+        <li>يمكنك <strong>إنهاء المؤتمر</strong> للجميع. أثناء القيادة استخدم مفتاح <strong>B</strong> لتبديل الحبر المتلاشي.</li>
         <li>يمكنك اختبار المؤتمر على جهاز واحد عبر زر <strong>Open another user</strong>. شاهد فيديو العرض: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

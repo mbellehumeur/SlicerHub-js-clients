@@ -7,6 +7,9 @@ const HOWTO_COUNT = 8;
 /** Bump when replacing files under help-images/ so browsers fetch the new PNG. */
 const HELP_IMG_CACHE = '20260929c';
 
+/** Lucide-style magic wand (matches OHIF Evidence Creators icon). */
+const MAGIC_WAND_SVG = `<svg class="wl-help-magic-wand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h0"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/></svg>`;
+
 function withHelpImgCacheBust(html: string): string {
   return html.replace(
     /(src="\.\/help-images\/[^"?]+)(")/g,
@@ -55,8 +58,10 @@ export function showHelp(helpModal: HTMLElement): void {
   ) as HTMLElement | null;
   if (titleEl) titleEl.textContent = t('help:modalTitle');
   if (quickStartEl) {
-    const openBtn = `<button type="button" class="wl-open-btn wl-help-open-sample" tabindex="-1" aria-hidden="true">${t('chrome:open')}</button>`;
-    const body = t('help:quickStartBody').replaceAll('{{open}}', openBtn);
+    const openBtn = `<button type="button" class="wl-open-btn wl-open-btn-start-hint wl-help-open-sample" tabindex="-1" aria-hidden="true">${t('chrome:open')}</button>`;
+    const body = t('help:quickStartBody')
+      .replaceAll('{{open}}', openBtn)
+      .replaceAll('{{magicWand}}', MAGIC_WAND_SVG);
     quickStartEl.innerHTML = `<strong>${t('help:quickStartTitle')}</strong> ${body}`;
   }
   if (content) content.innerHTML = helpModalHtml();

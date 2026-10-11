@@ -38,6 +38,30 @@ function MagicWandIcon({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Conferencing mark — same paths as @slicer-hub/client HUB_CONFERENCE_ICON_SVG.
+ * Rendered as React SVG (like MagicWand) so OHIF theme fill rules don't paint black interiors.
+ */
+function ConferencingIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path fill="none" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle fill="none" cx="9" cy="7" r="4" />
+      <path fill="none" d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path fill="none" d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
 function EvidenceCreatorsButton({
   wsState,
   anyOnline,
@@ -62,7 +86,7 @@ function EvidenceCreatorsButton({
       <TooltipTrigger asChild>
         <button
           type="button"
-          className={`mr-1 inline-flex items-center border-0 bg-transparent p-0 ${colorClass} ${
+          className={`inline-flex items-center border-0 bg-transparent p-0 ${colorClass} ${
             connecting ? 'animate-pulse' : ''
           }`}
           aria-label="Evidence Creators"
@@ -72,6 +96,24 @@ function EvidenceCreatorsButton({
         </button>
       </TooltipTrigger>
       <TooltipContent side="bottom">Evidence Creators</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function ConferencingButton() {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          disabled
+          className="inline-flex cursor-not-allowed items-center border-0 bg-transparent p-0 text-muted-foreground opacity-50"
+          aria-label="Conferencing"
+        >
+          <ConferencingIcon className="h-5 w-5" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">Conferencing (unavailable)</TooltipContent>
     </Tooltip>
   );
 }
@@ -115,11 +157,14 @@ function HubHeaderStatus() {
 
   return (
     <>
-      <EvidenceCreatorsButton
-        wsState={status.wsState}
-        anyOnline={anyOnline}
-        onClick={() => setDialogOpen(true)}
-      />
+      <div className="mr-1 inline-flex items-center gap-2">
+        <EvidenceCreatorsButton
+          wsState={status.wsState}
+          anyOnline={anyOnline}
+          onClick={() => setDialogOpen(true)}
+        />
+        <ConferencingButton />
+      </div>
       <EvidenceCreatorsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

@@ -212,7 +212,7 @@ function imagingStudyOpenDescription(state: AppState): string {
   return '';
 }
 
-/** Open ImagingStudy context capsule beside Conferencing. */
+/** Open ImagingStudy context capsule in the header center. */
 export function renderWorklistContext(state: AppState): void {
   const el = document.getElementById('worklistContext');
   if (!el) return;

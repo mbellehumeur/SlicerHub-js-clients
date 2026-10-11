@@ -13,17 +13,37 @@
       <div class="wl-header-start">
         <div class="wl-brand">SlicerWorklist</div>
       </div>
+      <div class="wl-header-center">
+        <section class="wl-panel wl-panel-compact wl-capsule" aria-labelledby="worklistContext">
+          <div class="wl-panel-header">
+            <h1 id="worklistContext" aria-live="polite">Current context: none</h1>
+            <div class="wl-panel-header-end">
+              <button
+                type="button"
+                id="closeContextBtn"
+                class="wl-viewer-btn"
+                data-i18n="chrome:close"
+                data-i18n-title="chrome:closeContext"
+                title="Close current context"
+                hidden
+                disabled
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
       <div class="wl-header-actions">
         <button
           type="button"
           id="startConferenceBtn"
-          class="wl-viewer-btn"
+          class="wl-icon-btn"
           title="Subscribe to the hub first"
+          aria-label="Conferencing"
           disabled
-          data-i18n="chrome:conferencing"
-        >
-          Conferencing
-        </button>
+          data-i18n-aria="chrome:conferencing"
+        ></button>
         <div class="wl-lang-wrap">
           <button
             type="button"
@@ -91,27 +111,6 @@
     </header>
 
     <main class="wl-main">
-      <div class="wl-capsule-row">
-        <section class="wl-panel wl-panel-compact wl-capsule" aria-labelledby="worklistContext">
-          <div class="wl-panel-header">
-            <h1 id="worklistContext" aria-live="polite">Current context: none</h1>
-            <div class="wl-panel-header-end">
-              <button
-                type="button"
-                id="closeContextBtn"
-                class="wl-viewer-btn"
-                data-i18n="chrome:close"
-                data-i18n-title="chrome:closeContext"
-                title="Close current context"
-                hidden
-                disabled
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </section>
-      </div>
       <section class="wl-apps" aria-label="Clients and viewers">
         <div class="wl-viewer-btns">
           <span class="wl-viewer-label wl-viewer-label-first" data-i18n="chrome:viewers">Image Displays:</span>
@@ -179,7 +178,7 @@
           >
             DICOM SR
           </button>
-          <span class="wl-viewer-label" data-i18n="chrome:classroom">Courses:</span>
+          <span class="wl-viewer-label" data-i18n="chrome:classroom">Classrooms:</span>
           <button
             type="button"
             id="openSt444Btn"

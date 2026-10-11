@@ -17,6 +17,14 @@ export const HUB_CONFERENCE_STRINGS_EN = Object.freeze({
   sessionSection: 'User / topic',
   sessionInfo: 'Session info',
   participantsAria: 'Participants',
+  userLabel: 'User:',
+  changeUserName: 'Change user name',
+  changeUserNameTitle: 'Change user name',
+  userNamePlaceholder: 'Enter user name',
+  openAnotherUser: 'Open another user',
+  openAnotherUserTitle: 'Open another user session to test conferencing',
+  userNameSavedNote: 'Saved. Reload the page to apply.',
+  done: 'Done',
 
   // Create
   createSection: 'Create a conference',

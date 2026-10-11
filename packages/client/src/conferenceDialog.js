@@ -57,6 +57,7 @@ import {
  * @property {() => CastConferenceDialogSession} getSession
  * @property {(view: CastConferenceView | null) => void} [onConferenceChange]
  * @property {(followHost: boolean) => void} [onFollowChange]
+ * @property {(userName: string) => void} [onUserNameChange]
  * @property {Partial<import('./conferenceStrings.js').CastConferenceStrings>} [strings]
  */
 
@@ -172,35 +173,64 @@ export function createHubConferenceDialog(options) {
       </div>
       <div class="${cls(prefix, 'section')} ${cls(prefix, 'section-session')}" data-hub-conference-session>
         <div class="${cls(prefix, 'user-row')}">
-          <label class="${cls(prefix, 'label')}" for="sessionUserNameInput">Change user name:</label>
+          <span class="${cls(prefix, 'label')}" data-hub-conference-user-label></span>
+          <span
+            class="${cls(prefix, 'user-display')}"
+            data-hub-conference-user-display
+            id="sessionUserNameDisplay"
+          >—</span>
+          <button
+            type="button"
+            id="sessionChangeUserBtn"
+            class="${cls(prefix, 'secondary')}"
+            data-hub-conference-change-user
+          ></button>
+        </div>
+        <p id="sessionChangeUserNote" class="${cls(prefix, 'muted')}" data-hub-conference-user-note hidden></p>
+      </div>
+    </div>
+    <div
+      class="${cls(prefix, 'change-user-overlay')}"
+      data-hub-conference-change-user-overlay
+      hidden
+    >
+      <div
+        class="${cls(prefix, 'change-user-dialog')}"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="${cls(prefix, 'change-user-title')}"
+        tabindex="-1"
+      >
+        <h3
+          id="${cls(prefix, 'change-user-title')}"
+          class="${cls(prefix, 'change-user-title')}"
+          data-hub-conference-change-user-title
+        ></h3>
+        <div class="${cls(prefix, 'field')}">
+          <label
+            class="${cls(prefix, 'label')}"
+            for="sessionUserNameInput"
+            data-hub-conference-user-label
+          ></label>
           <input
             type="text"
             id="sessionUserNameInput"
             class="${cls(prefix, 'input')} ${cls(prefix, 'user-input')}"
             autocomplete="username"
+            data-hub-conference-user-input
           />
-          <button type="button" id="sessionChangeUserBtn" class="${cls(prefix, 'secondary')}">
-            OK
-          </button>
         </div>
-        <p id="sessionChangeUserNote" class="${cls(prefix, 'muted')}" hidden>
-          Saved. Reload the page to apply.
-        </p>
-        <div class="${cls(prefix, 'session-row')}">
+        <div class="${cls(prefix, 'change-user-actions')}">
           <button
             type="button"
             id="openConferenceTestWorklistBtn"
             class="${cls(prefix, 'secondary')} ${cls(prefix, 'open-another-user')}"
             data-hub-conference-open-another-user
-            title="Open another user session to test conferencing"
-          >
-            Open another user
-          </button>
+          ></button>
           <button
             type="button"
-            class="${cls(prefix, 'secondary')} ${cls(prefix, 'session-close')}"
-            data-hub-conference-close
-            data-hub-conference-close-label
+            class="${cls(prefix, 'primary')}"
+            data-hub-conference-change-user-done
           ></button>
         </div>
       </div>
@@ -214,6 +244,24 @@ export function createHubConferenceDialog(options) {
   const openAnotherUserBtn = overlay.querySelector(
     '[data-hub-conference-open-another-user]'
   );
+  const userDisplay = overlay.querySelector(
+    '[data-hub-conference-user-display]'
+  );
+  const changeUserBtn = overlay.querySelector(
+    '[data-hub-conference-change-user]'
+  );
+  const changeUserOverlay = overlay.querySelector(
+    '[data-hub-conference-change-user-overlay]'
+  );
+  const changeUserDoneBtn = overlay.querySelector(
+    '[data-hub-conference-change-user-done]'
+  );
+  const userNameInput = overlay.querySelector('#sessionUserNameInput');
+  const userNote = overlay.querySelector('#sessionChangeUserNote');
+  const onUserNameChange =
+    typeof options?.onUserNameChange === 'function'
+      ? options.onUserNameChange
+      : null;
   const createSection = overlay.querySelector('[data-hub-conference-create]');
   const createFormSection = overlay.querySelector(
     '[data-hub-conference-create-form]'
@@ -229,6 +277,7 @@ export function createHubConferenceDialog(options) {
   const createBtn = overlay.querySelector('[data-hub-conference-create-btn]');
   const joinBtn = overlay.querySelector('[data-hub-conference-join-btn]');
   const exitBtn = overlay.querySelector('[data-hub-conference-exit-btn]');
+  const closeBtn = overlay.querySelector('[data-hub-conference-close]');
 
   /**
    * Put Join above Create when joinable conferences exist; otherwise Create first.
@@ -255,7 +304,7 @@ export function createHubConferenceDialog(options) {
       const option = document.createElement('option');
       option.value = preset;
       option.textContent = preset;
-      if (preset === 'ST-444 · Anatomie humaine') option.selected = true;
+      if (preset === 'Tumor Board') option.selected = true;
       titleSelect.appendChild(option);
     }
     const other = document.createElement('option');
@@ -288,22 +337,46 @@ export function createHubConferenceDialog(options) {
         ? s.endConference
         : s.leaveConference;
     }
-    overlay.querySelectorAll('[data-hub-conference-close]').forEach((node) => {
-      if (node instanceof HTMLElement) {
-        node.setAttribute('aria-label', s.closeAria);
-        if (node.hasAttribute('data-hub-conference-close-label')) {
-          node.textContent = s.close;
-        }
-      }
+    overlay.querySelectorAll('[data-hub-conference-user-label]').forEach((node) => {
+      if (node instanceof HTMLElement) node.textContent = s.userLabel;
     });
+    if (changeUserBtn instanceof HTMLElement) {
+      changeUserBtn.textContent = s.changeUserName;
+      changeUserBtn.title = s.changeUserNameTitle;
+    }
+    setText('[data-hub-conference-change-user-title]', s.changeUserNameTitle);
+    if (openAnotherUserBtn instanceof HTMLElement) {
+      openAnotherUserBtn.textContent = s.openAnotherUser;
+      openAnotherUserBtn.title = s.openAnotherUserTitle;
+    }
+    if (changeUserDoneBtn instanceof HTMLElement) {
+      changeUserDoneBtn.textContent = s.done;
+    }
+    if (userNote instanceof HTMLElement) {
+      userNote.textContent = s.userNameSavedNote;
+    }
+    if (userNameInput instanceof HTMLInputElement) {
+      userNameInput.placeholder = s.userNamePlaceholder;
+    }
     if (customTitle instanceof HTMLInputElement) {
       customTitle.placeholder = s.customTitlePlaceholder;
     }
+    if (closeBtn instanceof HTMLElement) {
+      closeBtn.setAttribute('aria-label', s.closeAria);
+    }
     fillTitlePresets();
+    syncUserNameDisplay();
   }
 
   function syncSessionControl() {
     /* Topic/session control removed; keep for API compatibility. */
+  }
+
+  function syncUserNameDisplay() {
+    const name = String(sessionSnapshot().userName || '').trim() || '—';
+    if (userDisplay instanceof HTMLElement) {
+      userDisplay.textContent = name;
+    }
   }
 
   function openAnotherUserSession() {
@@ -311,6 +384,41 @@ export function createHubConferenceDialog(options) {
     url.searchParams.set('freshUser', '1');
     url.searchParams.delete('topic');
     window.open(url.href, '_blank', 'noopener,noreferrer');
+  }
+
+  function openChangeUserDialog() {
+    if (!(changeUserOverlay instanceof HTMLElement)) return;
+    if (userNameInput instanceof HTMLInputElement) {
+      userNameInput.value = String(sessionSnapshot().userName || '').trim();
+    }
+    if (userNote instanceof HTMLElement) {
+      userNote.hidden = true;
+    }
+    changeUserOverlay.hidden = false;
+    if (userNameInput instanceof HTMLInputElement) {
+      userNameInput.focus();
+      userNameInput.select();
+    }
+  }
+
+  function closeChangeUserDialog() {
+    if (changeUserOverlay instanceof HTMLElement) {
+      changeUserOverlay.hidden = true;
+    }
+  }
+
+  function saveUserNameFromDialog() {
+    if (!(userNameInput instanceof HTMLInputElement)) return;
+    const next = userNameInput.value.trim();
+    if (onUserNameChange) onUserNameChange(next);
+    if (userDisplay instanceof HTMLElement) {
+      userDisplay.textContent = next || '—';
+    }
+    if (userNote instanceof HTMLElement) {
+      userNote.hidden = false;
+      userNote.textContent = s.userNameSavedNote;
+    }
+    closeChangeUserDialog();
   }
 
   applyStaticLabels();
@@ -755,7 +863,7 @@ export function createHubConferenceDialog(options) {
     setStatus('', '');
     syncSessionControl();
     if (titleSelect) {
-      titleSelect.value = 'ST-444 · Anatomie humaine';
+      titleSelect.value = 'Tumor Board';
     }
     if (customTitle) {
       customTitle.value = '';
@@ -763,14 +871,11 @@ export function createHubConferenceDialog(options) {
     if (customGroup) {
       customGroup.hidden = true;
     }
-    const userInput = overlay.querySelector('#sessionUserNameInput');
-    if (userInput instanceof HTMLInputElement) {
-      userInput.value = String(sessionSnapshot().userName || '').trim();
-    }
-    const userNote = overlay.querySelector('#sessionChangeUserNote');
+    closeChangeUserDialog();
     if (userNote instanceof HTMLElement) {
       userNote.hidden = true;
     }
+    syncUserNameDisplay();
     lastAnchor =
       anchor instanceof HTMLElement
         ? anchor
@@ -786,6 +891,7 @@ export function createHubConferenceDialog(options) {
   }
 
   function close() {
+    closeChangeUserDialog();
     overlay.hidden = true;
     setStatus('', '');
     clearAnchorPosition();
@@ -825,12 +931,35 @@ export function createHubConferenceDialog(options) {
   exitBtn?.addEventListener('click', () => {
     handleExit().catch(() => {});
   });
+  closeBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    close();
+  });
+  changeUserBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    openChangeUserDialog();
+  });
+  changeUserDoneBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    saveUserNameFromDialog();
+  });
   openAnotherUserBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
     openAnotherUserSession();
   });
-  overlay.querySelectorAll('[data-hub-conference-close]').forEach((node) => {
-    node.addEventListener('click', () => close());
+  userNameInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      saveUserNameFromDialog();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      closeChangeUserDialog();
+    }
+  });
+  changeUserOverlay?.addEventListener('click', (event) => {
+    if (event.target === changeUserOverlay) {
+      closeChangeUserDialog();
+    }
   });
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) {

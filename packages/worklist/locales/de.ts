@@ -41,31 +41,50 @@ export const de: LocaleBundle = {
     aboutLinkSuffix: '— Lizenzen, Danksagungen und Marken.',
     quickStartTitle: 'Schnellstart:',
     quickStartBody:
-      'Klicken Sie rechts auf einen der {{open}} Buttons, um eine Studie in 3D und MPR anzuzeigen.',
+      'Klicken Sie rechts auf einen der {{open}} Buttons, um ein CR zu öffnen und das Zauberstab-Symbol {{magicWand}} zu verwenden, um FleXray auszuführen.',
     introHtml: `
         <p>
           Ursprünglich dient diese Anwendung als „worklist client“-Akteur in einem Open-Source-
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>-System.
-          Das System soll Interoperabilität in medizinischen Bildgebungsanwendungen fördern, schulen, entwickeln und demonstrieren.
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>-
+          und
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>-System,
+          das in einer 3D-Slicer-Erweiterung namens
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a> liegt.
+          Slicer Hub stellt die Messaging-Infrastruktur bereit und zielt darauf ab, Interoperabilität in medizinischen
+          Bildgebungsanwendungen zu fördern, zu schulen, zu entwickeln und zu demonstrieren.
         </p>
         <p>Die Anwendung ist daher ein Bestandteil (<strong>WORKLIST_CLIENT actor</strong>) eines Systems, das Folgendes umfasst:</p>
         <ul class="wl-help-steps">
           <li>einen WebSub-Hub (<strong>HUB actor</strong>) für die Kommunikation zwischen Anwendungen und Benutzern</li>
           <li>Open-Source-Viewer für medizinische Bildgebung (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>Open-Source-Inferenzmodelle (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>Open-Source-Inferenzmodelle für medizinische Bildgebung (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>ein DICOM-SR-Reporting-Beispiel (<strong>REPORT_CREATOR actor</strong>)</li>
           <li>das <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> und die DICOM-DB von <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> als schreibgeschützte Archive (<strong>IMAGE_ARCHIVE actor</strong>)</li>
           <li>einen Authentifizierungs- / Identitätsanbieter mit Integration in die OIDC-Endpunkte des Hubs oder die eingebaute anonyme/Mock-Authentifizierung des Hubs</li>
         </ul>
         <p>
-          Die Anwendung enthält außerdem Funktionen für Anatomie- und Pathologieunterricht unabhängig vom IHE-Reporting-Workflow:
+          Das System enthält außerdem Bildungsfunktionen, die unabhängig vom IHE-
+          Integrated-Reporting-Workflow sind:
         </p>
         <ul class="wl-help-steps">
-          <li>Erstellen, Speichern und Hochladen von Lehrdateien und Kohorten</li>
+          <li>Erstellen, Speichern und Hochladen von Lehrdateien und Kohorten zur Unterrichtsvorbereitung</li>
           <li>Konferenz für gemeinsames Betrachten und Unterrichten</li>
           <li>ein temporärer Pinsel für kurze Annotationen während der Konferenz</li>
           <li>STL-Export für den 3D-Druck</li>
         </ul>
+        <p>
+          Forschungs- und 3D-Slicer-Funktionen, ebenfalls unabhängig von IHE, werden bereitgestellt:
+        </p>
+        <ul class="wl-help-steps">
+          <li>Dateiübertragung zwischen Anwendungen</li>
+          <li>medizinische Realitätsszenen und Kommunikation</li>
+          <li>Slicer-Qt-Image-Display-Client</li>
+          <li>Zugriff auf die Slicer-DICOM-DB</li>
+        </ul>
+        <p>
+          Die Dateiübertragung ermöglicht Inferenzservern, Ergebnisse direkt an die Viewer zurückzusenden,
+          ohne sie zuerst im PACS zu speichern. Sie unterstützt auch Forschungsformate wie NIfTI, NRRD und Zarr.
+        </p>
     `,
     howto0Title: 'So verbinden Sie SlicerWorklist mit 3D Slicer.',
     howto0Body: `
@@ -120,8 +139,8 @@ export const de: LocaleBundle = {
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Konferenz erstellen: Titelfeld und Schaltfläche Konferenz erstellen" width="167" height="192" />
         </li>
-        <li>Während Sie führen, werden Änderungen in SlicerLive (Layout, Fenster/Level, Segment-Sichtbarkeit, Kamera, MPR, temporäre Markierungen u. Ä.) an die Follower der Konferenz gesendet.</li>
-        <li>Während Sie führen, schalten Sie mit der Taste <strong>B</strong> die temporäre Markierungsfarbe ein/aus.</li>
+        <li>Während Sie führen, werden Änderungen in SlicerLive (Layout, Fenster/Level, Segment-Sichtbarkeit, Kamera, MPR-Scrollen/Schwenken/Zoomen, temporäre Markierungen und ähnliche Szenenaktualisierungen) an die Follower der Konferenz gesendet.</li>
+        <li>Sie können die <strong>Konferenz beenden</strong> für alle. Während Sie führen, schalten Sie mit der Taste <strong>B</strong> die temporäre Markierungsfarbe ein/aus.</li>
         <li>Sie können Conferencing auf einem einzelnen Desktop mit der Schaltfläche <strong>Open another user</strong> testen. Siehe das folgende Demovideo: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

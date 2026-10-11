@@ -41,31 +41,50 @@ export const ca: LocaleBundle = {
     aboutLinkSuffix: '— llicències, agraïments i marques.',
     quickStartTitle: 'Inici ràpid:',
     quickStartBody:
-      'Feu clic en un dels botons {{open}} a la dreta per veure un estudi en 3D i MPR.',
+      'Feu clic en un dels botons {{open}} a la dreta per obrir un CR i usar la icona de vareta màgica {{magicWand}} per executar FleXray.',
     introHtml: `
         <p>
-          L’objectiu original d’aquesta aplicació és ser un actor «worklist client» en un sistema de codi obert
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>.
-          El sistema vol donar suport a la promoció, formació, desenvolupament i demostració de la interoperabilitat en aplicacions d’imatge mèdica.
+          El propòsit original d’aquesta aplicació és ser un actor «worklist client» en un sistema de codi obert
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          i
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          que resideix en una extensió de 3D Slicer anomenada
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub proporciona la infraestructura de missatgeria i pretén promoure, formar, desenvolupar i
+          demostrar la interoperabilitat en aplicacions d’imatge mèdica.
         </p>
-        <p>L’aplicació és, doncs, un component (<strong>WORKLIST_CLIENT actor</strong>) d’un sistema que inclou:</p>
+        <p>L’aplicació és per tant un component (<strong>WORKLIST_CLIENT actor</strong>) d’un sistema que inclou:</p>
         <ul class="wl-help-steps">
           <li>un hub WebSub (<strong>HUB actor</strong>) per a la comunicació entre aplicacions i usuaris</li>
-          <li>visualitzadors d’imatge mèdica de codi obert (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>models d’inferència de codi obert (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>visors d’imatge mèdica de codi obert (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>models d’inferència d’imatge mèdica de codi obert (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>un exemple de reporting DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
           <li>l’<a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> i la BD DICOM de <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> com a arxius de només lectura (<strong>IMAGE_ARCHIVE actor</strong>)</li>
           <li>un proveïdor d’autenticació / identitat amb integració als endpoints OIDC del hub o autenticació anònima/mock integrada al hub</li>
         </ul>
         <p>
-          L’aplicació també inclou funcions d’ensenyament d’anatomia i patologia independents del flux IHE:
+          El sistema també inclou funcions educatives independents del flux IHE
+          Integrated Reporting:
         </p>
         <ul class="wl-help-steps">
-          <li>crear, desar i pujar fitxers docents i cohorts</li>
+          <li>crear, desar i pujar fitxers docents i cohorts per a la preparació de classes</li>
           <li>conferència per a visualització i ensenyament col·laboratius</li>
           <li>un pinzell efímer per a anotacions temporals en conferència</li>
           <li>exportació STL per a impressió 3D</li>
         </ul>
+        <p>
+          També es proporcionen funcionalitats de recerca i de 3D Slicer, independents de l’IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>transferència de fitxers entre aplicacions</li>
+          <li>escenes i comunicacions de realitat mèdica</li>
+          <li>client Slicer Qt Image Display</li>
+          <li>accés a la BD DICOM de Slicer</li>
+        </ul>
+        <p>
+          La transferència de fitxers permet als servidors d’inferència enviar els resultats directament als visors
+          sense emmagatzemar-los primer en un PACS. També admet formats de recerca com NIfTI, NRRD i Zarr.
+        </p>
     `,
     howto0Title: 'Com connectar SlicerWorklist a 3D Slicer.',
     howto0Body: `
@@ -120,8 +139,8 @@ export const ca: LocaleBundle = {
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Crear conferència: camp de títol i botó Crear conferència" width="167" height="192" />
         </li>
-        <li>Mentre liderau, els canvis a SlicerLive es propaguen als qui segueixen.</li>
-        <li>Mentre liderau, useu la tecla <strong>B</strong> per activar/desactivar la tinta efímera.</li>
+        <li>Mentre lidereu, els canvis a SlicerLive (disposició, finestra/nivell, visibilitat de segments, càmera, desplaçament/pan/zoom MPR, tinta efímera i actualitzacions d’escena similars) es propaguen als seguidors.</li>
+        <li>Podeu <strong>Finalitzar la conferència</strong> per a tothom. Mentre lidereu, useu la tecla <strong>B</strong> per activar/desactivar la tinta efímera.</li>
         <li>Podeu provar la conferència en un sol escriptori amb el botó <strong>Open another user</strong>. Vegeu el vídeo de demostració: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

@@ -107,5 +107,28 @@ export type ServicesManagerLike = {
       }) => string;
       hide?: (id: string) => void;
     };
+    segmentationService?: {
+      EVENTS?: {
+        SEGMENTATION_ADDED?: string;
+        SEGMENTATION_MODIFIED?: string;
+      };
+      subscribe?: (
+        eventName: string,
+        callback: (evt?: unknown) => void
+      ) => { unsubscribe: () => void };
+      getSegmentations?: () => Array<{
+        segmentationId?: string;
+        id?: string;
+        segments?: Record<
+          string,
+          { segmentIndex?: number; label?: string }
+        > | Array<{ segmentIndex?: number; label?: string }>;
+      }>;
+      setSegmentLabel?: (
+        segmentationId: string,
+        segmentIndex: number,
+        label: string
+      ) => void;
+    };
   };
 };

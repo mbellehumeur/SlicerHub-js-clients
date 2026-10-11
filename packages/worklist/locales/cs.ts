@@ -41,31 +41,50 @@ export const cs: LocaleBundle = {
     aboutLinkSuffix: '— licence, poděkování a ochranné známky.',
     quickStartTitle: 'Rychlý start:',
     quickStartBody:
-      'Klikněte na jedno z tlačítek {{open}} vpravo pro zobrazení studie ve 3D a MPR.',
+      'Klikněte na jedno z tlačítek {{open}} vpravo pro otevření CR a použijte ikonu kouzelné hůlky {{magicWand}} ke spuštění FleXray.',
     introHtml: `
         <p>
           Původním účelem této aplikace je být aktérem «worklist client» v open-source systému
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>.
-          Systém má podporovat propagaci, školení, vývoj a demonstraci interoperability v aplikacích lékařského zobrazování.
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          a
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>,
+          který sídlí v rozšíření 3D Slicer s názvem
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub poskytuje messagingovou infrastrukturu a usiluje o podporu, školení, vývoj a
+          demonstraci interoperability v aplikacích medicínského zobrazování.
         </p>
         <p>Aplikace je proto komponentou (<strong>WORKLIST_CLIENT actor</strong>) systému, který zahrnuje:</p>
         <ul class="wl-help-steps">
           <li>WebSub hub (<strong>HUB actor</strong>) pro komunikaci mezi aplikacemi a uživateli</li>
-          <li>open-source prohlížeče lékařského zobrazování (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>open-source inferenční modely (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>open-source prohlížeče medicínského zobrazování (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>open-source inferenční modely medicínského zobrazování (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>příklad reportingu DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
           <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> a DICOM DB <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> jako archivy pouze pro čtení (<strong>IMAGE_ARCHIVE actor</strong>)</li>
           <li>poskytovatele autentizace / identity s integrací na OIDC endpointy hubu nebo vestavěnou anonymní/mock autentizaci hubu</li>
         </ul>
         <p>
-          Aplikace také obsahuje funkce pro výuku anatomie a patologie nezávislé na workflow IHE:
+          Systém také zahrnuje vzdělávací funkce nezávislé na workflow IHE
+          Integrated Reporting:
         </p>
         <ul class="wl-help-steps">
-          <li>vytváření, ukládání a nahrávání výukových souborů a kohort</li>
+          <li>vytváření, ukládání a nahrávání výukových souborů a kohort pro přípravu výuky</li>
           <li>konference pro společné prohlížení a výuku</li>
-          <li>dočasný štětec pro krátké anotace během konference</li>
+          <li>nástroj mizejícího štětce pro dočasné anotace během konference</li>
           <li>export STL pro 3D tisk</li>
         </ul>
+        <p>
+          Poskytovány jsou také výzkumné a 3D Slicer funkce, rovněž nezávislé na IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>přenos souborů mezi aplikacemi</li>
+          <li>scény lékařské reality a komunikace</li>
+          <li>klient Slicer Qt Image Display</li>
+          <li>přístup k DICOM DB Sliceru</li>
+        </ul>
+        <p>
+          Přenos souborů umožňuje inferenčním serverům posílat výsledky přímo zpět do prohlížečů
+          bez předchozího uložení do PACS. Podporuje také výzkumné formáty jako NIfTI, NRRD a Zarr.
+        </p>
     `,
     howto0Title: 'Jak připojit SlicerWorklist k 3D Slicer.',
     howto0Body: `
@@ -112,16 +131,16 @@ export const cs: LocaleBundle = {
     howto2Title: 'Jak vytvořit konferenci.',
     howto2Body: `
       <ol class="wl-help-steps">
-        <li>Otevřete worklist a klikněte vpravo nahoře na <strong>Konference</strong>.</li>
+        <li>Otevřete worklist a klikněte na <strong>Konference</strong> vpravo nahoře.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Záhlaví SlicerLive se zvýrazněnou konferencí" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Záhlaví SlicerLive se zvýrazněnou Konferencí" width="477" height="117" />
         </li>
-        <li>Jako hostitel klikněte na <strong>Konference</strong> (záhlaví worklistu nebo lišta SlicerLive). Vyberte název a vytvořte — stanete se místem <strong>leading</strong>.</li>
+        <li>Jako hostitel klikněte na <strong>Konference</strong> (záhlaví worklistu nebo lišta SlicerLive). Zvolte název a vytvořte — stanete se <strong>vedoucím</strong> místem.</li>
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Vytvořit konferenci: pole názvu a tlačítko Vytvořit konferenci" width="167" height="192" />
         </li>
-        <li>Při vedení se změny ve SlicerLive (rozvržení, okno/úroveň, viditelnost segmentů, kamera, MPR, dočasný marker atd.) šíří ke sledujícím.</li>
-        <li>Při vedení použijte klávesu <strong>B</strong> k zapnutí/vypnutí dočasného markeru.</li>
+        <li>Během vedení se změny ve SlicerLive (rozložení, okno/úroveň, viditelnost segmentů, kamera, MPR scroll/pan/zoom, mizející inkoust a podobné aktualizace scény) šíří k následovníkům.</li>
+        <li>Můžete <strong>Ukončit konferenci</strong> pro všechny. Během vedení použijte klávesu <strong>B</strong> k zapnutí/vypnutí mizejícího inkoustu.</li>
         <li>Konferenci můžete vyzkoušet na jednom počítači tlačítkem <strong>Open another user</strong>. Ukázkové video: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

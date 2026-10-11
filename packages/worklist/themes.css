@@ -104,7 +104,8 @@ button {
 
 /* ---- header ---- */
 .wl-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 14px;
   height: var(--wl-top-h);
@@ -119,6 +120,42 @@ button {
   align-items: center;
   gap: 10px;
   min-width: 0;
+  justify-self: start;
+}
+
+.wl-header-center {
+  justify-self: center;
+  min-width: 0;
+  max-width: min(42rem, 52vw);
+}
+
+.wl-header-center .wl-capsule,
+.wl-header-center .wl-capsule.is-open {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  max-width: 100%;
+}
+
+.wl-header-center .wl-capsule .wl-panel-header {
+  padding: 2px 8px;
+  gap: 8px;
+  border-bottom: none;
+}
+
+.wl-header-center .wl-capsule #worklistContext {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.wl-header-center .wl-context-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .wl-brand {
@@ -131,7 +168,7 @@ button {
 .wl-header-actions {
   display: flex;
   align-items: center;
-  margin-left: auto;
+  justify-self: end;
   gap: 6px;
   min-width: 0;
 }
@@ -297,6 +334,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   padding: 12px 14px;
   border-bottom: 1px solid var(--wl-border);
 }
@@ -307,6 +345,7 @@ button {
 }
 
 .hub-conference-close {
+  margin-left: auto;
   border: none;
   background: transparent;
   color: var(--wl-fg-muted);
@@ -354,7 +393,7 @@ button {
   flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .hub-conference-user-row .hub-conference-label {
@@ -363,25 +402,72 @@ button {
   white-space: nowrap;
 }
 
-.hub-conference-user-row .hub-conference-user-input {
+.hub-conference-user-display {
   flex: 1 1 auto;
-  width: 8.5rem;
-  max-width: 10rem;
-  min-width: 5.5rem;
+  min-width: 0;
+  font: 600 13px/1.3 var(--wl-font);
+  color: var(--wl-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .hub-conference-user-row #sessionChangeUserBtn {
   flex: 0 0 auto;
 }
 
-.hub-conference-session-row {
+.hub-conference-change-user-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: inherit;
+}
+
+.hub-conference-change-user-overlay[hidden] {
+  display: none !important;
+}
+
+.hub-conference-change-user-dialog {
+  width: min(100%, 20rem);
+  padding: 14px;
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius);
+  background: var(--wl-surface);
+  box-shadow: var(--wl-shadow);
+}
+
+.hub-conference-change-user-title {
+  margin: 0 0 10px;
+  font: 700 13px/1.3 var(--wl-font);
+  color: #fff;
+}
+
+.hub-conference-change-user-dialog .hub-conference-field {
+  margin-bottom: 10px;
+}
+
+.hub-conference-change-user-dialog .hub-conference-user-input {
+  width: 100%;
+}
+
+.hub-conference-change-user-actions {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-.hub-conference-session-close {
+.hub-conference-change-user-actions .hub-conference-primary {
   margin-left: auto;
+}
+
+#sessionChangeUserNote {
+  margin: 8px 0 0;
 }
 
 .hub-conference-lang-wrap {
@@ -1007,15 +1093,21 @@ button {
 .wl-panel-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 8px;
+  padding: 8px 14px;
   border-bottom: 1px solid var(--wl-border);
+  min-height: 0;
+}
+
+.wl-panel-header .wl-icon-btn {
+  width: 28px;
+  height: 28px;
 }
 
 .wl-panel-header-end {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-left: auto;
 }
 
@@ -1039,8 +1131,10 @@ button {
   background: var(--wl-surface-2);
   border: 1px solid var(--wl-border);
   border-radius: var(--wl-radius);
-  padding: 5px 8px;
+  padding: 4px 8px;
   min-width: 220px;
+  font-size: 12px;
+  line-height: 1.2;
 }
 
 .wl-segroulette-btn {
@@ -1151,13 +1245,14 @@ a.wl-viewer-btn {
 
 .wl-table th,
 .wl-table td {
-  padding: 10px 14px;
+  padding: 8px 14px;
   text-align: left;
   border-bottom: 1px solid var(--wl-border);
   vertical-align: middle;
 }
 
 .wl-table th {
+  padding: 6px 14px;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1167,6 +1262,7 @@ a.wl-viewer-btn {
   position: sticky;
   top: 0;
   z-index: 1;
+  line-height: 1.2;
 }
 
 .wl-th-sort {
@@ -1179,7 +1275,7 @@ a.wl-viewer-btn {
   gap: 4px;
   width: 100%;
   margin: 0;
-  padding: 10px 14px;
+  padding: 6px 14px;
   border: 0;
   background: transparent;
   color: inherit;
@@ -1189,6 +1285,7 @@ a.wl-viewer-btn {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: left;
+  line-height: 1.2;
   cursor: pointer;
 }
 
@@ -1862,9 +1959,13 @@ a.wl-viewer-btn {
   min-width: 0;
   flex: 1 1 auto;
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0 0.75em;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.wl-help-header-text > h2 {
+  margin: 0;
 }
 
 .wl-help-quick-start {
@@ -1880,6 +1981,15 @@ a.wl-viewer-btn {
   pointer-events: none;
   cursor: default;
   margin: 0 0.15em;
+}
+
+.wl-help-magic-wand {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: middle;
+  margin: 0 0.15em;
+  color: var(--wl-fg);
 }
 
 .wl-help-intro-details {

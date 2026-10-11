@@ -56,7 +56,7 @@ function ConferenceDialog({
   const [availableTopics, setAvailableTopics] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [conferences, setConferences] = useState<CastConferenceRecord[]>([]);
-  const [titlePreset, setTitlePreset] = useState('US annotations');
+  const [titlePreset, setTitlePreset] = useState('Tumor Board');
   const [customTitle, setCustomTitle] = useState('');
 
   const currentConference = useMemo(

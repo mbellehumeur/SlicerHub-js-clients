@@ -41,31 +41,50 @@ export const hu: LocaleBundle = {
     aboutLinkSuffix: '— licencek, köszönetnyilvánítások és védjegyek.',
     quickStartTitle: 'Gyors indítás:',
     quickStartBody:
-      'Kattintson jobbra az egyik {{open}} gombra egy vizsgálat 3D és MPR megtekintéséhez.',
-    introHtml:
-      `
+      'Kattintson jobbra az egyik {{open}} gombra egy CR megnyitásához, majd használja a varázspálca ikont {{magicWand}} a FleXray futtatásához.',
+    introHtml: `
         <p>
-          Az alkalmazás eredeti célja, hogy «worklist client» szereplő legyen egy nyílt forráskódú 
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a> rendszerben. A rendszer célja az interoperabilitás előmozdítása, képzése, fejlesztése és bemutatása orvosi képalkotó alkalmazásokban.
+          Az alkalmazás eredeti célja, hogy «worklist client» szereplő legyen egy nyílt forráskódú
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          és
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          rendszerben, amely a
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a> nevű 3D Slicer bővítményben található.
+          A Slicer Hub biztosítja az üzenetküldési infrastruktúrát, és célja az interoperabilitás előmozdítása,
+          képzése, fejlesztése és bemutatása az orvosi képalkotó alkalmazásokban.
         </p>
-        <p>Az alkalmazás ezért egy rendszer komponense (<strong>WORKLIST_CLIENT actor</strong>), amely a következőket tartalmazza:</p>
+        <p>Az alkalmazás ezért egy komponens (<strong>WORKLIST_CLIENT actor</strong>) egy rendszerben, amely tartalmazza:</p>
         <ul class="wl-help-steps">
-          <li>WebSub hub (<strong>HUB actor</strong>) az alkalmazások és felhasználók közötti kommunikációhoz</li>
-          <li>nyílt forráskódú orvosi képalkotó megjelenítők (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>nyílt forráskódú következtetési modellek (<strong>EVIDENCE_CREATOR actors</strong>)</li>
-          <li>DICOM SR jelentéskészítési példa (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li>az <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> és a <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM adatbázisa csak olvasható archívumként (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>egy hitelesítési / identitásszolgáltató a hub OIDC végpontjaival való integrációval vagy a hub beépített anonim/mock hitelesítésével</li>
+          <li>egy WebSub hubot (<strong>HUB actor</strong>) az alkalmazások és felhasználók közötti kommunikációhoz</li>
+          <li>nyílt forráskódú orvosi képalkotó megjelenítőket (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>nyílt forráskódú orvosi képalkotó következtetési modelleket (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>egy DICOM SR jelentéskészítési példát (<strong>REPORT_CREATOR actor</strong>)</li>
+          <li>az <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a>-t és a <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM adatbázisát csak olvasható archívumként (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>egy hitelesítési / identitásszolgáltatót a hub OIDC végpontjaival vagy a beépített anonim/mock hitelesítéssel</li>
         </ul>
         <p>
-          Az alkalmazás anatómiai és patológiai oktatási funkciókat is tartalmaz, függetlenül az IHE munkafolyamattól:
+          A rendszer emellett oktatási funkciókat is tartalmaz, amelyek függetlenek az IHE
+          Integrated Reporting munkafolyamattól:
         </p>
         <ul class="wl-help-steps">
-          <li>tananyagok és kohorszok létrehozása, mentése és feltöltése</li>
+          <li>tananyagok és kohorszok létrehozása, mentése és feltöltése az órák előkészítéséhez</li>
           <li>konferencia közös megtekintéshez és oktatáshoz</li>
-          <li>ideiglenes ecset rövid megjegyzésekhez konferencia közben</li>
-          <li>STL export 3D nyomtatáshoz</li>
+          <li>eltűnő ecset eszköz ideiglenes annotációkhoz konferencia közben</li>
+          <li>STL exportálás 3D nyomtatáshoz</li>
         </ul>
+        <p>
+          Kutatási és 3D Slicer funkciók is rendelkezésre állnak, szintén IHE-től függetlenül:
+        </p>
+        <ul class="wl-help-steps">
+          <li>fájlátvitel az alkalmazások között</li>
+          <li>orvosi valóság jelenetek és kommunikáció</li>
+          <li>Slicer Qt Image Display kliens</li>
+          <li>Slicer DICOM DB hozzáférés</li>
+        </ul>
+        <p>
+          A fájlátvitel lehetővé teszi, hogy a következtetési szerverek az eredményeket közvetlenül a megjelenítőknek küldjék
+          anélkül, hogy előbb PACS-be tárolnák őket. Támogat kutatási formátumokat is, például NIfTI, NRRD és Zarr.
+        </p>
     `,
     howto0Title: 'A SlicerWorklist csatlakoztatása 3D Slicerhez.',
     howto0Body:
@@ -113,16 +132,16 @@ export const hu: LocaleBundle = {
     howto2Title: 'Hogyan hozzon létre konferenciát.',
     howto2Body: `
       <ol class="wl-help-steps">
-        <li>Nyissa meg a worklistet, és kattintson a jobb felső <strong>Konferencia</strong> gombra.</li>
+        <li>Nyissa meg a worklistet, és kattintson a <strong>Konferencia</strong> gombra jobbra fent.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive fejléc kiemelt konferenciával" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive fejléc kiemelt Konferenciával" width="477" height="117" />
         </li>
-        <li>Hoszként kattintson a <strong>Konferencia</strong> gombra (worklist fejléc vagy SlicerLive sáv). Válasszon címet és hozza létre — Ön lesz a <strong>leading</strong> hely.</li>
+        <li>Házigazdaként kattintson a <strong>Konferencia</strong> gombra (worklist fejléc vagy SlicerLive sáv). Válasszon címet és hozza létre — Ön lesz a <strong>vezető</strong> hely.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Konferencia létrehozása: cím mező és Létrehozás gomb" width="167" height="192" />
+          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Konferencia létrehozása: cím mező és Konferencia létrehozása gomb" width="167" height="192" />
         </li>
-        <li>Vezetés közben a SlicerLive-ban végzett módosítások (elrendezés, ablak/szint, szegmens láthatóság, kamera, MPR, ideiglenes marker stb.) eljutnak a követőkhöz.</li>
-        <li>Vezetés közben a <strong>B</strong> billentyűvel kapcsolhatja ki/be az ideiglenes markert.</li>
+        <li>Vezetés közben a SlicerLive változásai (elrendezés, ablak/szint, szegmensláthatóság, kamera, MPR görgetés/pan/zoom, eltűnő tinta és hasonló jelenetfrissítések) eljutnak a követőkhöz.</li>
+        <li>Mindenki számára <strong>Befejezheti a konferenciát</strong>. Vezetés közben a <strong>B</strong> billentyűvel kapcsolhatja az eltűnő tintát.</li>
         <li>Egy asztalon a <strong>Open another user</strong> gombbal tesztelheti a konferenciát. Demóvideó: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

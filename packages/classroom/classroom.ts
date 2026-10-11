@@ -284,29 +284,6 @@ function wireMenus(_state: AppState): void {
 
   settingsMenu.addEventListener('click', (ev) => ev.stopPropagation());
 
-  const saveSessionUserName = () => {
-    const input = document.getElementById(
-      'sessionUserNameInput'
-    ) as HTMLInputElement | null;
-    if (!input) return;
-    setStoredUserName(input.value.trim());
-    const note = document.getElementById('sessionChangeUserNote');
-    if (note) note.hidden = false;
-  };
-
-  document
-    .getElementById('sessionChangeUserBtn')
-    ?.addEventListener('click', saveSessionUserName);
-
-  document
-    .getElementById('sessionUserNameInput')
-    ?.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Enter') {
-        ev.preventDefault();
-        saveSessionUserName();
-      }
-    });
-
   document
     .querySelectorAll<HTMLButtonElement>('[data-theme-option]')
     .forEach((btn) => {
@@ -394,6 +371,10 @@ function boot(): void {
       },
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
+      },
+      onUserNameChange: (userName) => {
+        setStoredUserName(userName);
+        state.userName = userName;
       },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());

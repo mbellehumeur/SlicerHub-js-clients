@@ -49,6 +49,27 @@ export function isAppLocale(value: string | null | undefined): value is AppLocal
   );
 }
 
+/** AppLocale → OHIF i18next `lng` query value. */
+export function appLocaleToOhifLng(locale: AppLocale): string {
+  if (locale === 'en') return 'en-US';
+  if (locale === 'pt') return 'pt-BR';
+  return locale;
+}
+
+/** OHIF `lng` (e.g. en-US, pt-BR, fr) → AppLocale when recognized. */
+export function ohifLngToAppLocale(
+  lng: string | null | undefined
+): AppLocale | null {
+  const raw = String(lng || '')
+    .trim()
+    .toLowerCase();
+  if (!raw) return null;
+  if (raw === 'en-us' || raw === 'en') return 'en';
+  if (raw === 'pt-br' || raw === 'pt') return 'pt';
+  const base = raw.split('-')[0] || '';
+  return isAppLocale(base) ? base : null;
+}
+
 function readCookie(name: string): string | null {
   if (typeof document === 'undefined') return null;
   const prefix = `${encodeURIComponent(name)}=`;

@@ -80,6 +80,7 @@ import {
   shouldShowImagingStudyOpenLoadingNotification,
   type ImagingStudyOpenResult,
 } from '../../hub/imaging-study-open-notification';
+import { wireSegmentLabelI18n } from '../../hub/segment-label-i18n';
 import type {
   HubClientLike,
   CommandsManagerLike,
@@ -204,6 +205,7 @@ export default class HubService extends PubSubService {
   private _conferenceParticipants: string[] = [];
   private _lastBroadcastHubHeaderStatus: HubHeaderStatusState | null = null;
   private _statusRequestedForSession = false;
+  private _unwireSegmentLabelI18n: (() => void) | null = null;
 
   constructor(
     extensionManager: ExtensionManagerLike,
@@ -266,6 +268,12 @@ export default class HubService extends PubSubService {
 
     this._registerMessageHandlers();
 
+    this._unwireSegmentLabelI18n = wireSegmentLabelI18n({
+      getSegmentationService: () =>
+        this._servicesManager.services.segmentationService,
+      getHubEndpoint: () => this._client.getHubConfig().hub_endpoint ?? '',
+    });
+
     this._client.onConnectionStateChange((wsState: string) => {
       this._broadcastHubStatus(wsState);
       if (wsState === 'connected') {
@@ -302,6 +310,10 @@ export default class HubService extends PubSubService {
   }
 
   public destroy(): void {
+    if (this._unwireSegmentLabelI18n) {
+      this._unwireSegmentLabelI18n();
+      this._unwireSegmentLabelI18n = null;
+    }
     this._client.delete();
   }
 

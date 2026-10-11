@@ -41,31 +41,50 @@ export const uk: LocaleBundle = {
     aboutLinkSuffix: '— ліцензії, подяки та торговельні марки.',
     quickStartTitle: 'Швидкий старт:',
     quickStartBody:
-      'Натисніть одну з кнопок {{open}} праворуч, щоб переглянути дослідження в 3D і MPR.',
+      'Натисніть одну з кнопок {{open}} праворуч, щоб відкрити CR і використати значок чарівної палички {{magicWand}} для запуску FleXray.',
     introHtml: `
         <p>
           Початкова мета цієї програми — бути актором «worklist client» у системі з відкритим кодом
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>.
-          Система призначена підтримувати просування, навчання, розробку та демонстрацію сумісності в застосунках медичної візуалізації.
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          та
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>,
+          що міститься в розширенні 3D Slicer під назвою
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub забезпечує інфраструктуру обміну повідомленнями та має на меті сприяти, навчати, розвивати й
+          демонструвати сумісність у застосунках медичної візуалізації.
         </p>
-        <p>Застосунок є компонентом (<strong>WORKLIST_CLIENT actor</strong>) системи, яка включає:</p>
+        <p>Тому програма є компонентом (<strong>WORKLIST_CLIENT actor</strong>) системи, що включає:</p>
         <ul class="wl-help-steps">
-          <li>WebSub-хаб (<strong>HUB actor</strong>) для зв’язку між програмами та користувачами</li>
+          <li>WebSub-хаб (<strong>HUB actor</strong>) для зв’язку між застосунками та користувачами</li>
           <li>переглядачі медичної візуалізації з відкритим кодом (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>моделі висновку з відкритим кодом (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>моделі висновку медичної візуалізації з відкритим кодом (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>приклад звітування DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> та DICOM БД <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> як архіви лише для читання (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>постачальника автентифікації / ідентичності з інтеграцією до OIDC-ендпоінтів хаба або вбудованою анонімною/mock автентифікацією хаба</li>
+          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> і DICOM БД <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> як архіви лише для читання (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>постачальника автентифікації / ідентичності з інтеграцією до OIDC кінцевих точок хаба або вбудованою анонімною/mock автентифікацією</li>
         </ul>
         <p>
-          Програма також містить функції навчання анатомії та патології, незалежні від робочого процесу IHE:
+          Система також включає освітні функції, незалежні від робочого процесу IHE
+          Integrated Reporting:
         </p>
         <ul class="wl-help-steps">
-          <li>створення, збереження та завантаження навчальних файлів і когорт</li>
-          <li>конференція для спільного перегляду та викладання</li>
-          <li>тимчасовий пензель для короткочасних анотацій під час конференції</li>
+          <li>створення, збереження та завантаження навчальних файлів і когорт для підготовки занять</li>
+          <li>конференцію для спільного перегляду та навчання</li>
+          <li>інструмент зникаючого пензля для тимчасових анотацій під час конференції</li>
           <li>експорт STL для 3D-друку</li>
         </ul>
+        <p>
+          Також надаються дослідницькі та 3D Slicer функції, незалежні від IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>передавання файлів між застосунками</li>
+          <li>сцени медичної реальності та комунікація</li>
+          <li>клієнт Slicer Qt Image Display</li>
+          <li>доступ до DICOM БД Slicer</li>
+        </ul>
+        <p>
+          Передавання файлів дозволяє серверам висновку надсилати результати безпосередньо переглядачам
+          без попереднього збереження в PACS. Також підтримуються дослідницькі формати на кшталт NIfTI, NRRD і Zarr.
+        </p>
     `,
     howto0Title: 'Як підключити SlicerWorklist до 3D Slicer.',
     howto0Body: `
@@ -112,16 +131,16 @@ export const uk: LocaleBundle = {
     howto2Title: 'Як створити конференцію.',
     howto2Body: `
       <ol class="wl-help-steps">
-        <li>Відкрийте worklist і натисніть <strong>Конференція</strong> справа вгори.</li>
+        <li>Відкрийте worklist і натисніть <strong>Конференція</strong> праворуч угорі.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Заголовок SlicerLive з виділеною конференцією" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Заголовок SlicerLive з виділеною Конференцією" width="477" height="117" />
         </li>
-        <li>Як ведучий натисніть <strong>Конференція</strong> (заголовок worklist або панель SlicerLive). Виберіть назву та створіть — ви станете місцем <strong>leading</strong>.</li>
+        <li>Як організатор натисніть <strong>Конференція</strong> (заголовок worklist або панель SlicerLive). Оберіть назву й створіть — ви стаєте місцем <strong>leading</strong>.</li>
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Створити конференцію: поле назви та кнопка Створити конференцію" width="167" height="192" />
         </li>
-        <li>Під час ведення зміни в SlicerLive (розкладка, вікно/рівень, видимість сегментів, камера, MPR, тимчасовий маркер тощо) розсилаються тим, хто стежить.</li>
-        <li>Під час ведення використовуйте клавішу <strong>B</strong>, щоб увімкнути/вимкнути тимчасовий маркер.</li>
+        <li>Під час ведення зміни в SlicerLive (макет, вікно/рівень, видимість сегментів, камера, прокручування/pan/zoom MPR, зникаюче чорнило та подібні оновлення сцени) розсилаються підписникам.</li>
+        <li>Ви можете <strong>Завершити конференцію</strong> для всіх. Під час ведення використовуйте клавішу <strong>B</strong>, щоб увімкнути/вимкнути зникаюче чорнило.</li>
         <li>Ви можете перевірити конференцію на одному комп’ютері кнопкою <strong>Open another user</strong>. Дивіться демонстраційне відео: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

@@ -3,6 +3,7 @@ import {
   createHubConferenceDialog,
   createHubConferenceInviteController,
   confirmHubConferenceTakeover,
+  HUB_CONFERENCE_ICON_SVG,
   HUB_WORKLIST_WINDOW_NAME,
   deleteHubConference,
   placeHubDialogNearAnchor,
@@ -120,29 +121,6 @@ function wireMenus(state: AppState): void {
       align: 'end',
     });
   };
-
-  const saveSessionUserName = () => {
-    const input = document.getElementById(
-      'sessionUserNameInput'
-    ) as HTMLInputElement | null;
-    if (!input) return;
-    setStoredUserName(input.value.trim());
-    const note = document.getElementById('sessionChangeUserNote');
-    if (note) note.hidden = false;
-  };
-
-  document
-    .getElementById('sessionChangeUserBtn')
-    ?.addEventListener('click', saveSessionUserName);
-
-  document
-    .getElementById('sessionUserNameInput')
-    ?.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Enter') {
-        ev.preventDefault();
-        saveSessionUserName();
-      }
-    });
 
   helpBtn?.addEventListener('click', () => {
     openHelpModal();
@@ -281,6 +259,10 @@ async function boot(): Promise<void> {
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
       },
+      onUserNameChange: (userName) => {
+        setStoredUserName(userName);
+        state.userName = userName;
+      },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());
     statusWrap = conferenceDialog.getSessionControl().label;
@@ -353,13 +335,15 @@ async function boot(): Promise<void> {
     });
   });
 
-  document
-    .getElementById('startConferenceBtn')
-    ?.addEventListener('click', (ev) => {
+  const startConferenceBtn = document.getElementById('startConferenceBtn');
+  if (startConferenceBtn) {
+    startConferenceBtn.innerHTML = HUB_CONFERENCE_ICON_SVG;
+    startConferenceBtn.addEventListener('click', (ev) => {
       const btn =
         ev.currentTarget instanceof HTMLElement ? ev.currentTarget : null;
       openConferenceDialog(btn);
     });
+  }
 
   document.getElementById('endConferenceBtn')?.addEventListener('click', () => {
     const view = state.conference;

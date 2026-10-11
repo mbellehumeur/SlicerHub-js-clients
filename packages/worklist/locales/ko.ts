@@ -41,32 +41,49 @@ export const ko: LocaleBundle = {
     aboutLinkSuffix: '— 라이선스, 감사의 글, 상표.',
     quickStartTitle: '빠른 시작:',
     quickStartBody:
-      '오른쪽의 {{open}} 버튼 중 하나를 클릭하면 검사를 3D 및 MPR로 볼 수 있습니다.',
+      '오른쪽의 {{open}} 버튼 중 하나를 클릭하여 CR을 열고 마법 지팡이 아이콘 {{magicWand}}으로 FleXray를 실행하세요.',
     introHtml: `
         <p>
           이 애플리케이션의 원래 목적은 오픈소스
           <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
-          시스템에서 «worklist client» 액터 역할을 하는 것입니다.
-          이 시스템은 의료 영상 애플리케이션의 상호운용성을 홍보·교육·개발·시연하는 데 목적이 있습니다.
+          및
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          시스템에서 «worklist client» 액터 역할을 하는 것이며, 해당 시스템은
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>라는 3D Slicer 확장에 있습니다.
+          Slicer Hub는 메시징 인프라를 제공하며 의료 영상 애플리케이션의 상호운용성을
+          촉진·교육·개발·시연하는 것을 목표로 합니다.
         </p>
         <p>따라서 이 애플리케이션은 다음을 포함하는 시스템의 한 구성 요소(<strong>WORKLIST_CLIENT actor</strong>)입니다:</p>
         <ul class="wl-help-steps">
-          <li>애플리케이션과 사용자 간 통신용 WebSub 허브 (<strong>HUB actor</strong>)</li>
-          <li>오픈소스 의료 영상 뷰어 (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>오픈소스 추론 모델 (<strong>EVIDENCE_CREATOR actors</strong>)</li>
-          <li>DICOM SR 리포팅 예제 (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li>읽기 전용 아카이브로서의 <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> 및 <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>허브 OIDC 엔드포인트와 연동하거나 허브 내장 익명/모의 인증을 사용하는 인증 / ID 공급자</li>
+          <li>애플리케이션과 사용자 간 통신용 WebSub 허브(<strong>HUB actor</strong>)</li>
+          <li>오픈소스 의료 영상 뷰어(<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>오픈소스 의료 영상 추론 모델(<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>DICOM SR 리포팅 예제(<strong>REPORT_CREATOR actor</strong>)</li>
+          <li>읽기 전용 영상 아카이브로서의 <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> 및 <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM DB(<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>허브 OIDC 엔드포인트 연동 또는 허브 내장 익명/모의 인증을 제공하는 인증 / ID 공급자</li>
         </ul>
         <p>
-          또한 IHE 통합 보고 워크플로와 별도로 해부학·병리학 교육 기능이 포함됩니다:
+          시스템은 IHE Integrated Reporting 워크플로와 독립적인 교육 기능도 포함합니다:
         </p>
         <ul class="wl-help-steps">
-          <li>교육용 파일 및 코호트 생성·저장·업로드</li>
-          <li>공동 열람·교육을 위한 화상회의</li>
-          <li>회의 중 임시 주석용 소멸 브러시</li>
+          <li>수업 준비를 위한 교육 파일 및 코호트 생성·저장·업로드</li>
+          <li>공동 열람 및 교육을 위한 화상회의</li>
+          <li>화상회의 중 임시 주석용 사라지는 브러시 도구</li>
           <li>3D 프린팅용 STL 내보내기</li>
         </ul>
+        <p>
+          IHE와 무관한 연구 및 3D Slicer 기능도 제공됩니다:
+        </p>
+        <ul class="wl-help-steps">
+          <li>애플리케이션 간 파일 전송</li>
+          <li>의료 리얼리티 장면 및 통신</li>
+          <li>Slicer Qt Image Display 클라이언트</li>
+          <li>Slicer DICOM DB 접근</li>
+        </ul>
+        <p>
+          파일 전송을 통해 추론 서버가 결과를 PACS에 먼저 저장하지 않고 뷰어로 직접 보낼 수 있습니다.
+          NIfTI, NRRD, Zarr 같은 연구 파일 형식도 지원합니다.
+        </p>
     `,
     howto0Title: '3D Slicer에 SlicerWorklist 연결하기.',
     howto0Body: `
@@ -117,12 +134,12 @@ export const ko: LocaleBundle = {
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="화상회의가 강조된 SlicerLive 헤더" width="477" height="117" />
         </li>
-        <li>호스트로서 <strong>화상회의</strong>(워크리스트 헤더 또는 SlicerLive 바)를 클릭합니다. 제목을 고르고 만들면 <strong>leading</strong> 장소가 됩니다.</li>
+        <li>호스트로서 <strong>화상회의</strong>(워크리스트 헤더 또는 SlicerLive 바)를 클릭합니다. 제목을 선택하고 만들면 <strong>leading</strong> 장소가 됩니다.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/create-conference.png" alt="화상회의 만들기: 제목 필드와 만들기 버튼" width="167" height="192" />
+          <img class="wl-help-img" src="./help-images/create-conference.png" alt="화상회의 만들기: 제목 필드 및 화상회의 만들기 버튼" width="167" height="192" />
         </li>
-        <li>리딩 중 SlicerLive에서의 변경(레이아웃, 윈도우/레벨, 세그먼트 가시성, 카메라, MPR, 소멸 마커 등)이 회의 팔로워에게 전달됩니다.</li>
-        <li>리딩 중 <strong>B</strong> 키로 소멸 마커 잉크를 켜고 끌 수 있습니다.</li>
+        <li>리딩 중 SlicerLive의 변경(레이아웃, 윈도우/레벨, 세그먼트 가시성, 카메라, MPR 스크롤/팬/줌, 사라지는 잉크 및 유사한 장면 업데이트)이 팔로워에게 전달됩니다.</li>
+        <li>모두를 위해 <strong>화상회의 종료</strong>할 수 있습니다. 리딩 중 <strong>B</strong> 단축키로 사라지는 잉크를 켜고 끕니다.</li>
         <li>단일 데스크톱에서 <strong>Open another user</strong> 버튼으로 화상회의를 테스트할 수 있습니다. 데모 동영상: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

@@ -41,31 +41,50 @@ export const nl: LocaleBundle = {
     aboutLinkSuffix: '— licenties, dankbetuigingen en handelsmerken.',
     quickStartTitle: 'Snel starten:',
     quickStartBody:
-      'Klik rechts op een van de knoppen {{open}} om een studie in 3D en MPR te bekijken.',
+      'Klik rechts op een van de knoppen {{open}} om een CR te openen en het toverstafpictogram {{magicWand}} te gebruiken om FleXray uit te voeren.',
     introHtml: `
         <p>
-          Het oorspronkelijke doel van deze toepassing is een «worklist client»-actor te zijn in een open-source
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>-systeem.
-          Het systeem ondersteunt de bevordering, training, ontwikkeling en demonstratie van interoperabiliteit in medische beeldvormingstoepassingen.
+          Het oorspronkelijke doel van deze toepassing is om een «worklist client»-actor te zijn in een open-source
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>-
+          en
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>-systeem
+          dat zich bevindt in een 3D Slicer-extensie genaamd
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub biedt de messaging-infrastructuur en beoogt interoperabiliteit in medische beeldvormingstoepassingen
+          te bevorderen, te trainen, te ontwikkelen en te demonstreren.
         </p>
         <p>De toepassing is daarom een component (<strong>WORKLIST_CLIENT actor</strong>) van een systeem dat omvat:</p>
         <ul class="wl-help-steps">
           <li>een WebSub-hub (<strong>HUB actor</strong>) voor communicatie tussen toepassingen en gebruikers</li>
-          <li>open-source medische beeldviewers (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>open-source inferentiemodellen (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>open-source viewers voor medische beeldvorming (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>open-source inferentiemodellen voor medische beeldvorming (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>een DICOM SR-reportingvoorbeeld (<strong>REPORT_CREATOR actor</strong>)</li>
           <li>de <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> en de DICOM-DB van <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> als alleen-lezen archieven (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>een authenticatie- / identityprovider met integratie naar de OIDC-endpoints van de hub of de ingebouwde anonieme/mock-authenticatie van de hub</li>
+          <li>een authenticatie- / identiteitsprovider met integratie naar de OIDC-eindpunten van de hub of ingebouwde anonieme/mock-authenticatie van de hub</li>
         </ul>
         <p>
-          De toepassing bevat ook functies voor anatomie- en pathologieonderwijs, onafhankelijk van de IHE-workflow:
+          Het systeem bevat ook educatieve functies die onafhankelijk zijn van de IHE
+          Integrated Reporting-workflow:
         </p>
         <ul class="wl-help-steps">
-          <li>aanmaken, opslaan en uploaden van lesbestanden en cohorten</li>
-          <li>conferentie voor gezamenlijk bekijken en onderwijzen</li>
-          <li>een tijdelijke penseel voor korte annotaties tijdens de conferentie</li>
+          <li>aanmaken, opslaan en uploaden van lesbestanden en cohorten voor lesvoorbereiding</li>
+          <li>conferencing voor gezamenlijk bekijken en onderwijzen</li>
+          <li>een tijdelijke penseeltool voor tijdelijke annotaties tijdens conferencing</li>
           <li>STL-export voor 3D-printen</li>
         </ul>
+        <p>
+          Ook worden onderzoeks- en 3D Slicer-functionaliteiten geleverd, eveneens onafhankelijk van IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>bestandsoverdracht tussen toepassingen</li>
+          <li>medische-realiteitsscènes en communicatie</li>
+          <li>Slicer Qt Image Display-client</li>
+          <li>toegang tot de Slicer-DICOM-DB</li>
+        </ul>
+        <p>
+          Bestandsoverdracht stelt inferentieservers in staat resultaten rechtstreeks naar viewers te sturen
+          zonder ze eerst in een PACS op te slaan. Het ondersteunt ook onderzoeksformaten zoals NIfTI, NRRD en Zarr.
+        </p>
     `,
     howto0Title: 'Hoe SlicerWorklist te verbinden met 3D Slicer.',
     howto0Body: `
@@ -114,14 +133,14 @@ export const nl: LocaleBundle = {
       <ol class="wl-help-steps">
         <li>Open de worklist en klik rechtsboven op <strong>Conferentie</strong>.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive-kop met gemarkeerde conferentie" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive-koptekst met Conferentie gemarkeerd" width="477" height="117" />
         </li>
-        <li>Als host klikt u op <strong>Conferentie</strong> (worklistkop of SlicerLive-balk). Kies een titel en maak aan — u wordt de <strong>leading</strong> plaats.</li>
+        <li>Als host klikt u op <strong>Conferentie</strong> (worklist-kop of SlicerLive-balk). Kies een titel en maak aan — u wordt de <strong>leidende</strong> plaats.</li>
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Conferentie maken: titelveld en knop Conferentie maken" width="167" height="192" />
         </li>
-        <li>Tijdens het leiden worden wijzigingen in SlicerLive (indeling, venster/niveau, segmentzichtbaarheid, camera, MPR, tijdelijke marker enz.) naar volgers gestuurd.</li>
-        <li>Tijdens het leiden schakelt u met de toets <strong>B</strong> de tijdelijke marker in/uit.</li>
+        <li>Terwijl u leidt, worden wijzigingen in SlicerLive (layout, window/level, segmentzichtbaarheid, camera, MPR scroll/pan/zoom, tijdelijke inkt en vergelijkbare scène-updates) naar volgers gestuurd.</li>
+        <li>U kunt de <strong>Conferentie beëindigen</strong> voor iedereen. Terwijl u leidt, gebruikt u de toets <strong>B</strong> om tijdelijke inkt aan/uit te zetten.</li>
         <li>U kunt conferencing op één desktop testen met de knop <strong>Open another user</strong>. Bekijk de demovideo: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

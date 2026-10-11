@@ -41,31 +41,50 @@ export const ro: LocaleBundle = {
     aboutLinkSuffix: '— licențe, mulțumiri și mărci comerciale.',
     quickStartTitle: 'Start rapid:',
     quickStartBody:
-      'Faceți clic pe unul dintre butoanele {{open}} din dreapta pentru a vizualiza un studiu în 3D și MPR.',
-    introHtml:
-      `
+      'Faceți clic pe unul dintre butoanele {{open}} din dreapta pentru a deschide un CR și a folosi pictograma baghetei magice {{magicWand}} pentru a rula FleXray.',
+    introHtml: `
         <p>
-          Scopul inițial al acestei aplicații este de a fi un actor «worklist client» într-un sistem open-source 
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>. Sistemul sprijină promovarea, instruirea, dezvoltarea și demonstrarea interoperabilității în aplicațiile de imagistică medicală.
+          Scopul original al acestei aplicații este să fie un actor «worklist client» într-un sistem open-source
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          și
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          care rezidă într-o extensie 3D Slicer numită
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub oferă infrastructura de mesagerie și urmărește să promoveze, să instruiască, să dezvolte și
+          să demonstreze interoperabilitatea în aplicațiile de imagistică medicală.
         </p>
-        <p>Aplicația este deci o componentă (<strong>WORKLIST_CLIENT actor</strong>) a unui sistem care include:</p>
+        <p>Aplicația este așadar o componentă (<strong>WORKLIST_CLIENT actor</strong>) a unui sistem care include:</p>
         <ul class="wl-help-steps">
           <li>un hub WebSub (<strong>HUB actor</strong>) pentru comunicarea între aplicații și utilizatori</li>
           <li>vizualizatoare open-source de imagistică medicală (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>modele open-source de inferență (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>modele open-source de inferență pentru imagistică medicală (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>un exemplu de raportare DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> și baza DICOM <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> ca arhive doar în citire (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>un furnizor de autentificare / identitate cu integrare la endpoint-urile OIDC ale hub-ului sau autentificarea anonimă/mock încorporată în hub</li>
+          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> și baza DICOM <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> ca arhive doar pentru citire (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>un furnizor de autentificare / identitate cu integrare la endpoint-urile OIDC ale hub-ului sau autentificare anonimă/mock integrată</li>
         </ul>
         <p>
-          Aplicația include și funcții de educație în anatomie și patologie, independente de fluxul IHE:
+          Sistemul include și funcții educaționale independente de fluxul IHE
+          Integrated Reporting:
         </p>
         <ul class="wl-help-steps">
-          <li>crearea, salvarea și încărcarea fișierelor didactice și a cohortelor</li>
-          <li>conferință pentru vizualizare colaborativă și predare</li>
-          <li>pensulă temporară pentru adnotări scurte în timpul conferinței</li>
+          <li>crearea, salvarea și încărcarea fișierelor didactice și a cohortelor pentru pregătirea orelor</li>
+          <li>conferință pentru vizualizare și predare colaborativă</li>
+          <li>o unealtă pensulă efemeră pentru adnotări temporare în conferință</li>
           <li>export STL pentru imprimare 3D</li>
         </ul>
+        <p>
+          Sunt oferite și funcționalități de cercetare și 3D Slicer, independente de IHE:
+        </p>
+        <ul class="wl-help-steps">
+          <li>transfer de fișiere între aplicații</li>
+          <li>scene și comunicări de realitate medicală</li>
+          <li>client Slicer Qt Image Display</li>
+          <li>acces la baza DICOM Slicer</li>
+        </ul>
+        <p>
+          Transferul de fișiere permite serverelor de inferență să trimită rezultatele direct către vizualizatoare
+          fără a le stoca mai întâi într-un PACS. Acceptă și formate de cercetare precum NIfTI, NRRD și Zarr.
+        </p>
     `,
     howto0Title: 'Cum se conectează SlicerWorklist la 3D Slicer.',
     howto0Body:
@@ -113,16 +132,16 @@ export const ro: LocaleBundle = {
     howto2Title: 'Cum se creează o conferință.',
     howto2Body: `
       <ol class="wl-help-steps">
-        <li>Deschideți worklist și faceți clic pe <strong>Conferință</strong> în dreapta sus.</li>
+        <li>Deschideți worklist-ul și faceți clic pe <strong>Conferință</strong> în dreapta sus.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Antet SlicerLive cu conferința evidențiată" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="Antet SlicerLive cu Conferință evidențiată" width="477" height="117" />
         </li>
         <li>Ca gazdă, faceți clic pe <strong>Conferință</strong> (antet worklist sau bara SlicerLive). Alegeți un titlu și creați — deveniți locul <strong>leading</strong>.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Creează conferință: câmp titlu și buton Creează conferință" width="167" height="192" />
+          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Creați conferința: câmp titlu și buton Creați conferința" width="167" height="192" />
         </li>
-        <li>În timp ce conduceți, modificările din SlicerLive (layout, fereastră/nivel, vizibilitate segmente, cameră, MPR, marker temporar etc.) sunt trimise urmăritorilor.</li>
-        <li>În timp ce conduceți, folosiți tasta <strong>B</strong> pentru marker temporar pornit/oprit.</li>
+        <li>În timp ce conduceți, modificările din SlicerLive (aspect, fereastră/nivel, vizibilitate segmente, cameră, scroll/pan/zoom MPR, cerneală efemeră și actualizări similare de scenă) sunt propagate urmăritorilor.</li>
+        <li>Puteți <strong>Încheia conferința</strong> pentru toată lumea. În timp ce conduceți, folosiți tasta <strong>B</strong> pentru a activa/dezactiva cerneala efemeră.</li>
         <li>Puteți testa conferința pe un singur desktop cu butonul <strong>Open another user</strong>. Vedeți videoclipul demo: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

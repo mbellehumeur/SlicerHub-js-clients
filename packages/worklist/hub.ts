@@ -79,6 +79,7 @@ import {
   WORKLIST_ORG_FLEXRAY,
   WORKLIST_ORG_3D_SLICER,
 } from './config';
+import { appLocaleToOhifLng, resolveStoredLocale } from '@slicer-hub/i18n';
 import { conferenceStrings } from './i18n';
 import {
   INFERENCE_SERVERS,
@@ -1340,6 +1341,7 @@ export function openHubViewer(state: AppState, kind: ViewerKind): boolean {
     return false;
   }
   if (kind === 'ohif') {
+    url.searchParams.set('lng', appLocaleToOhifLng(resolveStoredLocale()));
     if (focusExistingOhifWindow(state)) return true;
     const win = window.open(url.toString(), ohifWindowName(state));
     if (win) {

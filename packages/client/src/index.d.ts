@@ -270,6 +270,11 @@ export const HUB_RADIO_ICON_SVG: string;
 export const HUB_RADIO_SLASH_CLASS: string;
 export const HUB_RADIO_STATUS_ICON_CLASS: string;
 
+/** Lucide-style two-people Conferencing SVG class name. */
+export const HUB_CONFERENCE_ICON_CLASS: string;
+/** Conferencing mark SVG (uses currentColor). */
+export const HUB_CONFERENCE_ICON_SVG: string;
+
 /** Icon + diagonal slash overlay markup for connection status. */
 export function castRadioStatusMarkup(options?: {
   slashId?: string;
@@ -765,6 +770,7 @@ export function createHubConferenceDialog(options: {
   getSession: () => CastConferenceDialogSession;
   onConferenceChange?: (view: CastConferenceView | null) => void;
   onFollowChange?: (followHost: boolean) => void;
+  onUserNameChange?: (userName: string) => void;
   strings?: Partial<CastConferenceStrings>;
 }): CastConferenceDialogController;
 
@@ -1307,6 +1313,8 @@ export declare const HubClient: {
   HUB_OPEN_MODE_FILES: typeof HUB_OPEN_MODE_FILES;
   HUB_OPEN_MODE_IDC: typeof HUB_OPEN_MODE_IDC;
   HUB_OPEN_MODE_LOCAL_DICOM: typeof HUB_OPEN_MODE_LOCAL_DICOM;
+  HUB_CONFERENCE_ICON_CLASS: typeof HUB_CONFERENCE_ICON_CLASS;
+  HUB_CONFERENCE_ICON_SVG: typeof HUB_CONFERENCE_ICON_SVG;
   HUB_RADIO_ICON_CLASS: typeof HUB_RADIO_ICON_CLASS;
   HUB_RADIO_ICON_SVG: typeof HUB_RADIO_ICON_SVG;
   HUB_RADIO_SLASH_CLASS: typeof HUB_RADIO_SLASH_CLASS;

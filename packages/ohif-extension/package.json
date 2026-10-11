@@ -24,6 +24,7 @@
   "dependencies": {
     "@slicer-hub/client": "*",
     "@slicer-hub/flexray-web": "*",
+    "@slicer-hub/i18n": "*",
     "dcmjs": "0.49.4",
     "jszip": "3.10.1"
   }

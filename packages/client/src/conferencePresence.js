@@ -447,7 +447,11 @@ function applyConferenceHeaderButton(btn, state) {
       btn.removeAttribute('disabled');
     }
   }
-  if (typeof state.label === 'string') {
+  // Keep SVG / icon markup; only set text labels on text buttons.
+  if (
+    typeof state.label === 'string' &&
+    !btn.querySelector('svg')
+  ) {
     btn.textContent = state.label;
   }
   if (typeof state.title === 'string') {

@@ -12,6 +12,15 @@ export const HUB_RADIO_STATUS_ICON_CLASS = 'hub-radio-status-icon';
 export const HUB_RADIO_SLASH_CLASS = 'hub-radio-slash';
 
 /**
+ * Shared Conferencing mark (lucide-style two people).
+ * Apps color it with currentColor.
+ */
+export const HUB_CONFERENCE_ICON_CLASS = 'hub-conference-icon';
+
+/** SVG markup; uses currentColor. Class: HUB_CONFERENCE_ICON_CLASS. */
+export const HUB_CONFERENCE_ICON_SVG = `<svg class="${HUB_CONFERENCE_ICON_CLASS}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+
+/**
  * Icon + diagonal slash overlay for idle / disconnected / error.
  * @param {{ slashId?: string }} [options]
  * @returns {string} HTML

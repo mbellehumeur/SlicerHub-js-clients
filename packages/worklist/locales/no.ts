@@ -41,31 +41,50 @@ export const no: LocaleBundle = {
     aboutLinkSuffix: '— lisenser, takk og varemerker.',
     quickStartTitle: 'Hurtigstart:',
     quickStartBody:
-      'Klikk en av {{open}}-knappene til høyre for å vise en studie i 3D og MPR.',
-    introHtml:
-      `
+      'Klikk en av {{open}}-knappene til høyre for å åpne et CR og bruke tryllestavikonet {{magicWand}} for å kjøre FleXray.',
+    introHtml: `
         <p>
-          Det opprinnelige formålet med denne applikasjonen er å være en «worklist client»-aktør i et åpen kildekode-
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>-system. Systemet skal støtte promotering, opplæring, utvikling og demonstrasjon av interoperabilitet i medisinske bildediagnostikk-applikasjoner.
+          Det opprinnelige formålet med denne applikasjonen er å være en «worklist client»-aktor i et åpen kildekode-
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>-
+          og
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>-system
+          som ligger i en 3D Slicer-utvidelse kalt
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub gir meldingsinfrastrukturen og tar sikte på å fremme, trene, utvikle og
+          demonstrere interoperabilitet i medisinske bildebehandlingsapplikasjoner.
         </p>
-        <p>Applikasjonen er derfor én komponent (<strong>WORKLIST_CLIENT actor</strong>) i et system som omfatter:</p>
+        <p>Applikasjonen er derfor en komponent (<strong>WORKLIST_CLIENT actor</strong>) i et system som inkluderer:</p>
         <ul class="wl-help-steps">
           <li>en WebSub-hub (<strong>HUB actor</strong>) for kommunikasjon mellom applikasjoner og brukere</li>
-          <li>åpen kildekode-visere for medisinsk bildediagnostikk (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>åpen kildekode-modeller for inferens (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>åpen kildekode-visere for medisinsk bildebehandling (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>åpen kildekode-inferensmodeller for medisinsk bildebehandling (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>et DICOM SR-rapporteringseksempel (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> og <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> DICOM-databasen som skrivebeskyttede arkiver (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>en autentiserings- / identitetsleverandør med integrasjon til hubens OIDC-endepunkter eller innebygd anonym/mock-autentisering i huben</li>
+          <li><a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> og DICOM-DB til <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> som skrivebeskyttede arkiver (<strong>IMAGE_ARCHIVE actor</strong>)</li>
+          <li>en autentiserings- / identitetsleverandør med integrasjon til hubbens OIDC-endepunkter eller innebygd anonym/mock-autentisering</li>
         </ul>
         <p>
-          Applikasjonen har også funksjoner for anatomi- og patologiundervisning, uavhengig av IHE-arbeidsflyten:
+          Systemet inkluderer også utdanningsfunksjoner som er uavhengige av IHE
+          Integrated Reporting-arbeidsflyten:
         </p>
         <ul class="wl-help-steps">
-          <li>oppretting, lagring og opplasting av undervisningsfiler og kohorter</li>
-          <li>konferanse for felles visning og undervisning</li>
-          <li>midlertidig pensel for korte merknader under konferansen</li>
-          <li>STL-eksport for 3D-utskrift</li>
+          <li>opprette, lagre og laste opp undervisningsfiler og kohorter for klasseforberedelse</li>
+          <li>konferanse for samarbeidende visning og undervisning</li>
+          <li>et midlertidig penselverktøy for midlertidige annotasjoner under konferanse</li>
+          <li>STL-eksport for 3D-printing</li>
         </ul>
+        <p>
+          Forsknings- og 3D Slicer-funksjonalitet, også uavhengig av IHE, tilbys:
+        </p>
+        <ul class="wl-help-steps">
+          <li>filoverføring mellom applikasjoner</li>
+          <li>medisinske realitetsscener og kommunikasjon</li>
+          <li>Slicer Qt Image Display-klient</li>
+          <li>tilgang til Slicer DICOM-DB</li>
+        </ul>
+        <p>
+          Filoverføring lar inferensservere sende resultater direkte tilbake til viserne
+          uten å lagre dem i PACS først. Den støtter også forskningsformater som NIfTI, NRRD og Zarr.
+        </p>
     `,
     howto0Title: 'Slik kobler du SlicerWorklist til 3D Slicer.',
     howto0Body:
@@ -115,14 +134,14 @@ export const no: LocaleBundle = {
       <ol class="wl-help-steps">
         <li>Åpne worklisten og klikk <strong>Konferanse</strong> øverst til høyre.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive-header med konferanse uthevet" width="477" height="117" />
+          <img class="wl-help-img" src="./help-images/slicerlive-start-conference.png" alt="SlicerLive-topptekst med Konferanse uthevet" width="477" height="117" />
         </li>
-        <li>Som vert, klikk <strong>Konferanse</strong> (worklist-header eller SlicerLive-linjen). Velg tittel og opprett — du blir <strong>leading</strong>-plassen.</li>
+        <li>Som vert klikker du <strong>Konferanse</strong> (worklist-topptekst eller SlicerLive-linjen). Velg en tittel og opprett — du blir det <strong>ledende</strong> stedet.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Opprett konferanse: tittelfelt og knappen Opprett konferanse" width="167" height="192" />
+          <img class="wl-help-img" src="./help-images/create-conference.png" alt="Opprett konferanse: tittelfelt og Opprett konferanse-knapp" width="167" height="192" />
         </li>
-        <li>Mens du leder, sendes endringer i SlicerLive (layout, vindu/nivå, segment-synlighet, kamera, MPR, midlertidig markør osv.) til følgere.</li>
-        <li>Mens du leder, bruk tasten <strong>B</strong> for å slå midlertidig markør av/på.</li>
+        <li>Mens du leder, sendes endringer i SlicerLive (layout, vindusnivå, segmentvisning, kamera, MPR scroll/pan/zoom, midlertidig blekk og lignende sceneoppdateringer) til følgere.</li>
+        <li>Du kan <strong>Avslutt konferanse</strong> for alle. Mens du leder, bruker du <strong>B</strong>-tasten for å slå midlertidig blekk av/på.</li>
         <li>Du kan teste konferanse på én desktop med knappen <strong>Open another user</strong>. Se demovideoen: <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,

@@ -41,31 +41,50 @@ export const fr: LocaleBundle = {
     aboutLinkSuffix: '— licences, remerciements et marques.',
     quickStartTitle: 'Démarrage rapide :',
     quickStartBody:
-      'Cliquez sur l’un des boutons {{open}} à droite pour visualiser une étude en 3D et MPR.',
+      'Cliquez sur l’un des boutons {{open}} à droite pour ouvrir un CR et utiliser l’icône baguette magique {{magicWand}} pour lancer FleXray.',
     introHtml: `
         <p>
           Le but initial de cette application est d’être un acteur « worklist client » dans un système open source
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>.
-          Le système vise à promouvoir, former, développer et démontrer l’interopérabilité des applications d’imagerie médicale.
+          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
+          et
+          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
+          qui réside dans une extension 3D Slicer appelée
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
+          Slicer Hub fournit l’infrastructure de messagerie et vise à promouvoir, former, développer et
+          démontrer l’interopérabilité des applications d’imagerie médicale.
         </p>
         <p>L’application est donc un composant (<strong>WORKLIST_CLIENT actor</strong>) d’un système qui comprend :</p>
         <ul class="wl-help-steps">
           <li>un hub WebSub (<strong>HUB actor</strong>) pour la communication entre applications et utilisateurs</li>
-          <li>des visionneuses d’imagerie open source (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>des modèles d’inférence open source (<strong>EVIDENCE_CREATOR actors</strong>)</li>
+          <li>des visionneuses d’imagerie médicale open source (<strong>IMAGE_DISPLAY actors</strong>)</li>
+          <li>des modèles d’inférence d’imagerie médicale open source (<strong>EVIDENCE_CREATOR actors</strong>)</li>
           <li>un exemple de reporting DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
           <li>l’<a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> et la base DICOM de <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> comme archives en lecture seule (<strong>IMAGE_ARCHIVE actor</strong>)</li>
           <li>un fournisseur d’authentification / d’identité avec intégration aux endpoints OIDC du hub ou l’authentification anonyme/mock intégrée au hub</li>
         </ul>
         <p>
-          L’application inclut aussi des fonctions d’enseignement d’anatomie et de pathologie indépendantes du workflow IHE :
+          Le système inclut aussi des fonctions d’enseignement indépendantes du workflow IHE
+          Integrated Reporting :
         </p>
         <ul class="wl-help-steps">
-          <li>création, enregistrement et téléversement de dossiers pédagogiques et de cohortes</li>
+          <li>création, enregistrement et téléversement de dossiers pédagogiques et de cohortes pour la préparation des cours</li>
           <li>conférence pour la visualisation et l’enseignement collaboratifs</li>
           <li>un outil de pinceau éphémère pour des annotations temporaires en conférence</li>
           <li>export STL pour l’impression 3D</li>
         </ul>
+        <p>
+          Des fonctionnalités de recherche et de 3D Slicer, également indépendantes de l’IHE, sont fournies :
+        </p>
+        <ul class="wl-help-steps">
+          <li>transfert de fichiers entre applications</li>
+          <li>scènes et communications de réalité médicale</li>
+          <li>client Slicer Qt Image Display</li>
+          <li>accès à la base DICOM de Slicer</li>
+        </ul>
+        <p>
+          Le transfert de fichiers permet aux serveurs d’inférence de renvoyer leurs résultats directement aux visionneuses
+          sans les stocker d’abord dans un PACS. Il prend aussi en charge des formats de recherche comme NIfTI, NRRD et Zarr.
+        </p>
     `,
     howto0Title: 'Comment connecter SlicerWorklist à 3D Slicer.',
     howto0Body: `
@@ -120,9 +139,9 @@ export const fr: LocaleBundle = {
         <li class="wl-help-figure">
           <img class="wl-help-img" src="./help-images/create-conference.png" alt="Créer une conférence : titre et bouton Créer une conférence" width="167" height="192" />
         </li>
-        <li>En leading, vos changements dans SlicerLive (mise en page, fenêtre/niveau, segments, caméra, MPR, encre éphémère, etc.) sont diffusés aux suiveurs.</li>
-        <li>En leading, utilisez la touche <strong>B</strong> pour activer/désactiver l’encre éphémère.</li>
-        <li>Vous pouvez tester la conférence sur un seul ordinateur avec le bouton <strong>Open another user</strong>. Voir la vidéo de démonstration : <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
+        <li>En leading, vos changements dans SlicerLive (mise en page, fenêtre/niveau, visibilité des segments, caméra, défilement/panoramique/zoom MPR, encre éphémère et mises à jour de scène similaires) sont diffusés aux suiveurs de la conférence.</li>
+        <li>Vous pouvez <strong>Terminer la conférence</strong> pour tout le monde. En leading, utilisez la touche <strong>B</strong> pour activer/désactiver l’encre éphémère.</li>
+        <li>Vous pouvez tester la conférence sur un seul ordinateur avec le bouton <strong>Open another user</strong>. Voir la vidéo de démonstration : <a href="https://youtu.be/xKQEOs1_9Bg" target="_blank" rel="noopener noreferrer">https://youtu.be/xKQEOs1_9Bg</a></li>
       </ol>
     `,
     howto3Title: 'Comment rechercher dans IDC et ajouter à une liste personnelle.',

@@ -16,7 +16,7 @@ export const en = {
     omiFhir: 'OMI Registry',
     omiFhirTitle:
       'Open Medical Inference (OMI) registry for all inference models',
-    classroom: 'Courses:',
+    classroom: 'Classrooms:',
     currentContext: 'Current context:',
     none: 'none',
     colStudy: 'Study',
@@ -37,7 +37,7 @@ export const en = {
     aboutLinkSuffix: '— licenses, acknowledgements, and trademarks.',
     quickStartTitle: 'Quick Start:',
     quickStartBody:
-      'Click one of the {{open}} buttons on the right to view a study in 3D and MPR.',
+      'Click one of the {{open}} buttons on the right to open a CR and use the magic wand icon {{magicWand}} to run FleXray.',
     introHtml: `
         <p>
           The original purpose of this application is to be a "worklist client" actor in an open-source

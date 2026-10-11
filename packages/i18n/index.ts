@@ -1,40 +1,43 @@
+export type { AppLocale } from './storage';
 export {
-  type AppLocale,
   LOCALE_STORAGE_KEY,
   LEGACY_LOCALE_KEY,
   LOCALE_COOKIE,
   isAppLocale,
+  appLocaleToOhifLng,
+  ohifLngToAppLocale,
   resolveStoredLocale,
   persistLocale,
   applyDocumentLocale,
 } from './storage';
 
-export {
-  APP_LOCALES,
-  wireLanguagePicker,
-  type WireLanguagePickerOpts,
-} from './language-picker';
+export type { WireLanguagePickerOpts } from './language-picker';
+export { APP_LOCALES, wireLanguagePicker } from './language-picker';
 
+export type { ConferenceStrings } from './conference';
 export {
-  type ConferenceStrings,
   CONFERENCE_BY_LOCALE,
   conferenceStringsFor,
 } from './conference';
 
+export type { HeaderChrome } from './header';
 export {
-  type HeaderChrome,
   HEADER_BY_LOCALE,
   headerChromeFor,
   applyHeaderChrome,
 } from './header';
 
+export type { ReportingChrome } from './reporting';
 export {
-  type ReportingChrome,
   REPORTING_BY_LOCALE,
   reportingChromeFor,
   applyReportingChrome,
 } from './reporting';
 
+export type {
+  SegmentLabelTerminology,
+  TranslateHubOptions,
+} from './segment-labels';
 export {
   SEGMENT_LABELS_STATIC,
   translateTargetForLocale,
@@ -42,6 +45,4 @@ export {
   segmentDisplayNameSync,
   ensureSegmentLabelsTranslated,
   segmentDisplayName,
-  type SegmentLabelTerminology,
-  type TranslateHubOptions,
 } from './segment-labels';
