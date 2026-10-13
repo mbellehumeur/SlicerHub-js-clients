@@ -7,12 +7,14 @@ import HubClient, {
   type CastProductStatusProbe,
   applyCastPublishEnvelopeFields,
   buildInferenceRunContextExtras,
+  cloneContextArray,
   DEFAULT_CAST_PUBLISH_ENVELOPE_FIELDS,
   generateSubscriberName,
   getHubEventLower,
   isRequestEvent,
   isStatusRequestDataType,
   normalizeConferenceParticipants,
+  normalizeImagingStudyContext,
   probeCastInferenceServers,
   requestEventFor,
   resolveHubConferenceState,
@@ -206,6 +208,8 @@ export default class HubService extends PubSubService {
   private _lastBroadcastHubHeaderStatus: HubHeaderStatusState | null = null;
   private _statusRequestedForSession = false;
   private _unwireSegmentLabelI18n: (() => void) | null = null;
+  /** Last ImagingStudy-open context (for STATUS replies to worklist). */
+  private _lastImagingStudyOpenContext: unknown[] = [];
 
   constructor(
     extensionManager: ExtensionManagerLike,
@@ -731,6 +735,7 @@ export default class HubService extends PubSubService {
         return;
       }
       if (hubEvent === 'imagingstudy-close') {
+        this._lastImagingStudyOpenContext = [];
         this._imagingStudyHandler.handleClose();
         return;
       }
@@ -832,8 +837,14 @@ export default class HubService extends PubSubService {
       return null;
     }
     await this._imagingStudyHandler.handleOpen(event, resolved);
+    this._rememberImagingStudyOpenContext(event.context);
     tryApplyPendingUsAnnotations(this._servicesManager);
     return { event, message: resolved };
+  }
+
+  private _rememberImagingStudyOpenContext(context: unknown): void {
+    const normalized = normalizeImagingStudyContext(context);
+    this._lastImagingStudyOpenContext = cloneContextArray(normalized);
   }
 
   private async _handleBinaryEvent(
@@ -874,7 +885,8 @@ export default class HubService extends PubSubService {
     if (isStatusRequestDataType(context.dataType)) {
       const statusPayload = buildStatusResponsePayload(
         this._productName,
-        this._servicesManager
+        this._servicesManager,
+        this._lastImagingStudyOpenContext
       );
       this._client.sendCastRequestResponse(
         correlationId,
@@ -885,6 +897,8 @@ export default class HubService extends PubSubService {
       console.info(`${LOG_PREFIX} status-response`, {
         id: correlationId,
         viewportCount: statusPayload.sceneview.viewports.length,
+        imagingStudy: statusPayload['context.type'] === 'ImagingStudy',
+        contextItems: statusPayload.context.length,
       });
       return;
     }
@@ -1090,6 +1104,7 @@ export default class HubService extends PubSubService {
       'subscriber.product.name': WORKLIST_CLIENT_ACTOR_KEYWORD,
     };
     await this._imagingStudyHandler.handleOpen(event, message);
+    this._rememberImagingStudyOpenContext(event.context);
     tryApplyPendingUsAnnotations(this._servicesManager);
     return { event, message };
   }

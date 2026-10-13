@@ -137,6 +137,15 @@ export function navigateToHubEmptyViewer(options?: HubNavigateOptions): void {
   hubNavigate('/viewer', { replace: true, ...options });
 }
 
+/** True when the current OHIF URL already names a study (any StudyInstanceUIDs). */
+function hubViewerAlreadyHasStudy(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  const params = new URLSearchParams(window.location.search);
+  return params.getAll('StudyInstanceUIDs').some(uid => uid.trim().length > 0);
+}
+
 export function navigateToHubViewer(
   studyUIDs: string[],
   options?: {
@@ -156,8 +165,15 @@ export function navigateToHubViewer(
   const dataSource =
     options?.dataSource ??
     (options?.useLocalDataSource !== false ? HUB_LOCAL_DATA_SOURCE : undefined);
-  if (options?.seriesUID) {
+  // When a study is already open, omit SeriesInstanceUIDs so Mode init does not
+  // race stale studyInstanceUIDs against a new series filter (worklist restart).
+  const omitSeriesFilter = hubViewerAlreadyHasStudy();
+  if (options?.seriesUID && !omitSeriesFilter) {
     query.append('SeriesInstanceUIDs', options.seriesUID);
+  } else if (options?.seriesUID && omitSeriesFilter) {
+    console.info(
+      `${LOG_PREFIX} navigateToHubViewer: study already open — omitting SeriesInstanceUIDs filter`
+    );
   }
 
   const modeRoute = resolveHubModeRoute(studyUIDs, options?.modeRoute);

@@ -2,6 +2,7 @@ import {
   createHubConferenceDialog,
   createHubConferenceInviteController,
   deleteHubConference,
+  HUB_CONFERENCE_ICON_SVG,
   shouldShowConferenceInvite,
   showHubInfoToast,
 } from '@slicer-hub/client';
@@ -16,23 +17,23 @@ import {
   type AppLocale,
 } from '@slicer-hub/i18n';
 import {
-  addMeasurementForSegment,
-  addMeasurementForSelectedOrFirst,
   addSnapshotAndRequestPng,
   autoConnect,
   createInitialState,
   downloadSnapshotLocally,
-  handleReportingClose,
   hubEndpoint,
+  illustrateTerm,
+  openCourseScene,
   openSnapshotFullView,
   refreshReportContextFromStatus,
-  removeMeasurement,
   removeSnapshot,
   requestStatusFromHostWorklist,
-  selectMeasurement,
+  selectCourseTerm,
   selectSegment,
+  sendConferenceChat,
   setConferenceFollowHost,
   setConferenceHubHandler,
+  setConferenceLogListener,
   setConferenceView,
   setSegOpacity,
   setSegmentOpacity,
@@ -50,6 +51,14 @@ import {
   type AppState,
 } from './hub';
 import {
+  advanceQuiz,
+  applyQuizChoice,
+  createQuizState,
+  renderCoursePanel,
+  type QuizState,
+} from './course/course-ui';
+import { courseChromeFor } from './course/strings';
+import {
   getStoredTheme,
   REPORTING_ACTOR,
   setStoredTheme,
@@ -64,16 +73,14 @@ import {
   mountVolOpacityChip,
   mountVolPresetButton,
   mountVolShiftSlider,
-  renderReportContext,
   renderReportDisplay,
   renderConferenceRoster,
   setSessionStatusControl,
   updateConnectionStatusUi,
 } from './classroom-ui';
 import {
+  openHubViewer,
   setViewerButtonsEnabled,
-  updateViewerPresenceButtons,
-  wireViewerButtons,
 } from './viewers';
 
 function applyTheme(theme: string): void {
@@ -208,29 +215,6 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
       void toggleLabelsVisibility(state);
       return;
     }
-    const removeBtn = t?.closest(
-      '[data-remove-measurement]'
-    ) as HTMLElement | null;
-    if (removeBtn?.dataset.removeMeasurement) {
-      ev.stopPropagation();
-      removeMeasurement(state, removeBtn.dataset.removeMeasurement);
-      return;
-    }
-    const addBtn = t?.closest('[data-add-measurement]') as HTMLElement | null;
-    if (addBtn) {
-      ev.stopPropagation();
-      const segNum = Number(addBtn.dataset.segNumber);
-      if (Number.isFinite(segNum)) {
-        addMeasurementForSegment(
-          state,
-          segNum,
-          addBtn.dataset.segSop || undefined
-        );
-      } else {
-        addMeasurementForSelectedOrFirst(state);
-      }
-      return;
-    }
     if (t?.closest('[data-seg-stl]')) {
       ev.stopPropagation();
       return;
@@ -239,11 +223,6 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
     if (eye?.dataset.segVis != null) {
       ev.stopPropagation();
       void toggleSegmentVisibility(state, Number(eye.dataset.segVis));
-      return;
-    }
-    const measRow = t?.closest('[data-measurement-id]') as HTMLElement | null;
-    if (measRow?.dataset.measurementId) {
-      selectMeasurement(state, measRow.dataset.measurementId);
       return;
     }
     const segRow = t?.closest('[data-seg-number]') as HTMLElement | null;
@@ -315,7 +294,7 @@ function boot(): void {
     'startConferenceBtn'
   ) as HTMLButtonElement | null;
   if (startBtn) {
-    startBtn.textContent = conf.conferencing;
+    startBtn.innerHTML = HUB_CONFERENCE_ICON_SVG;
     startBtn.setAttribute('aria-label', conf.conferencing);
     if (!startBtn.disabled) startBtn.title = conf.conferencing;
     else startBtn.title = conf.subscribeHubFirst;
@@ -330,19 +309,73 @@ function boot(): void {
   }
   applyTheme(getStoredTheme());
 
+  const syncHeaderTitle = (localeCode?: AppLocale): void => {
+    const titleEl = document.getElementById('classroomHeaderTitle');
+    if (!titleEl) return;
+    const chrome = courseChromeFor(localeCode || resolveStoredLocale());
+    titleEl.textContent = chrome.headerTitle;
+    document.title = chrome.headerTitle;
+  };
+  syncHeaderTitle(locale);
+
   const state = createInitialState();
   let statusWrap: HTMLElement | null = null;
+  let quiz: QuizState = createQuizState();
   const reportDisplay = document.getElementById('reportDisplay') as HTMLElement;
+  const glossaryPanel = document.getElementById('glossaryPanel') as HTMLElement;
+  const quizPanel = document.getElementById('quizPanel') as HTMLElement;
   const confStrings = () => conferenceStringsFor(resolveStoredLocale());
+
+  const syncConferenceChatChrome = (s: AppState): void => {
+    const chrome = courseChromeFor(resolveStoredLocale());
+    const title = document.getElementById('conferenceLogTitle');
+    if (title) title.textContent = chrome.conferenceLog;
+    const input = document.getElementById(
+      'conferenceChatInput'
+    ) as HTMLInputElement | null;
+    const send = document.getElementById(
+      'conferenceChatSend'
+    ) as HTMLButtonElement | null;
+    const inConf =
+      Boolean(s.conference) && s.connection === 'connected';
+    if (input) {
+      input.placeholder = chrome.chatPlaceholder;
+      input.disabled = !inConf;
+      if (!inConf) input.title = chrome.chatNeedConference;
+      else input.removeAttribute('title');
+    }
+    if (send) {
+      send.textContent = chrome.chatSend;
+      send.disabled = !inConf;
+    }
+  };
+
+  const remountCourse = (s: AppState): void => {
+    renderCoursePanel(glossaryPanel, quizPanel, s, quiz);
+  };
+
+  const syncConferenceLogUi = (s: AppState): void => {
+    const log = document.getElementById(
+      'conferenceLog'
+    ) as HTMLTextAreaElement | null;
+    if (!log) return;
+    log.value = s.conferenceLogLines.join('\n');
+    log.scrollTop = log.scrollHeight;
+    syncConferenceChatChrome(s);
+  };
 
   setStatusListener((s) => {
     updateConnectionStatusUi(statusWrap, s);
     setViewerButtonsEnabled(s.connection === 'connected', s);
+    syncConferenceChatChrome(s);
+    remountCourse(s);
   });
   setStudyListener((s) => {
-    renderReportContext(s);
     remountDisplay(s, reportDisplay);
-    updateViewerPresenceButtons(s);
+    remountCourse(s);
+  });
+  setConferenceLogListener((s) => {
+    syncConferenceLogUi(s);
   });
 
   let conferenceDialog: ReturnType<typeof createHubConferenceDialog> | null =
@@ -368,6 +401,7 @@ function boot(): void {
       }),
       onConferenceChange: (view) => {
         setConferenceView(state, view);
+        syncConferenceChatChrome(state);
       },
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
@@ -402,6 +436,7 @@ function boot(): void {
         }),
       onConferenceChange: (view) => {
         setConferenceView(state, view);
+        syncConferenceChatChrome(state);
       },
       onFollowChange: (followHost, invite) => {
         setConferenceFollowHost(state, followHost);
@@ -437,7 +472,9 @@ function boot(): void {
         'startConferenceBtn'
       ) as HTMLButtonElement | null;
       if (startBtn) {
-        startBtn.textContent = strings.conferencing;
+        if (!startBtn.querySelector('svg')) {
+          startBtn.innerHTML = HUB_CONFERENCE_ICON_SVG;
+        }
         startBtn.setAttribute('aria-label', strings.conferencing);
         if (!startBtn.disabled) startBtn.title = strings.conferencing;
         else startBtn.title = strings.subscribeHubFirst;
@@ -451,25 +488,11 @@ function boot(): void {
         endBtn.title = strings.leaveConference;
       }
       renderConferenceRoster(state);
-      renderReportContext(state);
+      remountCourse(state);
+      syncConferenceChatChrome(state);
+      syncHeaderTitle(code);
     },
   });
-
-  document.getElementById('closeContextBtn')?.addEventListener('click', () => {
-    void handleReportingClose(state).catch((err) => {
-      console.error('[@slicer-hub/classroom] close context failed', err);
-    });
-  });
-
-  for (const id of [
-    'reportSaveBtn',
-    'reportCompleteBtn',
-    'reportCancelBtn',
-  ] as const) {
-    document.getElementById(id)?.addEventListener('click', () => {
-      window.close();
-    });
-  }
 
   document
     .getElementById('startConferenceBtn')
@@ -504,16 +527,82 @@ function boot(): void {
       })
       .finally(() => {
         updateConnectionStatusUi(statusWrap, state);
+        syncConferenceChatChrome(state);
       });
   });
 
   wireMenus(state);
-  wireViewerButtons(state);
   wireReportDisplay(state, reportDisplay);
+
+  const onCourseClick = (ev: MouseEvent): void => {
+    const t = ev.target as HTMLElement | null;
+    const openScene = t?.closest('[data-open-scene]') as HTMLElement | null;
+    if (openScene?.dataset.openScene) {
+      const key = openScene.dataset.openScene;
+      if (key === 'mrhead' || key === 'totalsegmentator-ct') {
+        openScene.setAttribute('disabled', '');
+        void openCourseScene(state, key).finally(() => {
+          if (state.connection === 'connected') {
+            openScene.removeAttribute('disabled');
+          }
+          remountCourse(state);
+        });
+      }
+      return;
+    }
+    const illustrate = t?.closest(
+      '[data-illustrate-term]'
+    ) as HTMLElement | null;
+    if (illustrate?.dataset.illustrateTerm) {
+      const termId = illustrate.dataset.illustrateTerm;
+      selectCourseTerm(state, termId);
+      openHubViewer(state, 'ira');
+      void illustrateTerm(state, termId).then(() => remountCourse(state));
+      return;
+    }
+    const row = t?.closest('[data-term-id]') as HTMLElement | null;
+    if (row?.dataset.termId && !t?.closest('[data-illustrate-term]')) {
+      selectCourseTerm(state, row.dataset.termId);
+      remountCourse(state);
+      return;
+    }
+    if (t?.closest('[data-quiz-restart]')) {
+      quiz = createQuizState();
+      remountCourse(state);
+      return;
+    }
+    if (t?.closest('[data-quiz-next]')) {
+      quiz = advanceQuiz(quiz);
+      remountCourse(state);
+      return;
+    }
+    const choice = t?.closest('[data-quiz-choice]') as HTMLElement | null;
+    if (choice?.dataset.quizChoice) {
+      quiz = applyQuizChoice(quiz, choice.dataset.quizChoice);
+      remountCourse(state);
+    }
+  };
+  glossaryPanel?.addEventListener('click', onCourseClick);
+  quizPanel?.addEventListener('click', onCourseClick);
+
+  document
+    .getElementById('conferenceChatForm')
+    ?.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const input = document.getElementById(
+        'conferenceChatInput'
+      ) as HTMLInputElement | null;
+      if (!input) return;
+      const text = input.value;
+      input.value = '';
+      void sendConferenceChat(state, text);
+    });
+
   updateConnectionStatusUi(statusWrap, state);
   setViewerButtonsEnabled(state.connection === 'connected', state);
-  renderReportContext(state);
   remountDisplay(state, reportDisplay);
+  remountCourse(state);
+  syncConferenceLogUi(state);
 
   console.info(
     '[@slicer-hub/classroom] boot hub=',

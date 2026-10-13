@@ -268,3 +268,115 @@ export function buildRoiVisiblePatchOps(opts: {
     },
   ];
 }
+
+/** IRA LiveScene camera node id (matches ira-live-scene-bridge). */
+export const IRA_CAM_NODE_ID = 'cam1';
+
+export type CameraPose = {
+  position: [number, number, number];
+  focalPoint: [number, number, number];
+  viewUp: [number, number, number];
+  viewAngle: number;
+};
+
+function asVec3(v: unknown): [number, number, number] | null {
+  if (!Array.isArray(v) || v.length < 3) return null;
+  const a = Number(v[0]);
+  const b = Number(v[1]);
+  const c = Number(v[2]);
+  if (![a, b, c].every(Number.isFinite)) return null;
+  return [a, b, c];
+}
+
+/** Volume RAS center from ijkToRAS translation, else existing camera focalPoint. */
+export function volumeCenterFromSceneDoc(
+  doc: SceneDoc | null | undefined
+): [number, number, number] {
+  const volId = primaryVolNodeId(doc);
+  const vol = doc?.nodes?.[volId] as { ijkToRAS?: unknown } | undefined;
+  const m = vol?.ijkToRAS;
+  if (Array.isArray(m) && m.length >= 16) {
+    const x = Number(m[3]);
+    const y = Number(m[7]);
+    const z = Number(m[11]);
+    if ([x, y, z].every(Number.isFinite)) return [x, y, z];
+  }
+  const cam = doc?.nodes?.[IRA_CAM_NODE_ID] as
+    | { focalPoint?: unknown }
+    | undefined;
+  const fp = asVec3(cam?.focalPoint);
+  if (fp) return fp;
+  return [0, 0, 0];
+}
+
+/** Distance from existing camera to focal point, or a default orbit radius. */
+export function cameraDistanceFromSceneDoc(
+  doc: SceneDoc | null | undefined,
+  center: [number, number, number]
+): number {
+  const cam = doc?.nodes?.[IRA_CAM_NODE_ID] as
+    | { position?: unknown; focalPoint?: unknown }
+    | undefined;
+  const pos = asVec3(cam?.position);
+  const fp = asVec3(cam?.focalPoint) || center;
+  if (pos) {
+    const dx = pos[0] - fp[0];
+    const dy = pos[1] - fp[1];
+    const dz = pos[2] - fp[2];
+    const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    if (Number.isFinite(d) && d > 10) return d;
+  }
+  return 400;
+}
+
+/**
+ * Camera put ops that illustrate an anatomical plane in IRA 3D.
+ * termId: sagittal | frontal | transverse — look-along the plane normal (RAS).
+ */
+export function buildDirectionalTermCameraOps(opts: {
+  doc: SceneDoc | null | undefined;
+  termId: string;
+}): Array<Record<string, unknown>> {
+  const center = volumeCenterFromSceneDoc(opts.doc);
+  const dist = cameraDistanceFromSceneDoc(opts.doc, center);
+  const prev = opts.doc?.nodes?.[IRA_CAM_NODE_ID] as
+    | { viewAngle?: unknown; name?: unknown }
+    | undefined;
+  const viewAngle = Number(prev?.viewAngle);
+  const angle = Number.isFinite(viewAngle) && viewAngle > 0 ? viewAngle : 30;
+
+  let position: [number, number, number];
+  let viewUp: [number, number, number];
+  switch (opts.termId) {
+    case 'sagittal':
+      // Look from patient left (+R); superior up — viewing the sagittal cut.
+      position = [center[0] + dist, center[1], center[2]];
+      viewUp = [0, 0, 1];
+      break;
+    case 'frontal':
+      // Look from anterior (−A); superior up — viewing the coronal cut.
+      position = [center[0], center[1] - dist, center[2]];
+      viewUp = [0, 0, 1];
+      break;
+    case 'transverse':
+      // Look from superior (+S); anterior up — axial / cross-section view.
+      position = [center[0], center[1], center[2] + dist];
+      viewUp = [0, 1, 0];
+      break;
+    default:
+      position = [center[0], center[1] - dist, center[2]];
+      viewUp = [0, 0, 1];
+  }
+
+  const node = {
+    type: 'camera',
+    id: IRA_CAM_NODE_ID,
+    name: String(prev?.name || 'Camera'),
+    position,
+    focalPoint: center,
+    viewUp,
+    viewAngle: angle,
+  };
+
+  return [{ op: 'put', id: IRA_CAM_NODE_ID, node }];
+}

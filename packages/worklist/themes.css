@@ -1983,13 +1983,23 @@ a.wl-viewer-btn {
   margin: 0 0.15em;
 }
 
+.wl-help-magic-wand-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin: 0 0.2em;
+  padding: 0.15em;
+  border: 1px solid var(--wl-border, currentColor);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--wl-fg);
+}
+
 .wl-help-magic-wand {
-  display: inline-block;
+  display: block;
   width: 1.1em;
   height: 1.1em;
-  vertical-align: middle;
-  margin: 0 0.15em;
-  color: var(--wl-fg);
 }
 
 .wl-help-intro-details {

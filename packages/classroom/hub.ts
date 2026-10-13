@@ -20,10 +20,8 @@ import HubClient, {
   requestCastStatus,
   requestEventFor,
   resolveHubConferenceView,
-  resolveHubFileMessage,
   resolveHubAdminUrl,
   selectFirstMatchingHubKey,
-  batchContextFiles,
   showHubInfoToast,
   type CastConferenceView,
 } from '@slicer-hub/client';
@@ -46,16 +44,14 @@ import {
   setStoredUserName,
   SUBSCRIBE_EVENTS,
 } from './config';
-import { reportingChromeFor } from '@slicer-hub/i18n';
+import { reportingChromeFor, resolveStoredLocale } from '@slicer-hub/i18n';
 import {
   EMPTY_SEG_CATALOG,
-  findCatalogSegment,
-  firstCatalogSegment,
   segCatalogFromContext,
-  type ReportMeasurement,
   type SegCatalog,
 } from './seg-catalog';
 import {
+  buildDirectionalTermCameraOps,
   buildSegmentPatchOps,
   buildRoiVisiblePatchOps,
   buildVolumeCropPatchOps,
@@ -69,7 +65,12 @@ import {
   type SceneDoc,
   type SceneSegEntry,
 } from './scene-update';
-import { parseTid1500FromBuffer } from './tid1500';
+import { termById } from './course/directional-terms';
+import {
+  openClassroomSceneInIra,
+  type ClassroomSceneKey,
+} from './course/open-scene';
+import { courseChromeFor } from './course/strings';
 
 export type ConnectionUiState =
   | 'idle'
@@ -103,11 +104,8 @@ export type AppState = {
   lastImagingStudyOpenContext: unknown[];
   /** SEG catalog last loaded from Image Display STATUS. */
   segCatalog: SegCatalog;
-  /** Measurement rows (manual + / imported TID1500; in-memory only). */
-  measurements: ReportMeasurement[];
   /** Last Load-from-ID status detail for the UI. */
   segLoadDetail: string;
-  selectedMeasurementId: string | null;
   /** Selected catalog segment number (for header +). */
   selectedSegmentNumber: number | null;
   /** Selected SEG SOP for selectedSegmentNumber disambiguation. */
@@ -155,6 +153,12 @@ export type AppState = {
   connectedApps: Map<string, ConnectedAppInfo>;
   /** Open a second reporting tab that authenticates as a new hub user. */
   freshUser: boolean;
+  /** Conference activity + chat lines (in-session only). */
+  conferenceLogLines: string[];
+  /** Selected glossary term id for course UI. */
+  selectedTermId: string | null;
+  /** Relative-term demo note shown in course panel. */
+  courseDemoNote: string;
 };
 
 export type ConnectedAppInfo = {
@@ -216,9 +220,7 @@ export function createInitialState(): AppState {
     openStudy: null,
     lastImagingStudyOpenContext: [],
     segCatalog: EMPTY_SEG_CATALOG,
-    measurements: [],
     segLoadDetail: '',
-    selectedMeasurementId: null,
     selectedSegmentNumber: null,
     selectedSegmentSopUid: '',
     sceneDoc: null,
@@ -241,6 +243,9 @@ export function createInitialState(): AppState {
     iraOnline: false,
     connectedApps: new Map(),
     freshUser,
+    conferenceLogLines: [],
+    selectedTermId: null,
+    courseDemoNote: '',
   };
 }
 
@@ -318,11 +323,167 @@ async function syncConferenceView(state: AppState): Promise<void> {
   }
 }
 
+const CONFERENCE_LOG_MAX = 200;
+let onConferenceLogChange: ((state: AppState) => void) | null = null;
+
+export function setConferenceLogListener(
+  fn: ((state: AppState) => void) | null
+): void {
+  onConferenceLogChange = fn;
+}
+
+export function appendConferenceLog(state: AppState, line: string): void {
+  const text = String(line || '').trim();
+  if (!text) return;
+  const stamp = new Date().toLocaleTimeString();
+  state.conferenceLogLines = [
+    ...state.conferenceLogLines,
+    `[${stamp}] ${text}`,
+  ].slice(-CONFERENCE_LOG_MAX);
+  onConferenceLogChange?.(state);
+}
+
+function labelFromContext(
+  context: Record<string, unknown>,
+  keys: string[]
+): string {
+  for (const k of keys) {
+    const v = String(context[k] ?? '').trim();
+    if (v) return v;
+  }
+  return '';
+}
+
+function appendActivityFromConferenceMessage(
+  state: AppState,
+  message: Record<string, unknown>
+): void {
+  const event = message?.event as
+    | { 'hub.event'?: string; context?: unknown }
+    | undefined;
+  const hubEvent = getHubEventLower(event);
+  const context =
+    event?.context && typeof event.context === 'object' && !Array.isArray(event.context)
+      ? (event.context as Record<string, unknown>)
+      : {};
+  const chrome = courseChromeFor(resolveStoredLocale());
+
+  if (hubEvent === 'conference-start') {
+    const joined =
+      labelFromContext(context, ['joinedUserName', 'joinedTopic']) ||
+      '';
+    if (joined) {
+      appendConferenceLog(state, `${joined} ${chrome.joined}`);
+    } else {
+      const title = labelFromContext(context, ['title']);
+      appendConferenceLog(
+        state,
+        title
+          ? `${chrome.conferenceStarted}: ${title}`
+          : chrome.conferenceStarted
+      );
+    }
+    return;
+  }
+  if (hubEvent === 'conference-end') {
+    const reason = String(context.reason ?? '').trim();
+    if (reason === 'attendee-left') {
+      const who =
+        labelFromContext(context, [
+          'leaveUserName',
+          'leftUserName',
+          'leaveTopic',
+        ]) || 'Someone';
+      appendConferenceLog(state, `${who} ${chrome.left}`);
+    } else {
+      appendConferenceLog(state, chrome.conferenceEnded);
+    }
+    return;
+  }
+  if (hubEvent === 'conference-lead') {
+    const who =
+      labelFromContext(context, [
+        'leaderUserName',
+        'leaderLabel',
+        'sceneLeaderTopic',
+      ]) || 'Someone';
+    appendConferenceLog(state, `${who} ${chrome.tookOver}`);
+  }
+}
+
+function handleConferenceChatMessage(
+  state: AppState,
+  message: Record<string, unknown>
+): boolean {
+  const event = message?.event as
+    | { 'hub.event'?: string; context?: unknown }
+    | undefined;
+  if (getHubEventLower(event) !== 'conference-chat') return false;
+  const context =
+    event?.context && typeof event.context === 'object' && !Array.isArray(event.context)
+      ? (event.context as Record<string, unknown>)
+      : {};
+  const text = String(context.text ?? '').trim();
+  if (!text) return true;
+  const from =
+    labelFromContext(context, ['fromUserName', 'fromSubscriber']) ||
+    messageSubscriberName(message) ||
+    'Peer';
+  const id = String(context.messageId ?? '').trim();
+  if (id && state.conferenceLogLines.some((l) => l.includes(`#${id}`))) {
+    return true;
+  }
+  appendConferenceLog(
+    state,
+    id ? `${from}: ${text} #${id}` : `${from}: ${text}`
+  );
+  return true;
+}
+
+export async function sendConferenceChat(
+  state: AppState,
+  text: string
+): Promise<boolean> {
+  const body = String(text || '').trim();
+  if (!body) return false;
+  if (!state.client || state.connection !== 'connected') return false;
+  if (!state.conference) return false;
+  const messageId = `c${Date.now().toString(36)}${Math.random()
+    .toString(36)
+    .slice(2, 7)}`;
+  const fromUserName =
+    String(state.userName || '').trim() || state.subscriberName || 'Me';
+  try {
+    const res = await state.client.publish({
+      event: {
+        'hub.topic': state.topic,
+        'hub.event': 'conference-chat',
+        context: {
+          text: body,
+          fromSubscriber: state.subscriberName,
+          fromUserName,
+          sentAt: new Date().toISOString(),
+          messageId,
+        },
+      },
+      actor: REPORTING_ACTOR,
+    });
+    const ok = Boolean(res && res.ok);
+    if (ok) {
+      appendConferenceLog(state, `${fromUserName}: ${body} #${messageId}`);
+    }
+    return ok;
+  } catch (err) {
+    console.error(`${LOG_PREFIX} conference-chat publish failed`, err);
+    return false;
+  }
+}
+
 function handleConferenceHubEvent(
   state: AppState,
   message: Record<string, unknown>
 ): boolean {
-  if (conferenceHubHandler?.(message)) {
+  if (handleConferenceChatMessage(state, message)) {
     return true;
   }
   const event = message?.event as
@@ -332,6 +493,17 @@ function handleConferenceHubEvent(
       }
     | undefined;
   const hubEvent = getHubEventLower(event);
+  const isConfLifecycle =
+    hubEvent === 'conference-start' ||
+    hubEvent === 'conference-end' ||
+    hubEvent === 'conference-lead';
+  if (isConfLifecycle) {
+    appendActivityFromConferenceMessage(state, message);
+  }
+  const handledByInvite = Boolean(conferenceHubHandler?.(message));
+  if (handledByInvite) {
+    return true;
+  }
   if (hubEvent === 'conference-start') {
     void syncConferenceView(state);
     return true;
@@ -347,6 +519,10 @@ function handleConferenceHubEvent(
     }
     return true;
   }
+  if (hubEvent === 'conference-lead') {
+    void syncConferenceView(state);
+    return true;
+  }
   return false;
 }
 
@@ -356,66 +532,6 @@ function notifyStatus(state: AppState): void {
 
 function notifyStudy(state: AppState): void {
   onStudyChange?.(state);
-}
-
-function fileBytes(entry: Record<string, unknown>): Uint8Array | null {
-  const data = entry.data;
-  if (data instanceof ArrayBuffer) return new Uint8Array(data);
-  if (data instanceof Uint8Array) return data;
-  return null;
-}
-
-/** Refresh manual Volume values from STATUS; keep SR; drop orphan manuals. */
-function applyCatalogMeasurements(state: AppState): void {
-  const next: ReportMeasurement[] = [];
-  for (const m of state.measurements) {
-    if (m.source === 'sr') {
-      next.push(m);
-      continue;
-    }
-    if (m.source !== 'manual') continue;
-    if (m.segmentNumber == null) {
-      next.push(m);
-      continue;
-    }
-    const match = findCatalogSegment(
-      state.segCatalog,
-      m.segmentNumber,
-      m.segmentationSOPInstanceUID || undefined
-    );
-    if (!match) continue;
-    const label = String(match.segment.label || `Segment ${match.segment.number}`);
-    if (/^volume$/i.test(m.quantity)) {
-      next.push({
-        ...m,
-        segmentLabel: label,
-        trackingIdentifier: label,
-        value: Number.isFinite(match.segment.volumeMm3)
-          ? match.segment.volumeMm3
-          : m.value,
-        units: 'mm3',
-        segmentationSOPInstanceUID: String(
-          match.instance.sopInstanceUID || m.segmentationSOPInstanceUID
-        ),
-      });
-    } else {
-      next.push({
-        ...m,
-        segmentLabel: label,
-        trackingIdentifier: label,
-        segmentationSOPInstanceUID: String(
-          match.instance.sopInstanceUID || m.segmentationSOPInstanceUID
-        ),
-      });
-    }
-  }
-  state.measurements = next;
-  if (
-    state.selectedMeasurementId &&
-    !next.some((m) => m.id === state.selectedMeasurementId)
-  ) {
-    state.selectedMeasurementId = null;
-  }
 }
 
 const WORKLIST_ACTOR = 'WORKLIST_CLIENT';
@@ -1192,6 +1308,84 @@ async function publishVolumeCropOps(
   }
 }
 
+/** Publish arbitrary scene-update ops to Image Display (actor ID). */
+export async function publishSceneOps(
+  state: AppState,
+  ops: Array<Record<string, unknown>>
+): Promise<boolean> {
+  if (!state.client || state.connection !== 'connected') {
+    console.warn(`${LOG_PREFIX} scene ops: not connected`);
+    return false;
+  }
+  if (!ops.length) return false;
+  try {
+    const res = await state.client.publish({
+      event: {
+        'hub.topic': state.topic,
+        'hub.event': 'scene-update',
+        context: [{ key: 'scene', resource: { ops } }],
+      },
+      actor: REPORTING_ACTOR,
+      'target.actor': 'ID',
+      'target.product.name': '*',
+    });
+    return Boolean(res && res.ok);
+  } catch (err) {
+    console.error(`${LOG_PREFIX} scene ops exception`, err);
+    return false;
+  }
+}
+
+/**
+ * Select a directional term and optionally drive IRA camera.
+ * Returns a relative-term note when no camera demo applies.
+ */
+export async function illustrateTerm(
+  state: AppState,
+  termId: string
+): Promise<{ ok: boolean; relative: boolean }> {
+  const term = termById(termId);
+  state.selectedTermId = termId;
+  if (!term) {
+    state.courseDemoNote = '';
+    notifyStudy(state);
+    return { ok: false, relative: false };
+  }
+  if (term.demo.kind === 'relative' || !term.demo.viewUpHint) {
+    const chrome = courseChromeFor(resolveStoredLocale());
+    state.courseDemoNote = chrome.relativeDemoNote;
+    notifyStudy(state);
+    return { ok: true, relative: true };
+  }
+  state.courseDemoNote = '';
+  notifyStudy(state);
+  if (!state.sceneDoc) {
+    return { ok: false, relative: false };
+  }
+  const ops = buildDirectionalTermCameraOps({
+    doc: state.sceneDoc,
+    termId: term.id,
+  });
+  const ok = await publishSceneOps(state, ops);
+  return { ok, relative: false };
+}
+
+export function selectCourseTerm(state: AppState, termId: string | null): void {
+  state.selectedTermId = termId;
+  state.courseDemoNote = '';
+  notifyStudy(state);
+}
+
+/** Open MRHead / TotalSegmentator-CT LiveScene in IRA (course “View scan” buttons). */
+export async function openCourseScene(
+  state: AppState,
+  key: ClassroomSceneKey
+): Promise<boolean> {
+  const ok = await openClassroomSceneInIra(state, key);
+  if (ok) notifyStudy(state);
+  return ok;
+}
+
 /** Enable/disable volume crop; first enable also shows the ROI box. Remounts UI. */
 export function setVolumeCropEnabled(state: AppState, on: boolean): void {
   const enabled = Boolean(on);
@@ -1267,7 +1461,6 @@ export async function refreshReportContextFromStatus(
         adoptImagingStudyContext(state, parsed.idImagingContext);
       }
       state.segCatalog = parsed.catalog ?? EMPTY_SEG_CATALOG;
-      applyCatalogMeasurements(state);
       adoptSceneVisibility(state, parsed.sceneDoc);
       const n = state.segCatalog.segmentations.reduce(
         (acc, s) => acc + (s.segments?.length || 0),
@@ -1300,7 +1493,6 @@ export async function refreshReportContextFromStatus(
 
     // No Image Display — adopt ImagingStudy from worklist when present.
     state.segCatalog = EMPTY_SEG_CATALOG;
-    applyCatalogMeasurements(state);
     adoptSceneVisibility(state, null);
 
     if (parsed.worklistImagingContext) {
@@ -1332,21 +1524,6 @@ export async function loadSegCatalogFromImageDisplay(
   return refreshReportContextFromStatus(state);
 }
 
-export function selectMeasurement(
-  state: AppState,
-  measurementId: string | null
-): void {
-  state.selectedMeasurementId = measurementId;
-  if (measurementId) {
-    const m = state.measurements.find((row) => row.id === measurementId);
-    if (m?.segmentNumber != null) {
-      state.selectedSegmentNumber = m.segmentNumber;
-      state.selectedSegmentSopUid = m.segmentationSOPInstanceUID || '';
-    }
-  }
-  notifyStudy(state);
-}
-
 export function selectSegment(
   state: AppState,
   segmentNumber: number | null,
@@ -1354,97 +1531,6 @@ export function selectSegment(
 ): void {
   state.selectedSegmentNumber = segmentNumber;
   state.selectedSegmentSopUid = sopUid;
-  notifyStudy(state);
-}
-
-/** Add (or select existing) Volume measurement for a catalog segment. */
-export function addMeasurementForSegment(
-  state: AppState,
-  segmentNumber: number,
-  sopUid?: string
-): void {
-  const match = findCatalogSegment(
-    state.segCatalog,
-    segmentNumber,
-    sopUid || undefined
-  );
-  if (!match) {
-    state.segLoadDetail = 'No segment to measure';
-    notifyStudy(state);
-    return;
-  }
-  const num = Number(match.segment.number);
-  const sop = String(match.instance.sopInstanceUID || '');
-  const existing = state.measurements.find(
-    (m) =>
-      /^volume$/i.test(m.quantity) &&
-      Number(m.segmentNumber) === num &&
-      (!m.segmentationSOPInstanceUID ||
-        !sop ||
-        m.segmentationSOPInstanceUID === sop)
-  );
-  if (existing) {
-    state.selectedMeasurementId = existing.id;
-    state.selectedSegmentNumber = num;
-    state.selectedSegmentSopUid = sop;
-    state.segLoadDetail = `Selected Volume for ${existing.segmentLabel}`;
-    notifyStudy(state);
-    return;
-  }
-  const label = String(match.segment.label || `Segment ${num}`);
-  const id = `manual:${sop || 'seg'}:${num}:volume:${Date.now()}`;
-  state.measurements.push({
-    id,
-    quantity: 'Volume',
-    value: Number.isFinite(match.segment.volumeMm3)
-      ? match.segment.volumeMm3
-      : '—',
-    units: 'mm3',
-    segmentNumber: Number.isFinite(num) ? num : null,
-    segmentLabel: label,
-    segmentationSOPInstanceUID: sop,
-    trackingIdentifier: label,
-    source: 'manual',
-  });
-  state.selectedMeasurementId = id;
-  state.selectedSegmentNumber = Number.isFinite(num) ? num : null;
-  state.selectedSegmentSopUid = sop;
-  state.segLoadDetail = `Added Volume for ${label}`;
-  notifyStudy(state);
-}
-
-/** Header +: selected segment, else first catalog segment. */
-export function addMeasurementForSelectedOrFirst(state: AppState): void {
-  if (state.selectedSegmentNumber != null) {
-    addMeasurementForSegment(
-      state,
-      state.selectedSegmentNumber,
-      state.selectedSegmentSopUid || undefined
-    );
-    return;
-  }
-  const first = firstCatalogSegment(state.segCatalog);
-  if (!first) {
-    state.segLoadDetail = 'No segmentations yet — refresh from Image Display';
-    notifyStudy(state);
-    return;
-  }
-  addMeasurementForSegment(
-    state,
-    Number(first.segment.number),
-    first.instance.sopInstanceUID || undefined
-  );
-}
-
-export function removeMeasurement(state: AppState, measurementId: string): void {
-  const before = state.measurements.length;
-  state.measurements = state.measurements.filter((m) => m.id !== measurementId);
-  if (state.selectedMeasurementId === measurementId) {
-    state.selectedMeasurementId = null;
-  }
-  if (state.measurements.length < before) {
-    state.segLoadDetail = 'Removed measurement';
-  }
   notifyStudy(state);
 }
 
@@ -1696,56 +1782,6 @@ export function openSnapshotFullView(
   backdrop.hidden = false;
 }
 
-async function handleDicomSendMessage(
-  state: AppState,
-  message: Record<string, unknown>
-): Promise<boolean> {
-  const event = message?.event as { 'hub.event'?: string } | undefined;
-  if (getHubEventLower(event) !== 'dicom-send') return false;
-  if (!state.client) return true;
-
-  try {
-    const resolved = (await resolveHubFileMessage(
-      state.client,
-      message
-    )) as Record<string, unknown>;
-    const resolvedEvent = (resolved?.event ?? message.event) as Record<
-      string,
-      unknown
-    >;
-    const files = batchContextFiles(resolvedEvent) as Record<string, unknown>[];
-    let added = 0;
-    for (const entry of files) {
-      const bytes = fileBytes(entry);
-      if (!bytes?.length) continue;
-      const parsed = await parseTid1500FromBuffer(bytes);
-      if (!parsed.ok) continue;
-      for (const m of parsed.measurements) {
-        const id = `sr:${parsed.sopInstanceUID}:${m.quantity}:${m.segmentNumber}:${added}`;
-        state.measurements.push({
-          id,
-          quantity: m.quantity,
-          value: m.value,
-          units: m.units,
-          segmentNumber: m.segmentNumber,
-          segmentLabel: m.segmentLabel,
-          segmentationSOPInstanceUID: m.segmentationSOPInstanceUID,
-          trackingIdentifier: m.trackingIdentifier,
-          source: 'sr',
-        });
-        added++;
-      }
-    }
-    if (added) {
-      state.segLoadDetail = `Added ${added} measurement${added === 1 ? '' : 's'} from DICOM SR`;
-      notifyStudy(state);
-    }
-  } catch (err) {
-    console.warn(`${LOG_PREFIX} dicom-send SR handler`, err);
-  }
-  return true;
-}
-
 function setConnection(
   state: AppState,
   connection: ConnectionUiState,
@@ -1870,8 +1906,6 @@ function clearOpenStudyLocal(state: AppState): void {
   state.openStudy = null;
   state.lastImagingStudyOpenContext = [];
   state.segCatalog = EMPTY_SEG_CATALOG;
-  state.measurements = [];
-  state.selectedMeasurementId = null;
   state.selectedSegmentNumber = null;
   state.selectedSegmentSopUid = '';
   state.segLoadDetail = '';
@@ -1948,7 +1982,6 @@ function handleStructureReportUpdate(
   const context = cloneContextArray(messageEventContext(message));
   const catalog = segCatalogFromContext(context) ?? EMPTY_SEG_CATALOG;
   state.segCatalog = catalog;
-  applyCatalogMeasurements(state);
   // Keep visibility keys for new segments; don't wipe sceneDoc.
   adoptSceneVisibility(state, state.sceneDoc);
   const n = countCatalogSegments(catalog);
@@ -1966,7 +1999,7 @@ function handleStructureReportUpdate(
     try {
       document.title = `● Classroom — ${n} segments`;
       window.setTimeout(() => {
-        document.title = 'Classroom — Measurements';
+        document.title = 'Classroom';
       }, 2500);
     } catch {
       /* ignore */
@@ -2059,7 +2092,6 @@ function ensureClient(
       if (handleIncomingStatusRequest(state, message)) return;
       if (handleImagingStudyMessage(state, message)) return;
       if (handleStructureReportUpdate(state, message)) return;
-      void handleDicomSendMessage(state, message);
     });
 
     state.client.onConnectionStateChange((wsState: string) => {

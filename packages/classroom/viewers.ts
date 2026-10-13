@@ -2,8 +2,8 @@
  * Open Hub viewers from the reporting client (same deep-link pattern as worklist).
  *
  * Button enablement is local (not in @slicer-hub/client). Worklist owns the
- * full presence-aware rules; reporting only launches IRA/Slim when hub-connected.
- * SlicerDesktop / SlicerMirror / OHIF / VolView stay non-openable here (presence or N/A).
+ * full presence-aware rules; Classroom launches IRA / OHIF / Slim when hub-connected.
+ * SlicerDesktop / SlicerMirror / VolView stay non-openable here (presence or N/A).
  */
 import { HUB_WORKLIST_WINDOW_NAME } from '@slicer-hub/client';
 import {
@@ -26,6 +26,7 @@ const TITLE_VOLVIEW = 'VolView (not available from reporting)';
 const TITLE_IRA = 'Open SlicerLive';
 const TITLE_IRA_ONLINE = 'SlicerLive is connected on this topic';
 const TITLE_IRA_OFFLINE = 'Open SlicerLive (no IRA responded on this topic)';
+const TITLE_OHIF = 'Open OHIF';
 const TITLE_WORKLIST = 'Open SlicerWorklist';
 const TITLE_WORKLIST_ONLINE = 'SlicerWorklist is connected on this topic';
 const TITLE_WORKLIST_OFFLINE =
@@ -34,6 +35,7 @@ const TITLE_WORKLIST_OFFLINE =
 const WORKLIST_WINDOW_NAME = HUB_WORKLIST_WINDOW_NAME;
 let worklistWindow: Window | null = null;
 let iraWindow: Window | null = null;
+let ohifWindow: Window | null = null;
 
 function sessionToken(state: AppState): string {
   try {
@@ -64,6 +66,10 @@ function popupFeatures(width: number, height: number): string {
 /** Same name as worklist’s IRA opener so both apps share one tab. */
 function iraWindowName(state: AppState): string {
   return `hubViewer-ira-${String(state.topic || 'anon').replace(/[^\w.-]+/g, '_')}`;
+}
+
+function ohifWindowName(state: AppState): string {
+  return `hubViewer-ohif-${String(state.topic || 'anon').replace(/[^\w.-]+/g, '_')}`;
 }
 
 function openerHasName(expected: string): Window | null {
@@ -106,6 +112,15 @@ function focusExistingIraWindow(state: AppState): boolean {
   return focusHeldWindow(opener);
 }
 
+function focusExistingOhifWindow(state: AppState): boolean {
+  if (focusHeldWindow(ohifWindow)) return true;
+  ohifWindow = null;
+  const opener = openerHasName(ohifWindowName(state));
+  if (!opener) return false;
+  ohifWindow = opener;
+  return focusHeldWindow(opener);
+}
+
 export function openHubViewer(state: AppState, kind: ViewerKind): void {
   if (state.connection !== 'connected') {
     console.warn(`${LOG_PREFIX} open viewer skipped: not connected`);
@@ -118,6 +133,14 @@ export function openHubViewer(state: AppState, kind: ViewerKind): void {
     // Named tab open focuses existing IRA (opened by worklist) or creates one.
     const win = window.open(url.toString(), iraWindowName(state));
     if (win) iraWindow = win;
+    return;
+  }
+  if (kind === 'ohif') {
+    if (focusExistingOhifWindow(state)) return;
+    const url = new URL(resolveViewerUrls().ohif);
+    withSessionParams(url, state);
+    const win = window.open(url.toString(), ohifWindowName(state));
+    if (win) ohifWindow = win;
     return;
   }
   const url = new URL(resolveViewerUrls()[kind]);
@@ -217,12 +240,8 @@ export function setViewerButtonsEnabled(
 
   const ohif = byId('openOhifBtn');
   if (ohif) {
-    setDisabled(
-      ohif,
-      true,
-      enabled ? 'OHIF viewer is temporarily unavailable' : TITLE_DISABLED
-    );
-    ohif.classList.toggle('rp-viewer-btn-inert', enabled);
+    setDisabled(ohif, !enabled, enabled ? TITLE_OHIF : TITLE_DISABLED);
+    ohif.classList.remove('rp-viewer-btn-inert');
   }
 
   const slim = byId('openSlimBtn');
@@ -262,6 +281,7 @@ export function setViewerButtonsEnabled(
 export function wireViewerButtons(state: AppState): void {
   const map: Array<{ id: string; open: () => void }> = [
     { id: 'openIraBtn', open: () => openHubViewer(state, 'ira') },
+    { id: 'openOhifBtn', open: () => openHubViewer(state, 'ohif') },
     { id: 'openSlimBtn', open: () => openHubViewer(state, 'slim') },
     { id: 'openWorklistBtn', open: () => openWorklist(state) },
   ];

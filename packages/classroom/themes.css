@@ -105,6 +105,20 @@ button {
   min-width: 0;
 }
 
+.rp-header-title {
+  margin: 0;
+  justify-self: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-align: center;
+}
+
 .rp-brand {
   font-weight: 700;
   color: #fff;
@@ -1910,4 +1924,177 @@ button {
 
 .rp-modal-close:hover {
   color: var(--rp-fg);
+}
+
+.rp-section-head-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.rp-section-head-center .rp-section-title {
+  width: 100%;
+  text-align: center;
+}
+
+.rp-view-scan-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.rp-view-scan-label {
+  font-weight: 600;
+  color: var(--rp-fg);
+}
+
+.rp-activity-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.rp-activity-label {
+  font-weight: 600;
+  color: var(--rp-fg);
+  flex-shrink: 0;
+}
+
+.rp-activity-instruction {
+  color: var(--rp-fg);
+}
+
+.rp-collapse {
+  margin: 8px 0 0;
+  border: 1px solid var(--rp-border);
+  border-radius: 6px;
+  background: var(--rp-surface);
+}
+
+.rp-collapse-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  user-select: none;
+}
+
+.rp-collapse-summary::-webkit-details-marker {
+  display: none;
+}
+
+.rp-collapse-summary::before {
+  content: '';
+  width: 0.45em;
+  height: 0.45em;
+  border-right: 2px solid var(--rp-fg-muted);
+  border-bottom: 2px solid var(--rp-fg-muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.rp-collapse[open] > .rp-collapse-summary::before {
+  transform: rotate(45deg);
+}
+
+.rp-collapse-summary .rp-section-title {
+  margin: 0;
+}
+
+.rp-collapse-body {
+  padding: 0 12px 12px;
+  border-top: 1px solid var(--rp-border);
+}
+
+/* Directional-terms course layout: scene → planes → conference → quiz */
+.rp-main-classroom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.rp-main-classroom > .rp-chat-panel {
+  position: static;
+  padding: 0;
+}
+
+.rp-main-classroom > .rp-chat-panel > .rp-conference-collapse {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.rp-conference-log {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 160px;
+  resize: vertical;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--rp-surface-2);
+  color: var(--rp-fg);
+  border: 1px solid var(--rp-border);
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.rp-conference-chat-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.rp-conference-chat-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--rp-border);
+  border-radius: 4px;
+  background: var(--rp-surface);
+  color: var(--rp-fg);
+  padding: 6px 8px;
+}
+
+.rp-term-table td,
+.rp-term-table th {
+  vertical-align: top;
+}
+
+.rp-term-row {
+  cursor: pointer;
+}
+
+.rp-term-row-selected {
+  outline: 1px solid var(--rp-accent, #5aa7ff);
+  background: color-mix(in srgb, var(--rp-accent, #5aa7ff) 12%, transparent);
+}
+
+.rp-term-demo-btn {
+  white-space: nowrap;
+}
+
+.rp-quiz-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.rp-quiz-stem {
+  font-weight: 600;
+  margin: 4px 0 8px;
+}
+
+.rp-quiz-feedback {
+  font-weight: 600;
+}
+
+.rp-course-note {
+  margin-top: 8px;
 }

@@ -15,6 +15,7 @@ import { hubEndpoint } from './hub';
 import { hubOriginFromEndpoint } from './config';
 import type { SegCatalog, SegCatalogSegment } from './seg-catalog';
 import { enrichTerminologyFromSegdb } from './segdb-lookup';
+import { courseChromeFor } from './course/strings';
 import { openVrPresetMenu } from './vr-preset-menu';
 import {
   paintVrPresetThumbnail,
@@ -650,9 +651,13 @@ function segsAllVisible(state: AppState): boolean {
   return !Object.values(state.segmentVisible).some((v) => v === false);
 }
 
+/** Persist Volumes & segmentations collapse across remountDisplay. */
+let volumesSegsOpen = false;
+
 export function renderReportDisplay(container: HTMLElement, state: AppState): void {
   const allOn = segsAllVisible(state);
   const rp = reportingChromeFor();
+  const volSegTitle = courseChromeFor(resolveStoredLocale()).volumesAndSegs;
   container.innerHTML = `
     <div class="rp-section">
       <div class="rp-section-head">
@@ -668,29 +673,42 @@ export function renderReportDisplay(container: HTMLElement, state: AppState): vo
       </div>
       ${snapshotsTableHtml(state)}
     </div>
-    <div class="rp-section">
-      <div class="rp-section-head">
-        <h2 class="rp-section-title">${escapeHtml(rp.volumes)}</h2>
+    <details class="rp-collapse rp-vol-seg-collapse"${volumesSegsOpen ? ' open' : ''}>
+      <summary class="rp-collapse-summary">
+        <span class="rp-section-title">${escapeHtml(volSegTitle)}</span>
+      </summary>
+      <div class="rp-collapse-body">
+        <div class="rp-section">
+          <div class="rp-section-head">
+            <h2 class="rp-section-title">${escapeHtml(rp.volumes)}</h2>
+          </div>
+          ${volumesTableHtml(state)}
+        </div>
+        <div class="rp-section">
+          <div class="rp-section-head">
+            <h2 class="rp-section-title">${escapeHtml(rp.segmentations)}</h2>
+            ${loadStatusHtml(state)}
+          </div>
+          ${segmentationsTableHtml(
+            state.segCatalog,
+            state.selectedSegmentNumber,
+            state.selectedSegmentSopUid,
+            state.segmentVisible,
+            state.segmentOpacity,
+            allOn,
+            state.labelsVisible !== false,
+            state.segOpacity
+          )}
+        </div>
       </div>
-      ${volumesTableHtml(state)}
-    </div>
-    <div class="rp-section">
-      <div class="rp-section-head">
-        <h2 class="rp-section-title">${escapeHtml(rp.segmentations)}</h2>
-        ${loadStatusHtml(state)}
-      </div>
-      ${segmentationsTableHtml(
-        state.segCatalog,
-        state.selectedSegmentNumber,
-        state.selectedSegmentSopUid,
-        state.segmentVisible,
-        state.segmentOpacity,
-        allOn,
-        state.labelsVisible !== false,
-        state.segOpacity
-      )}
-    </div>
+    </details>
   `;
+  const collapse = container.querySelector(
+    '.rp-vol-seg-collapse'
+  ) as HTMLDetailsElement | null;
+  collapse?.addEventListener('toggle', () => {
+    volumesSegsOpen = Boolean(collapse.open);
+  });
   void refreshSegmentLabelTranslations(container, state);
 }
 

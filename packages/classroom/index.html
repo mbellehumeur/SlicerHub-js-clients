@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Classroom — Measurements</title>
-  <link rel="stylesheet" href="themes.css?v=ira-presence">
+  <title>Classroom</title>
+  <link rel="stylesheet" href="themes.css?v=body-planes">
 </head>
 <body>
   <div id="app">
@@ -12,18 +12,18 @@
       <div class="rp-header-start">
         <span class="rp-brand">Classroom</span>
       </div>
-      <div class="rp-header-spacer" aria-hidden="true"></div>
+      <h1 id="classroomHeaderTitle" class="rp-header-title">
+        ST-444 Anatomical terminology planes
+      </h1>
       <div class="rp-header-actions">
         <button
           type="button"
           id="startConferenceBtn"
-          class="rp-icon-btn rp-header-text-btn"
+          class="rp-icon-btn"
           aria-label="Conferencing"
           title="Subscribe to the hub first"
           disabled
-        >
-          Conferencing
-        </button>
+        ></button>
         <div class="rp-lang-wrap">
           <button
             type="button"
@@ -92,121 +92,57 @@
       </div>
     </header>
 
-    <section class="rp-apps" aria-label="Clients and viewers">
-      <div class="rp-viewer-btns">
-        <span class="rp-viewer-label rp-viewer-label-first" data-i18n-rp="viewers">Viewers:</span>
-        <button
-          type="button"
-          id="openSlicerBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerDesktop
-        </button>
-        <button
-          type="button"
-          id="openIraBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerLive
-        </button>
-        <button
-          type="button"
-          id="openHubMirrorBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerMirror
-        </button>
-        <button
-          type="button"
-          id="openOhifBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          OHIF
-        </button>
-        <button
-          type="button"
-          id="openSlimBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          Slim
-        </button>
-        <button
-          type="button"
-          id="openVolviewBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          VolView
-        </button>
-        <span class="rp-viewer-label" data-i18n-rp="worklistLabel">Worklist:</span>
-        <button
-          type="button"
-          id="openWorklistBtn"
-          class="rp-viewer-btn"
-          data-i18n-rp="slicerWorklist"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerWorklist
-        </button>
-      </div>
-    </section>
-
-    <div class="rp-capsule-row">
-      <section class="rp-panel rp-panel-compact rp-capsule" aria-labelledby="reportContext">
-        <div class="rp-panel-header">
-          <h1 id="reportContext" aria-live="polite">
-            <span class="rp-context-label">Current context:</span>
-            <span class="rp-context-value">none</span>
-          </h1>
-          <div class="rp-panel-header-end">
-            <button
-              type="button"
-              id="closeContextBtn"
-              class="rp-viewer-btn"
-              data-i18n-rp="close"
-              data-i18n-rp-title="closeContext"
-              title="Close current context"
-              hidden
-              disabled
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <main class="rp-main">
-      <section class="rp-panel" aria-label="Classroom">
+    <main class="rp-main rp-main-classroom">
+      <section class="rp-panel rp-scene-panel" aria-label="Classroom scene">
         <div id="reportDisplay" class="rp-report-display">
           <div class="rp-empty" data-i18n-rp="noReportSelected">No report selected</div>
         </div>
       </section>
-    </main>
 
-    <footer class="rp-footer" aria-label="Report actions">
-      <button type="button" id="reportCancelBtn" class="rp-viewer-btn">
-        Cancel
-      </button>
-      <button type="button" id="reportSaveBtn" class="rp-viewer-btn">
-        Save
-      </button>
-      <button type="button" id="reportCompleteBtn" class="rp-viewer-btn">
-        Complete
-      </button>
-    </footer>
+      <section class="rp-panel rp-course-panel" aria-label="Anatomical planes">
+        <div id="glossaryPanel" class="rp-course-display"></div>
+      </section>
+
+      <section class="rp-panel rp-chat-panel" aria-label="Conference chat">
+        <details class="rp-collapse rp-conference-collapse">
+          <summary class="rp-collapse-summary">
+            <h2 id="conferenceLogTitle" class="rp-section-title">Conference</h2>
+          </summary>
+          <div class="rp-collapse-body">
+            <textarea
+              id="conferenceLog"
+              class="rp-conference-log"
+              readonly
+              rows="8"
+              aria-live="polite"
+            ></textarea>
+            <form id="conferenceChatForm" class="rp-conference-chat-form">
+              <input
+                id="conferenceChatInput"
+                class="rp-conference-chat-input"
+                type="text"
+                maxlength="500"
+                autocomplete="off"
+                placeholder="Message the conference…"
+                disabled
+              />
+              <button
+                type="submit"
+                id="conferenceChatSend"
+                class="rp-viewer-btn"
+                disabled
+              >
+                Send
+              </button>
+            </form>
+          </div>
+        </details>
+      </section>
+
+      <section class="rp-panel rp-quiz-panel" aria-label="Quiz">
+        <div id="quizPanel" class="rp-course-display"></div>
+      </section>
+    </main>
   </div>
 
   <div id="aboutModal" class="rp-modal-backdrop" hidden>
@@ -217,14 +153,15 @@
       </div>
       <div class="rp-modal-body">
         <p>
-          Hub classroom client — measurements and links to segmentations on
-          the Image Display (<code>CLASSROOM_CLIENT</code>). SEG voxels stay in IRA.
+          Hub classroom — body sections and anatomical planes (glossary + quiz),
+          conference chat, and links to segmentations / snapshots on the Image
+          Display (<code>CLASSROOM_CLIENT</code>). SEG voxels stay in IRA.
         </p>
         <p class="rp-muted">Uses <code>@slicer-hub/client</code>.</p>
       </div>
     </div>
   </div>
 
-  <script type="module" src="classroom.js?v=stl-noop"></script>
+  <script type="module" src="classroom.js?v=body-planes"></script>
 </body>
 </html>

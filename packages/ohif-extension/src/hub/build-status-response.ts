@@ -1,4 +1,6 @@
 import {
+  buildLocalDicomImagingStudyOpenContext,
+  cloneContextArray,
   isStatusPayloadOnline,
   isStatusRequestDataType,
   isTotalSegmentatorProduct,
@@ -23,6 +25,9 @@ export type StatusResponsePayload = {
   product: string;
   items: StatusItem[];
   sceneview: SceneviewResponsePayload;
+  /** IRA-compatible ImagingStudy open context for worklist STATUS adoption. */
+  'context.type': string;
+  context: unknown[];
 };
 
 export type HubRequestResponseItem = {
@@ -88,14 +93,51 @@ export function collatedResponsesFromRequestResult(
   return Array.isArray(responses) ? (responses as HubRequestResponseItem[]) : [];
 }
 
+/** Minimal ImagingStudy context from the active viewer when stored open context is empty. */
+export function imagingStudyContextFromViewer(
+  servicesManager: ServicesManagerLike
+): unknown[] {
+  const sceneview = buildSceneviewResponsePayload('OHIF', servicesManager);
+  const fromViewport = sceneview.viewports.find(
+    vp => typeof vp.studyInstanceUID === 'string' && vp.studyInstanceUID.trim()
+  );
+  let studyInstanceUID = fromViewport?.studyInstanceUID?.trim() ?? '';
+  let seriesInstanceUID = fromViewport?.seriesInstanceUID?.trim() || undefined;
+
+  if (!studyInstanceUID && typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    studyInstanceUID =
+      params.getAll('StudyInstanceUIDs').find(uid => uid.trim())?.trim() ?? '';
+    seriesInstanceUID =
+      params.getAll('SeriesInstanceUIDs').find(uid => uid.trim())?.trim() ||
+      undefined;
+  }
+
+  if (!studyInstanceUID) {
+    return [];
+  }
+
+  return buildLocalDicomImagingStudyOpenContext({
+    id: studyInstanceUID,
+    studyInstanceUID,
+    seriesInstanceUID,
+  });
+}
+
 export function buildStatusResponsePayload(
   productName: string,
-  servicesManager: ServicesManagerLike
+  servicesManager: ServicesManagerLike,
+  imagingStudyContext?: unknown[]
 ): StatusResponsePayload {
+  const stored = cloneContextArray(imagingStudyContext);
+  const context =
+    stored.length > 0 ? stored : imagingStudyContextFromViewer(servicesManager);
   return {
     source: 'status',
     product: productName,
     items: [{ key: 'availability', value: 'online' }],
     sceneview: buildSceneviewResponsePayload(productName, servicesManager),
+    'context.type': context.length ? 'ImagingStudy' : '',
+    context,
   };
 }

@@ -541,6 +541,10 @@ function selectThreeDSlicerOrg(): void {
     'worklistOrgSelect'
   ) as HTMLSelectElement | null;
   if (!orgSelect) return;
+  const opt = [...orgSelect.options].find(
+    (o) => o.value === WORKLIST_ORG_3D_SLICER
+  );
+  if (opt?.hidden) return;
   orgSelect.value = WORKLIST_ORG_3D_SLICER;
 }
 
@@ -554,6 +558,23 @@ export function selectDefaultWorklistOrg(): void {
   ) as HTMLSelectElement | null;
   if (!orgSelect) return;
   orgSelect.value = defaultWorklistOrgFilter();
+}
+
+/** Show "3D Slicer" org filter only while SlicerDesktop is connected. */
+function syncThreeDSlicerOrgOption(state: AppState): void {
+  const orgSelect = document.getElementById(
+    'worklistOrgSelect'
+  ) as HTMLSelectElement | null;
+  if (!orgSelect) return;
+  const opt = [...orgSelect.options].find(
+    (o) => o.value === WORKLIST_ORG_3D_SLICER
+  );
+  if (!opt) return;
+  const show = hasConnectedThreeDSlicer(state);
+  opt.hidden = !show;
+  if (!show && orgSelect.value === WORKLIST_ORG_3D_SLICER) {
+    selectDefaultWorklistOrg();
+  }
 }
 
 /** Drop Slicer DICOM rows and restore the default worklist filter. */
@@ -685,45 +706,78 @@ function clearLocalImagingStudyContext(state: AppState): void {
   notifyWorklist(state);
 }
 
-function isStatusContextDonorActor(actor: string): boolean {
-  const key = actor.trim().toUpperCase();
-  return key === IMAGE_DISPLAY_ACTOR || key === 'REPORTING_CLIENT';
+function statusRowProductName(item: Record<string, unknown>): string {
+  const productName = String(item.productName ?? '').trim();
+  if (productName) return productName;
+  const data = item.data;
+  if (data && typeof data === 'object') {
+    return String((data as { product?: unknown }).product ?? '').trim();
+  }
+  return '';
 }
 
-/** Apply ImagingStudy from ID / reporting STATUS locally — no ImagingStudy-open publish. */
+/** Prefer OHIF → IRA → other ID → reporting when adopting open study from STATUS. */
+function statusImagingStudyDonorRank(
+  actor: string,
+  productName: string
+): number {
+  const actorKey = actor.trim().toUpperCase();
+  if (matchesHubProduct(productName, 'ohif')) return 0;
+  if (matchesHubProduct(productName, 'ira')) return 1;
+  if (actorKey === IMAGE_DISPLAY_ACTOR) return 2;
+  if (actorKey === 'REPORTING_CLIENT') return 3;
+  return -1;
+}
+
+/**
+ * Apply non-empty ImagingStudy from OHIF / IRA / ID / reporting STATUS locally —
+ * no ImagingStudy-open publish. Empty ImagingStudy rows are ignored (do not clear).
+ */
 function adoptImagingStudyFromStatusResponses(
   state: AppState,
   responses: Array<Record<string, unknown>>
 ): void {
   if (state.lastImagingStudyOpenContext.length) return;
 
+  type Candidate = {
+    rank: number;
+    actor: string;
+    productName: string;
+    context: unknown[];
+  };
+  let best: Candidate | null = null;
+
   for (const item of responses) {
-    const actor = String(item.actor ?? '').trim();
-    if (!isStatusContextDonorActor(actor)) continue;
-    const itemData = item.data as
+    if (!item || typeof item !== 'object') continue;
+    const row = item as Record<string, unknown>;
+    const actor = String(row.actor ?? '').trim();
+    const productName = statusRowProductName(row);
+    const rank = statusImagingStudyDonorRank(actor, productName);
+    if (rank < 0) continue;
+
+    const itemData = row.data as
       | { 'context.type'?: unknown; context?: unknown }
       | undefined;
     if (!itemData || typeof itemData !== 'object') continue;
+    if (itemData['context.type'] !== 'ImagingStudy') continue;
 
-    if (itemData['context.type'] === 'ImagingStudy') {
-      const context = cloneContextArray(itemData.context);
-      if (!context.length) {
-        // Peer reports ImagingStudy type but empty — treat as locally closed.
-        clearLocalImagingStudyContext(state);
-        console.info(
-          `${LOG_PREFIX} STATUS: empty ImagingStudy from ${actor} — cleared local open`
-        );
-        return;
-      }
-      applyLocalImagingStudyContext(state, context);
-      console.info(
-        `${LOG_PREFIX} STATUS adopted ImagingStudy from ${actor}`,
-        `items=${context.length}`,
-        '(local only, not published)'
-      );
-      return;
+    const context = cloneContextArray(itemData.context);
+    if (!context.length) continue;
+
+    if (!best || rank < best.rank) {
+      best = { rank, actor, productName, context };
     }
   }
+
+  if (!best) return;
+
+  applyLocalImagingStudyContext(state, best.context);
+  console.info(
+    `${LOG_PREFIX} STATUS adopted ImagingStudy from`,
+    best.productName || best.actor || '(peer)',
+    `items=${best.context.length}`,
+    '(local only, not published)'
+  );
 }
 
 function removeConnectedApp(
@@ -783,6 +837,7 @@ export function updateConnectedAppButtons(state: AppState): void {
     canOpen,
     openHubMirrorButtonTitle(hubOn, slicerOn, hubMirrorOn)
   );
+  syncThreeDSlicerOrgOption(state);
   updateInferenceServerButtons(state);
 }
 

@@ -15,6 +15,7 @@ export const SUBSCRIBE_EVENTS = [
   'dicom-send',
   'structurereport-update',
   'scene-update',
+  'conference-chat',
 ];
 
 export const THEME_STORAGE_KEY = 'pw46.classroom.theme';
