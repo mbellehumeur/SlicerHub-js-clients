@@ -222,8 +222,7 @@ export function idcCategoryFromFilterValue(value: string): string | null {
 
 export const VIEWER_OPEN_TITLE_DISABLED = 'Subscribe to the hub first';
 export const VIEWER_OPEN_TITLE_REPORTING = 'Open IRA Report Creator';
-export const VIEWER_OPEN_TITLE_CLASSROOM =
-  'Open Classroom — body sections and planes (ST-444)';
+export const VIEWER_OPEN_TITLE_CLASSROOM = 'Anatomical Planes';
 export const VIEWER_OPEN_TITLE_IRA = 'Open SlicerLive';
 export const VIEWER_OPEN_TITLE_SLICER =
   '3D Slicer Image Display is connected';

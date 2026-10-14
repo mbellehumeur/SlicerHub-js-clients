@@ -151,6 +151,8 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
       return;
     }
     if (t?.closest('[data-add-snapshot]')) {
+      ev.preventDefault();
+      ev.stopPropagation();
       void addSnapshotAndRequestPng(state);
       return;
     }
@@ -310,10 +312,11 @@ function boot(): void {
   applyTheme(getStoredTheme());
 
   const syncHeaderTitle = (localeCode?: AppLocale): void => {
-    const titleEl = document.getElementById('classroomHeaderTitle');
-    if (!titleEl) return;
     const chrome = courseChromeFor(localeCode || resolveStoredLocale());
-    titleEl.textContent = chrome.headerTitle;
+    const brandEl = document.querySelector('.rp-brand');
+    if (brandEl) brandEl.textContent = chrome.brand;
+    const titleEl = document.getElementById('classroomHeaderTitle');
+    if (titleEl) titleEl.textContent = chrome.headerTitle;
     document.title = chrome.headerTitle;
   };
   syncHeaderTitle(locale);
@@ -539,7 +542,12 @@ function boot(): void {
     const openScene = t?.closest('[data-open-scene]') as HTMLElement | null;
     if (openScene?.dataset.openScene) {
       const key = openScene.dataset.openScene;
-      if (key === 'mrhead' || key === 'totalsegmentator-ct') {
+      if (
+        key === 'mrhead' ||
+        key === 'kits-00038' ||
+        key === 'totalsegmentator-ct' ||
+        key === 'ctaabdomen-panoramix'
+      ) {
         openScene.setAttribute('disabled', '');
         void openCourseScene(state, key).finally(() => {
           if (state.connection === 'connected') {

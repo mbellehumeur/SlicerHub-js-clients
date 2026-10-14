@@ -24,8 +24,8 @@ export const DIRECTIONAL_TERMS: DirectionalTerm[] = [
   {
     id: 'sagittal',
     term: {
-      en: 'Sagittal plane',
-      fr: 'Plan sagittal',
+      en: 'A - Sagittal Plane',
+      fr: 'A - Plan sagittal',
     },
     definition: {
       en: 'Divides the body or an organ vertically into right and left sides. If this vertical plane runs directly down the middle of the body, it is called the midsagittal or median plane. If it divides the body into unequal right and left sides, it is called a parasagittal plane.',
@@ -46,8 +46,8 @@ export const DIRECTIONAL_TERMS: DirectionalTerm[] = [
   {
     id: 'frontal',
     term: {
-      en: 'Frontal plane',
-      fr: 'Plan frontal',
+      en: 'B - Frontal Plane',
+      fr: 'B - Plan frontal',
     },
     definition: {
       en: 'Divides the body or an organ into an anterior (front) portion and a posterior (rear) portion. The frontal plane is sometimes referred to as a coronal plane.',
@@ -68,8 +68,8 @@ export const DIRECTIONAL_TERMS: DirectionalTerm[] = [
   {
     id: 'transverse',
     term: {
-      en: 'Transverse plane',
-      fr: 'Plan transversal',
+      en: 'Transverse Plane',
+      fr: 'C - Plan transversal',
     },
     definition: {
       en: 'Divides the body or organ horizontally into upper and lower portions. Transverse planes produce images referred to as cross sections.',

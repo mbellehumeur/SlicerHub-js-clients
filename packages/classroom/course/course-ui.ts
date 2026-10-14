@@ -16,6 +16,15 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
+const CAMERA_ICON = `<svg class="rp-activity-camera-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <path d="M4 8h3l1.5-2h7L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  <circle cx="12" cy="14" r="3.5" stroke="currentColor" stroke-width="1.7"/>
+</svg>`;
+
+function instructionStepHtml(text: string): string {
+  return escapeHtml(text).replace(/\{\{camera\}\}/g, CAMERA_ICON);
+}
+
 export type QuizState = {
   mode: 'def' | 'term';
   index: number;
@@ -74,58 +83,96 @@ function glossaryHtml(state: AppState, locale: string): string {
     : '';
   return `
     <div class="rp-section rp-planes-section">
-      <div class="rp-section-head rp-section-head-center">
-        <h2 class="rp-section-title">${escapeHtml(chrome.glossary)}</h2>
-      </div>
-      <div class="rp-view-scan-row">
-        <span class="rp-view-scan-label">${escapeHtml(chrome.viewScan)}</span>
-        <button
-          type="button"
-          class="rp-viewer-btn"
-          data-open-scene="mrhead"
-          ${state.connection === 'connected' ? '' : 'disabled'}
-        >${escapeHtml(chrome.scanMrHead)}</button>
-        <button
-          type="button"
-          class="rp-viewer-btn"
-          data-open-scene="totalsegmentator-ct"
-          ${state.connection === 'connected' ? '' : 'disabled'}
-        >${escapeHtml(chrome.scanTotalSegCt)}</button>
+      <p class="rp-planes-intro">${escapeHtml(chrome.planesIntro)}</p>
+      <div class="rp-planes-table-row">
+        <div class="rp-table-wrap">
+          <table class="rp-table rp-term-table">
+            <thead>
+              <tr>
+                <th>${escapeHtml(chrome.colTerm)}</th>
+                <th>${escapeHtml(chrome.colDefinition)}</th>
+                <th>${escapeHtml(chrome.colExamples)}</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <figure class="rp-planes-figure">
+          <img
+            src="assets/planes-of-body-labeled.jpg"
+            alt="${escapeHtml(chrome.planesFigureAlt)}"
+            width="619"
+            height="635"
+            loading="lazy"
+          />
+          <figcaption class="rp-planes-figure-credit">
+            <a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >${escapeHtml(chrome.planesFigureCredit)}</a>
+          </figcaption>
+        </figure>
       </div>
       <div class="rp-activity-row">
         <span class="rp-activity-label">${escapeHtml(chrome.activityLabel)}</span>
-        <span class="rp-activity-instruction">${escapeHtml(chrome.activityInstruction)}</span>
+        <span class="rp-activity-text">${escapeHtml(chrome.activityText)}</span>
       </div>
-      <div class="rp-table-wrap">
-        <table class="rp-table rp-term-table">
-          <thead>
-            <tr>
-              <th>${escapeHtml(chrome.colTerm)}</th>
-              <th>${escapeHtml(chrome.colDefinition)}</th>
-              <th>${escapeHtml(chrome.colExamples)}</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
+      <div class="rp-view-scan-block">
+        <div class="rp-instructions-block">
+          <span class="rp-instructions-label">${escapeHtml(chrome.instructionsLabel)}</span>
+          <ol class="rp-instructions-list">
+            ${chrome.instructionSteps
+              .map((step) => `<li>${instructionStepHtml(step)}</li>`)
+              .join('')}
+          </ol>
+        </div>
+        <div class="rp-view-scan-buttons">
+          <button
+            type="button"
+            class="rp-viewer-btn"
+            data-open-scene="mrhead"
+            ${state.connection === 'connected' ? '' : 'disabled'}
+          >${escapeHtml(chrome.scanMrHead)}</button>
+          <button
+            type="button"
+            class="rp-viewer-btn"
+            data-open-scene="kits-00038"
+            title="KiTS · c4kc kits · KiTS-00038"
+            ${state.connection === 'connected' ? '' : 'disabled'}
+          >${escapeHtml(chrome.scanKits)}</button>
+          <button
+            type="button"
+            class="rp-viewer-btn"
+            data-open-scene="totalsegmentator-ct"
+            title="TotalSegmentator-CT"
+            ${state.connection === 'connected' ? '' : 'disabled'}
+          >${escapeHtml(chrome.scanThoraxLarge)}</button>
+          <button
+            type="button"
+            class="rp-viewer-btn"
+            data-open-scene="ctaabdomen-panoramix"
+            title="CTAAbdomenPanoramix"
+            ${state.connection === 'connected' ? '' : 'disabled'}
+          >${escapeHtml(chrome.scanAbdomenPelvisLarge)}</button>
+        </div>
       </div>
       ${note}
     </div>`;
 }
 
-function quizHtml(quiz: QuizState, locale: string): string {
+/** Persist Quiz collapse across remountCourse. */
+let quizOpen = false;
+
+function quizBodyHtml(quiz: QuizState, locale: string): string {
   const chrome = courseChromeFor(locale);
   if (!quiz.order.length) {
-    return `<div class="rp-section"><p class="rp-muted">${escapeHtml(chrome.quiz)}</p></div>`;
+    return `<p class="rp-muted">${escapeHtml(chrome.quiz)}</p>`;
   }
   if (quiz.index >= quiz.order.length) {
     return `
-      <div class="rp-section">
-        <div class="rp-section-head">
-          <h2 class="rp-section-title">${escapeHtml(chrome.quiz)}</h2>
-        </div>
-        <p>${escapeHtml(chrome.quizScore)}: ${quiz.correct} / ${quiz.order.length}</p>
-        <button type="button" class="rp-viewer-btn" data-quiz-restart>${escapeHtml(chrome.quizRestart)}</button>
-      </div>`;
+      <p>${escapeHtml(chrome.quizScore)}: ${quiz.correct} / ${quiz.order.length}</p>
+      <button type="button" class="rp-viewer-btn" data-quiz-restart>${escapeHtml(chrome.quizRestart)}</button>`;
   }
   const id = quiz.order[quiz.index]!;
   const term = DIRECTIONAL_TERMS.find((t) => t.id === id)!;
@@ -157,18 +204,28 @@ function quizHtml(quiz: QuizState, locale: string): string {
     ? `<button type="button" class="rp-viewer-btn" data-quiz-next>${escapeHtml(chrome.quizNext)}</button>`
     : '';
   return `
-    <div class="rp-section">
-      <div class="rp-section-head">
-        <h2 class="rp-section-title">${escapeHtml(chrome.quiz)}</h2>
-        <span class="rp-muted">${escapeHtml(chrome.quizScore)}: ${quiz.correct} / ${quiz.index}${
-          quiz.answered ? '' : ''
-        } · ${quiz.index + 1}/${quiz.order.length}</span>
+    <div class="rp-section-head rp-quiz-progress">
+      <span class="rp-muted">${escapeHtml(chrome.quizScore)}: ${quiz.correct} / ${quiz.index}${
+        quiz.answered ? '' : ''
+      } · ${quiz.index + 1}/${quiz.order.length}</span>
+    </div>
+    ${prompt}
+    <div class="rp-quiz-choices">${buttons}</div>
+    ${feedback}
+    ${next}`;
+}
+
+function quizHtml(quiz: QuizState, locale: string): string {
+  const chrome = courseChromeFor(locale);
+  return `
+    <details class="rp-collapse rp-quiz-collapse"${quizOpen ? ' open' : ''}>
+      <summary class="rp-collapse-summary">
+        <span class="rp-section-title">${escapeHtml(chrome.quiz)}</span>
+      </summary>
+      <div class="rp-collapse-body">
+        ${quizBodyHtml(quiz, locale)}
       </div>
-      ${prompt}
-      <div class="rp-quiz-choices">${buttons}</div>
-      ${feedback}
-      ${next}
-    </div>`;
+    </details>`;
 }
 
 export function renderCoursePanel(
@@ -179,7 +236,15 @@ export function renderCoursePanel(
 ): void {
   const locale = resolveStoredLocale();
   if (glossaryContainer) glossaryContainer.innerHTML = glossaryHtml(state, locale);
-  if (quizContainer) quizContainer.innerHTML = quizHtml(quiz, locale);
+  if (quizContainer) {
+    quizContainer.innerHTML = quizHtml(quiz, locale);
+    const collapse = quizContainer.querySelector(
+      '.rp-quiz-collapse'
+    ) as HTMLDetailsElement | null;
+    collapse?.addEventListener('toggle', () => {
+      quizOpen = Boolean(collapse.open);
+    });
+  }
 }
 
 export function applyQuizChoice(

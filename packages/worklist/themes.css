@@ -1221,15 +1221,25 @@ a.wl-viewer-btn {
   cursor: default;
 }
 
-.wl-viewer-btn-connected:not(:disabled) {
+.wl-viewer-btn-connected:not(:disabled),
+.wl-viewer-btn-featured:not(:disabled) {
   border-color: var(--wl-accent);
   background: color-mix(in srgb, var(--wl-accent) 18%, var(--wl-surface-2));
   color: var(--wl-fg);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--wl-accent) 35%, transparent);
 }
 
-.wl-viewer-btn-connected:hover:not(:disabled) {
+.wl-viewer-btn-connected:hover:not(:disabled),
+.wl-viewer-btn-featured:hover:not(:disabled) {
   background: color-mix(in srgb, var(--wl-accent) 28%, var(--wl-surface-3));
+}
+
+/* Keep classroom cue visible even while hub is disconnected. */
+.wl-viewer-btn-featured:disabled {
+  opacity: 0.75;
+  border-color: color-mix(in srgb, var(--wl-accent) 55%, var(--wl-border));
+  background: color-mix(in srgb, var(--wl-accent) 12%, var(--wl-surface-2));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--wl-accent) 25%, transparent);
 }
 
 .wl-table-wrap {

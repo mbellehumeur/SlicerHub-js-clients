@@ -1376,7 +1376,7 @@ export function selectCourseTerm(state: AppState, termId: string | null): void {
   notifyStudy(state);
 }
 
-/** Open MRHead / TotalSegmentator-CT LiveScene in IRA (course “View scan” buttons). */
+/** Open MRHead LiveScene or KiTS IDC study in IRA (course study buttons). */
 export async function openCourseScene(
   state: AppState,
   key: ClassroomSceneKey
@@ -1997,9 +1997,10 @@ function handleStructureReportUpdate(
   // focus the popup via their Window handle when segment count grows.
   if (n > prevCount) {
     try {
-      document.title = `● Classroom — ${n} segments`;
+      const brand = courseChromeFor(resolveStoredLocale()).brand;
+      document.title = `● ${brand} — ${n} segments`;
       window.setTimeout(() => {
-        document.title = 'Classroom';
+        document.title = brand;
       }, 2500);
     } catch {
       /* ignore */

@@ -1,15 +1,19 @@
 /** Classroom course + conference chat chrome (EN/FR). */
 
 export type CourseChrome = {
+  brand: string;
   headerTitle: string;
   course: string;
   volumesAndSegs: string;
   glossary: string;
-  viewScan: string;
-  scanMrHead: string;
-  scanTotalSegCt: string;
   activityLabel: string;
-  activityInstruction: string;
+  activityText: string;
+  instructionsLabel: string;
+  instructionSteps: [string, string, string];
+  scanMrHead: string;
+  scanKits: string;
+  scanThoraxLarge: string;
+  scanAbdomenPelvisLarge: string;
   quiz: string;
   term: string;
   definition: string;
@@ -35,19 +39,29 @@ export type CourseChrome = {
   colTerm: string;
   colDefinition: string;
   colExamples: string;
+  planesIntro: string;
+  planesFigureAlt: string;
+  planesFigureCredit: string;
 };
 
 const en: CourseChrome = {
-  headerTitle: 'ST-444 Anatomical terminology planes',
-  course: 'Body planes',
-  volumesAndSegs: 'Volumes & segmentations',
+  brand: 'Classroom',
+  headerTitle: 'Anatomical Planes Identification',
+  course: 'Anatomical planes',
+  volumesAndSegs: 'Volumes & Segmentations',
   glossary: 'Anatomical Planes Identification',
-  viewScan: 'Open one of the studies to perform the plane identification activity',
-  scanMrHead: 'Head',
-  scanTotalSegCt: 'Thorax',
   activityLabel: 'Activity:',
-  activityInstruction:
-    'Use the brush tool (hotkey B) in the viewer to mark each anatomical plane and make a snapshot of each.',
+  activityText: 'Identify the anatomical planes on medical images.',
+  instructionsLabel: 'Instructions:',
+  instructionSteps: [
+    'Click one of the buttons below to open medical images and perform the plane identification activity.',
+    'Use the brush tool toggle key (hotkey B) in the viewer to mark each anatomical plane.',
+    'Make a snapshot {{camera}} of each.',
+  ],
+  scanMrHead: 'Head (8 MB)',
+  scanKits: 'Thorax - small (19 MB)',
+  scanThoraxLarge: 'Thorax - large (60 MB)',
+  scanAbdomenPelvisLarge: 'Abdomen, Pelvis - large (80 MB)',
   quiz: 'Quiz',
   term: 'Plane',
   definition: 'Definition',
@@ -62,7 +76,7 @@ const en: CourseChrome = {
   quizRestart: 'Restart quiz',
   quizCorrect: 'Correct',
   quizWrong: 'Not quite',
-  conferenceLog: 'Conference',
+  conferenceLog: 'Conference Chat',
   chatPlaceholder: 'Message the conference…',
   chatSend: 'Send',
   chatNeedConference: 'Join a conference to chat',
@@ -74,19 +88,31 @@ const en: CourseChrome = {
   colTerm: 'Plane',
   colDefinition: 'Definition',
   colExamples: 'Example(s)',
+  planesIntro:
+    'Anatomical planes are imaginary flat surfaces used to describe locations and sections of the body in anatomy and medical imaging. The three planes most commonly used are the sagittal, frontal (coronal), and transverse (axial) planes.',
+  planesFigureAlt:
+    'Anatomical planes of the body: sagittal, frontal (coronal), and transverse',
+  planesFigureCredit: 'OpenStax Anatomy & Physiology / CC BY 4.0',
 };
 
 const fr: CourseChrome = {
-  headerTitle: 'ST-444 Terminologie anatomique — plans',
+  brand: 'Salle de classe',
+  headerTitle: 'Identification des plans anatomiques',
   course: 'Plans anatomiques',
-  volumesAndSegs: 'Volumes et segmentations',
+  volumesAndSegs: 'Volumes et Segmentations',
   glossary: 'Identification des plans anatomiques',
-  viewScan: 'Ouvrez une des études pour réaliser l’activité d’identification des plans',
-  scanMrHead: 'Head',
-  scanTotalSegCt: 'Thorax',
   activityLabel: 'Activité :',
-  activityInstruction:
-    'Utilisez l’outil pinceau (raccourci B) dans le visualiseur pour marquer chaque plan anatomique et en faire une capture.',
+  activityText: 'Identifier les plans anatomiques sur des images médicales.',
+  instructionsLabel: 'Instructions :',
+  instructionSteps: [
+    'Cliquez sur l’un des boutons ci-dessous pour ouvrir des images médicales et réaliser l’activité d’identification des plans.',
+    'Utilisez la touche bascule de l’outil pinceau (raccourci B) dans le visualiseur pour marquer chaque plan anatomique.',
+    'Faites une capture {{camera}} de chacun.',
+  ],
+  scanMrHead: 'Tête (8 Mo)',
+  scanKits: 'Thorax — petit (19 Mo)',
+  scanThoraxLarge: 'Thorax — grand (60 Mo)',
+  scanAbdomenPelvisLarge: 'Abdomen, pelvis — grand (80 Mo)',
   quiz: 'Quiz',
   term: 'Plan',
   definition: 'Définition',
@@ -101,7 +127,7 @@ const fr: CourseChrome = {
   quizRestart: 'Recommencer',
   quizCorrect: 'Correct',
   quizWrong: 'Pas tout à fait',
-  conferenceLog: 'Conférence',
+  conferenceLog: 'Chat de conférence',
   chatPlaceholder: 'Message à la conférence…',
   chatSend: 'Envoyer',
   chatNeedConference: 'Rejoignez une conférence pour discuter',
@@ -113,6 +139,11 @@ const fr: CourseChrome = {
   colTerm: 'Plan',
   colDefinition: 'Définition',
   colExamples: 'Exemple(s)',
+  planesIntro:
+    'Les plans anatomiques sont des surfaces planes imaginaires utilisées pour décrire la localisation et les coupes du corps en anatomie et en imagerie médicale. Les trois plans les plus couramment utilisés sont les plans sagittal, frontal (coronal) et transversal (axial).',
+  planesFigureAlt:
+    'Plans anatomiques du corps : sagittal, frontal (coronal) et transversal',
+  planesFigureCredit: 'OpenStax Anatomy & Physiology / CC BY 4.0',
 };
 
 export function courseChromeFor(locale?: string): CourseChrome {

@@ -60,7 +60,6 @@ import {
   VIEWER_OPEN_TITLE_IRA,
   VIEWER_OPEN_TITLE_DISABLED,
   VIEWER_OPEN_TITLE_REPORTING,
-  VIEWER_OPEN_TITLE_CLASSROOM,
   VIEWER_OPEN_TITLE_OHIF,
   VIEWER_OPEN_TITLE_SCENEVIEWS,
   VIEWER_OPEN_TITLE_SEGROULETTE,
@@ -80,7 +79,7 @@ import {
   WORKLIST_ORG_3D_SLICER,
 } from './config';
 import { appLocaleToOhifLng, resolveStoredLocale } from '@slicer-hub/i18n';
-import { conferenceStrings } from './i18n';
+import { conferenceStrings, t } from './i18n';
 import {
   INFERENCE_SERVERS,
 } from './inference-servers';
@@ -411,7 +410,7 @@ const CONNECTED_PRODUCT_BUTTONS: Array<{
     match: (p) => matchesHubProduct(p, 'reporting'),
   },
   {
-    // UI label is "ST-444"
+    // UI label is "Anatomical Planes" (i18n chrome:anatomicalPlanes)
     id: 'openSt444Btn',
     match: (p) => matchesHubProduct(p, 'classroom'),
   },
@@ -1173,7 +1172,7 @@ function focusExistingOhifWindow(state: AppState): boolean {
 
 function viewerPopupFeatures(kind: ViewerKind): string {
   const place =
-    kind === 'reporting' || kind === 'classroom'
+    kind === 'reporting'
       ? reportingPopupPlacement()
       : kind === 'ira'
         ? iraPopupPlacement() // hub-mirror still uses IRA-sized popup placement
@@ -1190,8 +1189,8 @@ function viewerPopupFeatures(kind: ViewerKind): string {
     `left=${place.left}`,
     `top=${place.top}`,
   ];
-  // Keep a Window handle for reporting / classroom (and hub-mirror via 'ira' placement).
-  if (kind !== 'reporting' && kind !== 'classroom' && kind !== 'ira') {
+  // Keep a Window handle for reporting (and hub-mirror via 'ira' placement).
+  if (kind !== 'reporting' && kind !== 'ira') {
     parts.push('noopener', 'noreferrer');
   }
   return parts.join(',');
@@ -1337,15 +1336,15 @@ function openClassroomViewer(state: AppState): void {
   if (token) {
     url.searchParams.set('id-token', token);
   }
-  const place = reportingPopupPlacement();
-  const win = window.open(
-    url.toString(),
-    CLASSROOM_WINDOW_NAME,
-    viewerPopupFeatures('classroom')
-  );
+  // Normal browser tab (no popup features), same pattern as IRA / OHIF.
+  const win = window.open(url.toString(), CLASSROOM_WINDOW_NAME);
   if (!win) return;
   classroomWindow = win;
-  placePopupWindow(win, place);
+  try {
+    win.focus();
+  } catch {
+    /* ignore */
+  }
 }
 
 export function openHubViewer(state: AppState, kind: ViewerKind): boolean {
@@ -1557,7 +1556,7 @@ export function setViewerButtonsEnabled(
   );
   const buttons: Array<{ id: string; title: string }> = [
     { id: 'openReportingBtn', title: VIEWER_OPEN_TITLE_REPORTING },
-    { id: 'openSt444Btn', title: VIEWER_OPEN_TITLE_CLASSROOM },
+    { id: 'openSt444Btn', title: t('chrome:anatomicalPlanes') },
     { id: 'openSlicerBtn', title: VIEWER_OPEN_TITLE_SLICER },
     { id: 'openHubMirrorBtn', title: VIEWER_OPEN_TITLE_HUB_MIRROR },
     { id: 'openIraBtn', title: VIEWER_OPEN_TITLE_IRA },

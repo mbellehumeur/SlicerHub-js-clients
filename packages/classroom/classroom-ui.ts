@@ -651,17 +651,18 @@ function segsAllVisible(state: AppState): boolean {
   return !Object.values(state.segmentVisible).some((v) => v === false);
 }
 
-/** Persist Volumes & segmentations collapse across remountDisplay. */
+/** Persist collapse open state across remountDisplay. */
 let volumesSegsOpen = false;
+let snapshotsOpen = false;
 
 export function renderReportDisplay(container: HTMLElement, state: AppState): void {
   const allOn = segsAllVisible(state);
   const rp = reportingChromeFor();
   const volSegTitle = courseChromeFor(resolveStoredLocale()).volumesAndSegs;
   container.innerHTML = `
-    <div class="rp-section">
-      <div class="rp-section-head">
-        <h2 class="rp-section-title">${escapeHtml(rp.snapshots)}</h2>
+    <details class="rp-collapse rp-snapshots-collapse"${snapshotsOpen ? ' open' : ''}>
+      <summary class="rp-collapse-summary">
+        <span class="rp-section-title">${escapeHtml(rp.snapshots)}</span>
         <button
           type="button"
           id="rpAddSnapshotBtn"
@@ -670,9 +671,11 @@ export function renderReportDisplay(container: HTMLElement, state: AppState): vo
           title="Capture snapshot from Image Display"
           aria-label="Capture snapshot"
         >${CAMERA_ICON}</button>
+      </summary>
+      <div class="rp-collapse-body">
+        ${snapshotsTableHtml(state)}
       </div>
-      ${snapshotsTableHtml(state)}
-    </div>
+    </details>
     <details class="rp-collapse rp-vol-seg-collapse"${volumesSegsOpen ? ' open' : ''}>
       <summary class="rp-collapse-summary">
         <span class="rp-section-title">${escapeHtml(volSegTitle)}</span>
@@ -703,6 +706,18 @@ export function renderReportDisplay(container: HTMLElement, state: AppState): vo
       </div>
     </details>
   `;
+  const snapshotsCollapse = container.querySelector(
+    '.rp-snapshots-collapse'
+  ) as HTMLDetailsElement | null;
+  snapshotsCollapse?.addEventListener('toggle', () => {
+    snapshotsOpen = Boolean(snapshotsCollapse.open);
+  });
+  // Keep camera clicks from toggling the <details> summary.
+  container
+    .querySelector('[data-add-snapshot]')
+    ?.addEventListener('click', (ev) => {
+      ev.preventDefault();
+    });
   const collapse = container.querySelector(
     '.rp-vol-seg-collapse'
   ) as HTMLDetailsElement | null;

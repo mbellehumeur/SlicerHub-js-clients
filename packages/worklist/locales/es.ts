@@ -21,6 +21,7 @@ export const es: LocaleBundle = {
     localAi: 'Evidence Creators:',
     remoteAi: 'Evidence Creators:',
     classroom: 'Curso:',
+    anatomicalPlanes: 'Anatomical Planes',
     currentContext: 'Contexto actual:',
     none: 'ninguno',
     colStudy: 'Estudio',

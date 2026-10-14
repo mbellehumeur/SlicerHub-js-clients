@@ -153,6 +153,14 @@ const EC_STYLES = `
   align-items: center;
   margin-top: 6px;
 }
+.hub-ec-run-row .hub-ec-quality-label {
+  flex: 0 0 auto;
+  margin: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
 .hub-ec-run-row .hub-ec-model-select {
   flex: 1 1 auto;
   min-width: 0;
@@ -758,27 +766,38 @@ function EvidenceCreatorsDialog({
             <div className="hub-ec-run-row">
               {isFlexray ? (
                 flexrayChoices.length ? (
-                  <div className="hub-ec-model-select">
-                    <Select
-                      value={flexrayModelId === 'high' ? 'high' : 'low'}
-                      onValueChange={value => setFlexrayModelId(value)}
+                  <>
+                    <Label
+                      htmlFor="ec-flexray-quality"
+                      className="hub-ec-quality-label"
                     >
-                      <SelectTrigger aria-label="FleXray quality">
-                        <SelectValue
-                          placeholder={
-                            selectedFlexrayChoice?.optionLabel || 'Low'
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-72">
-                        {flexrayChoices.map(choice => (
-                          <SelectItem key={choice.id} value={choice.id}>
-                            {choice.optionLabel}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      Quality
+                    </Label>
+                    <div className="hub-ec-model-select">
+                      <Select
+                        value={flexrayModelId === 'high' ? 'high' : 'low'}
+                        onValueChange={value => setFlexrayModelId(value)}
+                      >
+                        <SelectTrigger
+                          id="ec-flexray-quality"
+                          aria-label="FleXray quality"
+                        >
+                          <SelectValue
+                            placeholder={
+                              selectedFlexrayChoice?.optionLabel || 'Low'
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-72">
+                          {flexrayChoices.map(choice => (
+                            <SelectItem key={choice.id} value={choice.id}>
+                              {choice.optionLabel}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
                 ) : (
                   <div className="hub-ec-model-select hub-ec-note">
                     {flexrayManifestError || 'Loading models…'}

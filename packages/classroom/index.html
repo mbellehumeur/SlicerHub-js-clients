@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Classroom</title>
-  <link rel="stylesheet" href="themes.css?v=body-planes">
+  <link rel="stylesheet" href="themes.css?v=activity-row">
 </head>
 <body>
   <div id="app">
@@ -13,7 +13,7 @@
         <span class="rp-brand">Classroom</span>
       </div>
       <h1 id="classroomHeaderTitle" class="rp-header-title">
-        ST-444 Anatomical terminology planes
+        Anatomical Planes Identification
       </h1>
       <div class="rp-header-actions">
         <button
@@ -93,20 +93,20 @@
     </header>
 
     <main class="rp-main rp-main-classroom">
+      <section class="rp-panel rp-course-panel" aria-label="Anatomical planes">
+        <div id="glossaryPanel" class="rp-course-display"></div>
+      </section>
+
       <section class="rp-panel rp-scene-panel" aria-label="Classroom scene">
         <div id="reportDisplay" class="rp-report-display">
           <div class="rp-empty" data-i18n-rp="noReportSelected">No report selected</div>
         </div>
       </section>
 
-      <section class="rp-panel rp-course-panel" aria-label="Anatomical planes">
-        <div id="glossaryPanel" class="rp-course-display"></div>
-      </section>
-
       <section class="rp-panel rp-chat-panel" aria-label="Conference chat">
         <details class="rp-collapse rp-conference-collapse">
           <summary class="rp-collapse-summary">
-            <h2 id="conferenceLogTitle" class="rp-section-title">Conference</h2>
+            <span id="conferenceLogTitle" class="rp-section-title">Conference Chat</span>
           </summary>
           <div class="rp-collapse-body">
             <textarea
@@ -162,6 +162,6 @@
     </div>
   </div>
 
-  <script type="module" src="classroom.js?v=body-planes"></script>
+  <script type="module" src="classroom.js?v=planes-first"></script>
 </body>
 </html>

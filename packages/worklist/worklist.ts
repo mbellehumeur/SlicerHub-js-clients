@@ -319,6 +319,7 @@ async function boot(): Promise<void> {
   const helpModalEl = document.getElementById('helpModal') as HTMLElement | null;
   onLanguageChanged(() => {
     applyChromeLabels();
+    setViewerButtonsEnabled(state.connection === 'connected', state);
     renderWorklistContext(state);
     renderConferenceRoster(state);
     refreshHelpIfOpen(helpModalEl);
