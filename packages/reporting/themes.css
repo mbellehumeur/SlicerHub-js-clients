@@ -362,8 +362,16 @@ button {
   box-shadow: var(--rp-shadow);
 }
 
-.hub-conference-change-user-title {
+.hub-conference-change-user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin: 0 0 10px;
+}
+
+.hub-conference-change-user-title {
+  margin: 0;
   font: 700 13px/1.3 var(--rp-font);
   color: #fff;
 }

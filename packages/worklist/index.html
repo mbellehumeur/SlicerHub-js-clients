@@ -114,17 +114,18 @@
       <section class="wl-apps" aria-label="Clients and viewers">
         <div class="wl-viewer-btns">
           <span class="wl-viewer-label wl-viewer-label-first" data-i18n="chrome:classroom">Classrooms:</span>
-          <button
-            type="button"
+          <a
             id="openSt444Btn"
             class="wl-viewer-btn wl-viewer-btn-featured"
+            href="#"
             data-i18n="chrome:anatomicalPlanes"
             data-i18n-title="chrome:anatomicalPlanes"
             title="Anatomical Planes"
-            disabled
+            aria-disabled="true"
+            tabindex="-1"
           >
             Anatomical Planes
-          </button>
+          </a>
           <span class="wl-viewer-label" data-i18n="chrome:viewers">Image Displays:</span>
           <button
             type="button"
@@ -143,6 +144,15 @@
             disabled
           >
             SlicerDesktop
+          </button>
+          <button
+            type="button"
+            id="openOsirixBtn"
+            class="wl-viewer-btn"
+            title="Not available yet"
+            disabled
+          >
+            OsiriX
           </button>
           <button
             type="button"
@@ -171,15 +181,6 @@
           >
             Slim
           </button>
-          <button
-            type="button"
-            id="openVolviewBtn"
-            class="wl-viewer-btn"
-            title="Subscribe to the hub first"
-            disabled
-          >
-            VolView
-          </button>
           <span class="wl-viewer-label" data-i18n="chrome:reportingClients">Report Creators:</span>
           <button
             type="button"
@@ -189,6 +190,15 @@
             disabled
           >
             DICOM SR
+          </button>
+          <button
+            type="button"
+            id="openHl7CdaBtn"
+            class="wl-viewer-btn"
+            title="Not available yet"
+            disabled
+          >
+            HL7 CDA
           </button>
           <button
             type="button"

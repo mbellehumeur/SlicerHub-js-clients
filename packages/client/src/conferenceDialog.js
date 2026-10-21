@@ -201,11 +201,19 @@ export function createHubConferenceDialog(options) {
         aria-labelledby="${cls(prefix, 'change-user-title')}"
         tabindex="-1"
       >
-        <h3
-          id="${cls(prefix, 'change-user-title')}"
-          class="${cls(prefix, 'change-user-title')}"
-          data-hub-conference-change-user-title
-        ></h3>
+        <div class="${cls(prefix, 'change-user-header')}">
+          <h3
+            id="${cls(prefix, 'change-user-title')}"
+            class="${cls(prefix, 'change-user-title')}"
+            data-hub-conference-change-user-title
+          ></h3>
+          <button
+            type="button"
+            class="${cls(prefix, 'close')}"
+            data-hub-conference-change-user-close
+            aria-label=""
+          >×</button>
+        </div>
         <div class="${cls(prefix, 'field')}">
           <label
             class="${cls(prefix, 'label')}"
@@ -255,6 +263,9 @@ export function createHubConferenceDialog(options) {
   );
   const changeUserDoneBtn = overlay.querySelector(
     '[data-hub-conference-change-user-done]'
+  );
+  const changeUserCloseBtn = overlay.querySelector(
+    '[data-hub-conference-change-user-close]'
   );
   const userNameInput = overlay.querySelector('#sessionUserNameInput');
   const userNote = overlay.querySelector('#sessionChangeUserNote');
@@ -363,6 +374,9 @@ export function createHubConferenceDialog(options) {
     }
     if (closeBtn instanceof HTMLElement) {
       closeBtn.setAttribute('aria-label', s.closeAria);
+    }
+    if (changeUserCloseBtn instanceof HTMLElement) {
+      changeUserCloseBtn.setAttribute('aria-label', s.closeAria);
     }
     fillTitlePresets();
     syncUserNameDisplay();
@@ -943,9 +957,14 @@ export function createHubConferenceDialog(options) {
     event.stopPropagation();
     saveUserNameFromDialog();
   });
+  changeUserCloseBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    closeChangeUserDialog();
+  });
   openAnotherUserBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
     openAnotherUserSession();
+    close();
   });
   userNameInput?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {

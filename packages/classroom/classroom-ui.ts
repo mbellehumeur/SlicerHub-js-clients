@@ -653,7 +653,7 @@ function segsAllVisible(state: AppState): boolean {
 
 /** Persist collapse open state across remountDisplay. */
 let volumesSegsOpen = false;
-let snapshotsOpen = false;
+let snapshotsOpen = true;
 
 export function renderReportDisplay(container: HTMLElement, state: AppState): void {
   const allOn = segsAllVisible(state);

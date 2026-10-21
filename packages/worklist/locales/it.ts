@@ -64,7 +64,7 @@ export const it: LocaleBundle = {
           <li>un provider di autenticazione / identità con integrazione agli endpoint OIDC dell’hub o autenticazione anonima/mock integrata nell’hub</li>
         </ul>
         <p>
-          Il sistema include anche funzioni educative indipendenti dal workflow IHE
+          L’estensione include anche funzioni educative indipendenti dal workflow IHE
           Integrated Reporting:
         </p>
         <ul class="wl-help-steps">

@@ -52,43 +52,15 @@
         >
           Leave conference
         </button>
-        <div class="rp-menu-wrap">
-          <button
-            type="button"
-            id="castSettingsBtn"
-            class="rp-icon-btn"
-            aria-label="Help"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            title="Help"
-          >
-            ?
-          </button>
-          <div id="castSettingsMenu" class="rp-menu" role="menu" hidden>
-            <button
-              type="button"
-              class="rp-menu-item"
-              role="menuitemradio"
-              aria-checked="true"
-              data-theme-option="slicerlive"
-            >
-              SlicerLive theme
-            </button>
-            <button
-              type="button"
-              class="rp-menu-item"
-              role="menuitemradio"
-              aria-checked="false"
-              data-theme-option="ohif"
-            >
-              OHIF theme
-            </button>
-            <div class="rp-menu-sep" role="separator"></div>
-            <button type="button" id="castAboutBtn" class="rp-menu-item" role="menuitem">
-              About…
-            </button>
-          </div>
-        </div>
+        <button
+          type="button"
+          id="castAboutBtn"
+          class="rp-icon-btn"
+          aria-label="About"
+          title="About"
+        >
+          ?
+        </button>
       </div>
     </header>
 
@@ -103,10 +75,10 @@
         </div>
       </section>
 
-      <section class="rp-panel rp-chat-panel" aria-label="Conference chat">
+      <section class="rp-panel rp-chat-panel" aria-label="Classroom chat">
         <details class="rp-collapse rp-conference-collapse">
           <summary class="rp-collapse-summary">
-            <span id="conferenceLogTitle" class="rp-section-title">Conference Chat</span>
+            <span id="conferenceLogTitle" class="rp-section-title">Classroom Chat</span>
           </summary>
           <div class="rp-collapse-body">
             <textarea
@@ -146,19 +118,12 @@
   </div>
 
   <div id="aboutModal" class="rp-modal-backdrop" hidden>
-    <div class="rp-modal" role="dialog" aria-labelledby="aboutTitle">
+    <div class="rp-modal rp-about-modal" role="dialog" aria-labelledby="aboutTitle">
       <div class="rp-modal-header">
-        <h2 id="aboutTitle">About</h2>
+        <h2 id="aboutTitle">About this application</h2>
         <button type="button" class="rp-modal-close" data-close-modal aria-label="Close">×</button>
       </div>
-      <div class="rp-modal-body">
-        <p>
-          Hub classroom — body sections and anatomical planes (glossary + quiz),
-          conference chat, and links to segmentations / snapshots on the Image
-          Display (<code>CLASSROOM_CLIENT</code>). SEG voxels stay in IRA.
-        </p>
-        <p class="rp-muted">Uses <code>@slicer-hub/client</code>.</p>
-      </div>
+      <div id="aboutModalContent" class="rp-modal-body rp-about-body"></div>
     </div>
   </div>
 

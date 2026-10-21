@@ -64,7 +64,7 @@ export const ko: LocaleBundle = {
           <li>허브 OIDC 엔드포인트 연동 또는 허브 내장 익명/모의 인증을 제공하는 인증 / ID 공급자</li>
         </ul>
         <p>
-          시스템은 IHE Integrated Reporting 워크플로와 독립적인 교육 기능도 포함합니다:
+          확장은 IHE Integrated Reporting 워크플로와 독립적인 교육 기능도 포함합니다:
         </p>
         <ul class="wl-help-steps">
           <li>수업 준비를 위한 교육 파일 및 코호트 생성·저장·업로드</li>

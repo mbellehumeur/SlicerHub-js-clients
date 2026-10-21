@@ -64,7 +64,7 @@ export const nl: LocaleBundle = {
           <li>een authenticatie- / identiteitsprovider met integratie naar de OIDC-eindpunten van de hub of ingebouwde anonieme/mock-authenticatie van de hub</li>
         </ul>
         <p>
-          Het systeem bevat ook educatieve functies die onafhankelijk zijn van de IHE
+          De extensie bevat ook educatieve functies die onafhankelijk zijn van de IHE
           Integrated Reporting-workflow:
         </p>
         <ul class="wl-help-steps">

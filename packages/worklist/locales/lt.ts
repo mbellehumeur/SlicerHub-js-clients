@@ -64,7 +64,7 @@ export const lt: LocaleBundle = {
           <li>autentifikavimo / tapatybės teikėją su integracija į centro OIDC galinius taškus arba įmontuotą anoniminę/mock autentifikaciją</li>
         </ul>
         <p>
-          Sistema taip pat apima švietimo funkcijas, nepriklausomas nuo IHE
+          Plėtinys taip pat apima švietimo funkcijas, nepriklausomas nuo IHE
           Integrated Reporting darbo eigos:
         </p>
         <ul class="wl-help-steps">

@@ -34,6 +34,7 @@ import {
   ensureIdcWsiLoaded,
   ensureSlicerLiveViewer,
   ensureSlicerScenesLoaded,
+  handleClassroomOpenClick,
   handleWorklistClose,
   hubEndpoint,
   openHubViewer,
@@ -149,7 +150,6 @@ function wireMenus(state: AppState): void {
 function wireViewerButtons(state: AppState, onWorklistChanged: () => void): void {
   const map: Array<{ id: string; kind: ViewerKind }> = [
     { id: 'openReportingBtn', kind: 'reporting' },
-    { id: 'openSt444Btn', kind: 'classroom' },
     { id: 'openIraBtn', kind: 'ira' },
     { id: 'openOhifBtn', kind: 'ohif' },
     { id: 'openSlimBtn', kind: 'slim' },
@@ -159,6 +159,9 @@ function wireViewerButtons(state: AppState, onWorklistChanged: () => void): void
       openHubViewer(state, kind);
     });
   }
+  document.getElementById('openSt444Btn')?.addEventListener('click', (ev) => {
+    handleClassroomOpenClick(state, ev);
+  });
   document.getElementById('openHubMirrorBtn')?.addEventListener('click', () => {
     openHubMirrorViewer(state);
   });

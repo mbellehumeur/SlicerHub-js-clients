@@ -67,7 +67,6 @@ import {
   THEME_SLICERLIVE,
 } from './config';
 import {
-  closeMenus,
   mountSegOpacityChip,
   mountSegmentOpacityChips,
   mountVolOpacityChip,
@@ -82,17 +81,12 @@ import {
   openHubViewer,
   setViewerButtonsEnabled,
 } from './viewers';
+import { initI18n, setLocale as setWorklistLocale, t } from '../worklist/i18n';
 
 function applyTheme(theme: string): void {
   const next = theme === THEME_OHIF ? THEME_OHIF : THEME_SLICERLIVE;
   document.documentElement.dataset.theme = next;
   setStoredTheme(next);
-  document
-    .querySelectorAll<HTMLButtonElement>('[data-theme-option]')
-    .forEach((btn) => {
-      const active = btn.dataset.themeOption === next;
-      btn.setAttribute('aria-checked', active ? 'true' : 'false');
-    });
 }
 
 function remountDisplay(state: AppState, reportDisplay: HTMLElement): void {
@@ -237,52 +231,42 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
   });
 }
 
-function wireMenus(_state: AppState): void {
-  const settingsBtn = document.getElementById(
-    'castSettingsBtn'
-  ) as HTMLButtonElement;
-  const settingsMenu = document.getElementById(
-    'castSettingsMenu'
-  ) as HTMLElement;
-  const aboutModal = document.getElementById('aboutModal') as HTMLElement;
+async function fillClassroomAbout(
+  content: HTMLElement,
+  titleEl: HTMLElement | null
+): Promise<void> {
+  await initI18n();
+  await setWorklistLocale(resolveStoredLocale());
+  if (titleEl) titleEl.textContent = t('help:aboutSummary');
+  content.innerHTML = `<div class="rp-help-intro">${t('help:introHtml')}</div>`;
+}
 
-  const closeAllMenus = () => {
-    closeMenus(settingsMenu);
-  };
+function wireAbout(): void {
+  const aboutBtn = document.getElementById(
+    'castAboutBtn'
+  ) as HTMLButtonElement | null;
+  const aboutModal = document.getElementById('aboutModal') as HTMLElement | null;
+  const aboutContent = document.getElementById(
+    'aboutModalContent'
+  ) as HTMLElement | null;
+  const aboutTitle = document.getElementById(
+    'aboutTitle'
+  ) as HTMLElement | null;
+  if (!aboutBtn || !aboutModal || !aboutContent) return;
 
-  settingsBtn.addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    const open = settingsMenu.hidden;
-    closeAllMenus();
-    settingsMenu.hidden = !open;
-    settingsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-
-  document.addEventListener('click', () => {
-    closeAllMenus();
-    settingsBtn.setAttribute('aria-expanded', 'false');
-  });
-
-  settingsMenu.addEventListener('click', (ev) => ev.stopPropagation());
-
-  document
-    .querySelectorAll<HTMLButtonElement>('[data-theme-option]')
-    .forEach((btn) => {
-      btn.addEventListener('click', () => {
-        applyTheme(btn.dataset.themeOption || THEME_SLICERLIVE);
-        closeAllMenus();
-      });
-    });
-
-  document.getElementById('castAboutBtn')?.addEventListener('click', () => {
+  aboutBtn.addEventListener('click', () => {
     aboutModal.hidden = false;
-    closeAllMenus();
+    void fillClassroomAbout(aboutContent, aboutTitle);
   });
 
   document.querySelectorAll('[data-close-modal]').forEach((el) => {
     el.addEventListener('click', () => {
       aboutModal.hidden = true;
     });
+  });
+
+  aboutModal.addEventListener('click', (ev) => {
+    if (ev.target === aboutModal) aboutModal.hidden = true;
   });
 }
 
@@ -534,7 +518,7 @@ function boot(): void {
       });
   });
 
-  wireMenus(state);
+  wireAbout();
   wireReportDisplay(state, reportDisplay);
 
   const onCourseClick = (ev: MouseEvent): void => {

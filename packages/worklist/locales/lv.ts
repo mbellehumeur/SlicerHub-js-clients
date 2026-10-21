@@ -64,7 +64,7 @@ export const lv: LocaleBundle = {
           <li>autentifikācijas / identitātes nodrošinātāju ar integrāciju hub OIDC galapunktos vai iebūvētu anonīmu/mock autentifikāciju</li>
         </ul>
         <p>
-          Sistēma ietver arī izglītības funkcijas, kas ir neatkarīgas no IHE
+          Paplašinājums ietver arī izglītības funkcijas, kas ir neatkarīgas no IHE
           Integrated Reporting darba plūsmas:
         </p>
         <ul class="wl-help-steps">

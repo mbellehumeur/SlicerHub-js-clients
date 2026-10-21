@@ -16,13 +16,31 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;');
 }
 
-const CAMERA_ICON = `<svg class="rp-activity-camera-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+/** Escape a plane term and enlarge the leading a/b/c letter. */
+function termLabelHtml(term: string): string {
+  const m = String(term || '').match(/^([abc])\s*-\s*(.*)$/i);
+  if (!m) return escapeHtml(term);
+  const letter = m[1]!.toLowerCase();
+  const rest = m[2] ?? '';
+  return `<span class="rp-plane-letter">${escapeHtml(letter)}</span> - ${escapeHtml(rest)}`;
+}
+
+const CAMERA_ICON = `<svg class="rp-activity-inline-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
   <path d="M4 8h3l1.5-2h7L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
   <circle cx="12" cy="14" r="3.5" stroke="currentColor" stroke-width="1.7"/>
 </svg>`;
 
+/** Same pen mark as IRA vanishing-brush / ICONS.marker. */
+const BRUSH_ICON = `<svg class="rp-activity-inline-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M4 20l2.5-2.5 11-11 2.5 2.5-11 11L4 20z"/>
+  <path d="M15.5 6.5l2.5 2.5"/>
+  <path d="M5 19l1 1" stroke-width="2.2"/>
+</svg>`;
+
 function instructionStepHtml(text: string): string {
-  return escapeHtml(text).replace(/\{\{camera\}\}/g, CAMERA_ICON);
+  return escapeHtml(text)
+    .replace(/\{\{camera\}\}/g, CAMERA_ICON)
+    .replace(/\{\{brush\}\}/g, BRUSH_ICON);
 }
 
 export type QuizState = {
@@ -73,7 +91,7 @@ function glossaryHtml(state: AppState, locale: string): string {
       .map((ex) => escapeHtml(pickLocale(ex, locale)))
       .join('<br/>');
     return `<tr class="rp-term-row${selected}" data-term-id="${escapeHtml(t.id)}" tabindex="0">
-      <td>${escapeHtml(pickLocale(t.term, locale))}</td>
+      <td>${termLabelHtml(pickLocale(t.term, locale))}</td>
       <td>${escapeHtml(pickLocale(t.definition, locale))}</td>
       <td>${examples}</td>
     </tr>`;
@@ -114,19 +132,32 @@ function glossaryHtml(state: AppState, locale: string): string {
           </figcaption>
         </figure>
       </div>
-      <div class="rp-activity-row">
-        <span class="rp-activity-label">${escapeHtml(chrome.activityLabel)}</span>
-        <span class="rp-activity-text">${escapeHtml(chrome.activityText)}</span>
+      <div class="rp-activity-instructions-row">
+        <div class="rp-activity-instructions-copy">
+          <div class="rp-activity-row">
+            <span class="rp-activity-label">${escapeHtml(chrome.activityLabel)}</span>
+            <span class="rp-activity-text">${escapeHtml(chrome.activityText)}</span>
+          </div>
+          <div class="rp-instructions-block">
+            <span class="rp-instructions-label">${escapeHtml(chrome.instructionsLabel)}</span>
+            <ol class="rp-instructions-list">
+              ${chrome.instructionSteps
+                .map((step) => `<li>${instructionStepHtml(step)}</li>`)
+                .join('')}
+            </ol>
+          </div>
+        </div>
+        <figure class="rp-viewer-figure">
+          <img
+            src="assets/screenshot-viewer.jpg"
+            alt="${escapeHtml(chrome.viewerFigureAlt)}"
+            width="1431"
+            height="846"
+            loading="lazy"
+          />
+        </figure>
       </div>
       <div class="rp-view-scan-block">
-        <div class="rp-instructions-block">
-          <span class="rp-instructions-label">${escapeHtml(chrome.instructionsLabel)}</span>
-          <ol class="rp-instructions-list">
-            ${chrome.instructionSteps
-              .map((step) => `<li>${instructionStepHtml(step)}</li>`)
-              .join('')}
-          </ol>
-        </div>
         <div class="rp-view-scan-buttons">
           <button
             type="button"
@@ -161,8 +192,17 @@ function glossaryHtml(state: AppState, locale: string): string {
     </div>`;
 }
 
-/** Persist Quiz collapse across remountCourse. */
+/** Persist Quiz / Bonus collapse across remountCourse. */
 let quizOpen = false;
+let bonusOpen = false;
+
+const BONUS_ENDO_URL = 'https://pieper.github.io/live/webgpu/endo.html';
+const BONUS_CREDIT_SLICERHEART_URL =
+  'https://github.com/SlicerHeart/SlicerHeart';
+const BONUS_CREDIT_JACC_URL =
+  'https://doi.org/10.1016/j.jaccas.2024.102827';
+const BONUS_CREDIT_RADIOL_URL = 'https://doi.org/10.1148/ryct.250129';
+const BONUS_CREDIT_SOURCE_URL = 'https://github.com/pieper/SlicerLive';
 
 function quizBodyHtml(quiz: QuizState, locale: string): string {
   const chrome = courseChromeFor(locale);
@@ -182,16 +222,16 @@ function quizBodyHtml(quiz: QuizState, locale: string): string {
       ? `<p class="rp-quiz-prompt">${escapeHtml(chrome.quizPromptDef)}</p>
          <p class="rp-quiz-stem">${escapeHtml(pickLocale(term.definition, locale))}</p>`
       : `<p class="rp-quiz-prompt">${escapeHtml(chrome.quizPromptTerm)}</p>
-         <p class="rp-quiz-stem">${escapeHtml(pickLocale(term.term, locale))}</p>`;
+         <p class="rp-quiz-stem">${termLabelHtml(pickLocale(term.term, locale))}</p>`;
   const buttons = opts
     .map((o) => {
-      const label =
+      const labelHtml =
         quiz.mode === 'def'
-          ? pickLocale(o.term, locale)
-          : pickLocale(o.definition, locale);
+          ? termLabelHtml(pickLocale(o.term, locale))
+          : escapeHtml(pickLocale(o.definition, locale));
       return `<button type="button" class="rp-viewer-btn rp-quiz-choice" data-quiz-choice="${escapeHtml(o.id)}" ${
         quiz.answered ? 'disabled' : ''
-      }>${escapeHtml(label)}</button>`;
+      }>${labelHtml}</button>`;
     })
     .join(' ');
   const feedback =
@@ -215,6 +255,69 @@ function quizBodyHtml(quiz: QuizState, locale: string): string {
     ${next}`;
 }
 
+function bonusHtml(locale: string): string {
+  const chrome = courseChromeFor(locale);
+  const controls = chrome.bonusControls
+    .map(
+      (c) =>
+        `<li><span class="rp-bonus-control-key">${escapeHtml(c.key)}</span> — ${escapeHtml(c.action)}</li>`
+    )
+    .join('');
+  return `
+    <details class="rp-collapse rp-bonus-collapse"${bonusOpen ? ' open' : ''}>
+      <summary class="rp-collapse-summary">
+        <span class="rp-section-title">${escapeHtml(chrome.bonus)}</span>
+      </summary>
+      <div class="rp-collapse-body">
+        <p class="rp-bonus-pitch">${escapeHtml(chrome.bonusPitch)}</p>
+        <p class="rp-bonus-link-wrap">
+          <a
+            class="rp-bonus-link"
+            href="${escapeHtml(BONUS_ENDO_URL)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >${escapeHtml(chrome.bonusLink)}</a>
+        </p>
+        <ul class="rp-bonus-controls">${controls}</ul>
+        <figure class="rp-bonus-figure">
+          <a
+            href="${escapeHtml(BONUS_ENDO_URL)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="assets/Screenshot-fly-through.png"
+              alt="${escapeHtml(chrome.bonusFigureAlt)}"
+              loading="lazy"
+            />
+          </a>
+          <figcaption class="rp-bonus-credits">
+            <a
+              href="${escapeHtml(BONUS_CREDIT_SLICERHEART_URL)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >${escapeHtml(chrome.bonusCreditSlicerHeart)}</a>
+            <a
+              href="${escapeHtml(BONUS_CREDIT_JACC_URL)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >${escapeHtml(chrome.bonusCreditJacc)}</a>
+            <a
+              href="${escapeHtml(BONUS_CREDIT_RADIOL_URL)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >${escapeHtml(chrome.bonusCreditRadiol)}</a>
+            <a
+              href="${escapeHtml(BONUS_CREDIT_SOURCE_URL)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >${escapeHtml(chrome.bonusCreditSource)}</a>
+          </figcaption>
+        </figure>
+      </div>
+    </details>`;
+}
+
 function quizHtml(quiz: QuizState, locale: string): string {
   const chrome = courseChromeFor(locale);
   return `
@@ -225,7 +328,8 @@ function quizHtml(quiz: QuizState, locale: string): string {
       <div class="rp-collapse-body">
         ${quizBodyHtml(quiz, locale)}
       </div>
-    </details>`;
+    </details>
+    ${bonusHtml(locale)}`;
 }
 
 export function renderCoursePanel(
@@ -243,6 +347,12 @@ export function renderCoursePanel(
     ) as HTMLDetailsElement | null;
     collapse?.addEventListener('toggle', () => {
       quizOpen = Boolean(collapse.open);
+    });
+    const bonus = quizContainer.querySelector(
+      '.rp-bonus-collapse'
+    ) as HTMLDetailsElement | null;
+    bonus?.addEventListener('toggle', () => {
+      bonusOpen = Boolean(bonus.open);
     });
   }
 }

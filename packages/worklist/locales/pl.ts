@@ -64,7 +64,7 @@ export const pl: LocaleBundle = {
           <li>dostawcę uwierzytelniania / tożsamości z integracją z endpointami OIDC huba lub wbudowanym anonimowym/mock uwierzytelnianiem huba</li>
         </ul>
         <p>
-          System obejmuje także funkcje edukacyjne niezależne od przepływu IHE
+          Rozszerzenie obejmuje także funkcje edukacyjne niezależne od przepływu IHE
           Integrated Reporting:
         </p>
         <ul class="wl-help-steps">

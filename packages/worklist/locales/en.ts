@@ -60,7 +60,7 @@ export const en = {
           <li>an authentication / identity provider with integration to the hub OIDC endpoints or built-in hub anonymous/mock authentication</li>
         </ul>
         <p>
-          The system also includes features for education that are independent of the IHE
+          The extension also includes features for education that are independent of the IHE
           Integrated Reporting workflow:
         </p>
         <ul class="wl-help-steps">
@@ -80,7 +80,7 @@ export const en = {
         </ul>
         <p>
           File transfer allows inference servers to send their results directly back to the viewers
-          without storing them in PACS first. It also supports research file formats like NIfTI, NRRD, and Zarr.
+          without storing them in PACS first. It also supports research file formats such as NIfTI, NRRD, and Zarr.
         </p>
     `,
     howto0Title: 'How to connect SlicerWorklist to 3D Slicer.',

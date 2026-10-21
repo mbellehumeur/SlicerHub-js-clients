@@ -441,8 +441,16 @@ button {
   box-shadow: var(--wl-shadow);
 }
 
-.hub-conference-change-user-title {
+.hub-conference-change-user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin: 0 0 10px;
+}
+
+.hub-conference-change-user-title {
+  margin: 0;
   font: 700 13px/1.3 var(--wl-font);
   color: #fff;
 }
@@ -1206,36 +1214,43 @@ a.wl-viewer-btn {
   cursor: pointer;
 }
 
-.wl-viewer-btn:hover:not(:disabled) {
+a.wl-viewer-btn[aria-disabled='true'] {
+  pointer-events: none;
+}
+
+.wl-viewer-btn:hover:not(:disabled):not([aria-disabled='true']) {
   background: var(--wl-surface-3);
 }
 
-.wl-viewer-btn:disabled {
+.wl-viewer-btn:disabled,
+.wl-viewer-btn[aria-disabled='true'] {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
 /* Disabled for interaction, but keep full enabled appearance. */
-.wl-viewer-btn-inert:disabled {
+.wl-viewer-btn-inert:disabled,
+.wl-viewer-btn-inert[aria-disabled='true'] {
   opacity: 1;
   cursor: default;
 }
 
-.wl-viewer-btn-connected:not(:disabled),
-.wl-viewer-btn-featured:not(:disabled) {
+.wl-viewer-btn-connected:not(:disabled):not([aria-disabled='true']),
+.wl-viewer-btn-featured:not(:disabled):not([aria-disabled='true']) {
   border-color: var(--wl-accent);
   background: color-mix(in srgb, var(--wl-accent) 18%, var(--wl-surface-2));
   color: var(--wl-fg);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--wl-accent) 35%, transparent);
 }
 
-.wl-viewer-btn-connected:hover:not(:disabled),
-.wl-viewer-btn-featured:hover:not(:disabled) {
+.wl-viewer-btn-connected:hover:not(:disabled):not([aria-disabled='true']),
+.wl-viewer-btn-featured:hover:not(:disabled):not([aria-disabled='true']) {
   background: color-mix(in srgb, var(--wl-accent) 28%, var(--wl-surface-3));
 }
 
 /* Keep classroom cue visible even while hub is disconnected. */
-.wl-viewer-btn-featured:disabled {
+.wl-viewer-btn-featured:disabled,
+.wl-viewer-btn-featured[aria-disabled='true'] {
   opacity: 0.75;
   border-color: color-mix(in srgb, var(--wl-accent) 55%, var(--wl-border));
   background: color-mix(in srgb, var(--wl-accent) 12%, var(--wl-surface-2));

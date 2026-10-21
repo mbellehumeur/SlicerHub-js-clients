@@ -64,7 +64,7 @@ export const hu: LocaleBundle = {
           <li>egy hitelesítési / identitásszolgáltatót a hub OIDC végpontjaival vagy a beépített anonim/mock hitelesítéssel</li>
         </ul>
         <p>
-          A rendszer emellett oktatási funkciókat is tartalmaz, amelyek függetlenek az IHE
+          A bővítmény emellett oktatási funkciókat is tartalmaz, amelyek függetlenek az IHE
           Integrated Reporting munkafolyamattól:
         </p>
         <ul class="wl-help-steps">

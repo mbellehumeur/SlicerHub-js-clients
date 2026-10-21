@@ -376,8 +376,16 @@ button {
   box-shadow: var(--rp-shadow);
 }
 
-.hub-conference-change-user-title {
+.hub-conference-change-user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin: 0 0 10px;
+}
+
+.hub-conference-change-user-title {
+  margin: 0;
   font: 700 13px/1.3 var(--rp-font);
   color: #fff;
 }
@@ -869,7 +877,7 @@ button {
   cursor: pointer;
 }
 
-#castSettingsBtn {
+#castAboutBtn {
   font: 700 15px -apple-system, system-ui, sans-serif;
 }
 
@@ -1833,6 +1841,14 @@ button {
   box-shadow: var(--rp-shadow);
 }
 
+.rp-about-modal {
+  width: min(560px, 100%);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .rp-modal-header {
   display: flex;
   align-items: center;
@@ -1840,6 +1856,7 @@ button {
   padding: 12px 14px;
   border-bottom: 1px solid var(--rp-border);
   background: var(--rp-bar);
+  flex-shrink: 0;
 }
 
 .rp-modal-header h2 {
@@ -1850,6 +1867,49 @@ button {
 
 .rp-modal-body {
   padding: 14px;
+}
+
+.rp-about-body {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.rp-help-intro {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.rp-help-intro p {
+  margin: 0 0 12px;
+}
+
+.rp-help-intro p:last-child {
+  margin-bottom: 0;
+}
+
+.rp-help-intro a {
+  color: var(--rp-accent);
+}
+
+.rp-help-intro .wl-help-steps {
+  margin: 0 0 12px;
+  padding-left: 1.25em;
+}
+
+.rp-help-intro .wl-help-steps:last-child {
+  margin-bottom: 0;
+}
+
+.rp-help-intro .wl-help-steps li {
+  margin: 0 0 6px;
+  font-weight: 400;
+}
+
+.rp-help-intro .wl-help-steps li:last-child {
+  margin-bottom: 0;
 }
 
 .rp-kv {
@@ -1936,6 +1996,53 @@ button {
   text-align: center;
 }
 
+.rp-activity-instructions-row {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  margin: 0 0 12px;
+}
+
+.rp-activity-instructions-copy {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.rp-viewer-figure {
+  flex: 0 1 22rem;
+  width: min(40%, 22rem);
+  margin: 0;
+  position: relative;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.rp-viewer-figure img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top right;
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius);
+  background: var(--rp-surface);
+}
+
+@media (max-width: 720px) {
+  .rp-activity-instructions-row {
+    flex-direction: column;
+  }
+
+  .rp-viewer-figure {
+    width: 100%;
+    max-width: 28rem;
+    /* Fall back to aspect ratio when stacked (no side-by-side height constraint). */
+    position: relative;
+    aspect-ratio: 1431 / 846;
+  }
+}
+
 .rp-activity-row {
   display: flex;
   flex-wrap: wrap;
@@ -1995,7 +2102,7 @@ button {
   margin-bottom: 0;
 }
 
-.rp-instructions-list .rp-activity-camera-icon {
+.rp-instructions-list .rp-activity-inline-icon {
   display: inline-block;
   vertical-align: -3px;
   margin: 0 2px;
@@ -2100,8 +2207,78 @@ button {
   margin-left: 4px;
 }
 
-.rp-quiz-collapse .rp-collapse-body {
+.rp-quiz-collapse .rp-collapse-body,
+.rp-bonus-collapse .rp-collapse-body {
   padding-top: 10px;
+}
+
+.rp-bonus-pitch {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--rp-fg-muted);
+}
+
+.rp-bonus-link-wrap {
+  margin: 0 0 10px;
+}
+
+.rp-bonus-link {
+  color: var(--rp-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+
+.rp-bonus-link:hover {
+  color: var(--rp-accent-hover);
+}
+
+.rp-bonus-controls {
+  margin: 0 0 12px;
+  padding: 0 0 0 1.1em;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--rp-fg-muted);
+}
+
+.rp-bonus-controls li {
+  margin: 0 0 4px;
+}
+
+.rp-bonus-control-key {
+  font-weight: 600;
+  color: var(--rp-fg);
+}
+
+.rp-bonus-figure {
+  margin: 0;
+  max-width: 36rem;
+}
+
+.rp-bonus-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius);
+  background: var(--rp-surface);
+}
+
+.rp-bonus-credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--rp-fg-muted);
+}
+
+.rp-bonus-credits a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .rp-quiz-progress {
@@ -2170,6 +2347,12 @@ button {
 .rp-term-table td,
 .rp-term-table th {
   vertical-align: top;
+}
+
+.rp-plane-letter {
+  font-size: 1.45em;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .rp-term-row {

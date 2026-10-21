@@ -64,7 +64,7 @@ export const cs: LocaleBundle = {
           <li>poskytovatele autentizace / identity s integrací na OIDC endpointy hubu nebo vestavěnou anonymní/mock autentizaci hubu</li>
         </ul>
         <p>
-          Systém také zahrnuje vzdělávací funkce nezávislé na workflow IHE
+          Rozšíření také zahrnuje vzdělávací funkce nezávislé na workflow IHE
           Integrated Reporting:
         </p>
         <ul class="wl-help-steps">

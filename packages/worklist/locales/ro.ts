@@ -64,7 +64,7 @@ export const ro: LocaleBundle = {
           <li>un furnizor de autentificare / identitate cu integrare la endpoint-urile OIDC ale hub-ului sau autentificare anonimă/mock integrată</li>
         </ul>
         <p>
-          Sistemul include și funcții educaționale independente de fluxul IHE
+          Extensia include și funcții educaționale independente de fluxul IHE
           Integrated Reporting:
         </p>
         <ul class="wl-help-steps">

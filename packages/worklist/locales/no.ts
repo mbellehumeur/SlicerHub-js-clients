@@ -64,7 +64,7 @@ export const no: LocaleBundle = {
           <li>en autentiserings- / identitetsleverandør med integrasjon til hubbens OIDC-endepunkter eller innebygd anonym/mock-autentisering</li>
         </ul>
         <p>
-          Systemet inkluderer også utdanningsfunksjoner som er uavhengige av IHE
+          Utvidelsen inkluderer også utdanningsfunksjoner som er uavhengige av IHE
           Integrated Reporting-arbeidsflyten:
         </p>
         <ul class="wl-help-steps">

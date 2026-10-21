@@ -64,7 +64,7 @@ export const ca: LocaleBundle = {
           <li>un proveïdor d’autenticació / identitat amb integració als endpoints OIDC del hub o autenticació anònima/mock integrada al hub</li>
         </ul>
         <p>
-          El sistema també inclou funcions educatives independents del flux IHE
+          L’extensió també inclou funcions educatives independents del flux IHE
           Integrated Reporting:
         </p>
         <ul class="wl-help-steps">

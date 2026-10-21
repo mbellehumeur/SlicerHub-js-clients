@@ -393,10 +393,6 @@ const CONNECTED_PRODUCT_BUTTONS: Array<{
     match: (p) => matchesHubProduct(p, 'ohif'),
   },
   {
-    id: 'openVolviewBtn',
-    match: (p) => matchesHubProduct(p, 'volview'),
-  },
-  {
     id: 'openSlicerBtn',
     match: (p) => matchesHubProduct(p, 'slicer'),
   },
@@ -1320,14 +1316,17 @@ function reclaimClassroomWindowByName(): boolean {
   return true;
 }
 
-function openClassroomViewer(state: AppState): void {
-  if (focusExistingClassroomWindow()) return;
-
-  if (hasConnectedClassroom(state)) {
-    reclaimClassroomWindowByName();
-    return;
+/** Tablets / touch UIs: same-tab navigation avoids blocked window.open / popups. */
+function classroomOpenTarget(): '_blank' | '_self' {
+  try {
+    if (window.matchMedia('(pointer: coarse)').matches) return '_self';
+  } catch {
+    /* ignore */
   }
+  return '_blank';
+}
 
+function classroomViewerUrl(state: AppState): URL {
   const url = new URL(resolveViewerUrls().classroom);
   if (state.topic) {
     url.searchParams.set('topic', state.topic);
@@ -1336,15 +1335,106 @@ function openClassroomViewer(state: AppState): void {
   if (token) {
     url.searchParams.set('id-token', token);
   }
-  // Normal browser tab (no popup features), same pattern as IRA / OHIF.
-  const win = window.open(url.toString(), CLASSROOM_WINDOW_NAME);
-  if (!win) return;
-  classroomWindow = win;
-  try {
-    win.focus();
-  } catch {
-    /* ignore */
+  return url;
+}
+
+/**
+ * Keep the Anatomical Planes control as a real &lt;a href&gt; so browsers
+ * (especially iPad Safari) treat open as a user link navigation, not a popup.
+ */
+export function syncClassroomOpenLink(
+  state: AppState | undefined,
+  enabled: boolean
+): void {
+  const link = document.getElementById(
+    'openSt444Btn'
+  ) as HTMLAnchorElement | null;
+  if (!link || link.tagName !== 'A') return;
+
+  const title = t('chrome:anatomicalPlanes');
+  link.title = enabled ? title : VIEWER_OPEN_TITLE_DISABLED;
+  link.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+
+  if (!enabled) {
+    link.href = '#';
+    link.removeAttribute('target');
+    link.removeAttribute('rel');
+    link.tabIndex = -1;
+    return;
   }
+
+  link.removeAttribute('tabindex');
+  const url = state
+    ? classroomViewerUrl(state)
+    : new URL(resolveViewerUrls().classroom);
+  link.href = url.toString();
+  const target = classroomOpenTarget();
+  link.target = target;
+  if (target === '_blank') {
+    link.rel = 'noopener noreferrer';
+  } else {
+    link.removeAttribute('rel');
+  }
+}
+
+/**
+ * Desktop: try to focus an existing Classroom tab. Coarse pointers skip
+ * named-window reclaim (often opens a blank tab on iOS) and navigate via
+ * the &lt;a&gt; instead.
+ */
+function tryFocusClassroomWindow(state: AppState): boolean {
+  if (classroomOpenTarget() === '_self') return false;
+  if (focusExistingClassroomWindow()) return true;
+  if (hasConnectedClassroom(state) && reclaimClassroomWindowByName()) {
+    return true;
+  }
+  return false;
+}
+
+/** Navigate to Classroom using the same URL/target as the worklist &lt;a&gt;. */
+function navigateClassroomUrl(url: URL): void {
+  const target = classroomOpenTarget();
+  if (target === '_self') {
+    window.location.assign(url.toString());
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = url.toString();
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function openClassroomViewer(state: AppState): void {
+  syncClassroomOpenLink(state, true);
+  if (tryFocusClassroomWindow(state)) return;
+
+  const url = classroomViewerUrl(state);
+  navigateClassroomUrl(url);
+}
+
+/**
+ * Click handler for the Classroom &lt;a&gt;: focus/reclaim when possible;
+ * otherwise let the browser follow href (no window.open).
+ */
+export function handleClassroomOpenClick(
+  state: AppState,
+  ev: Event
+): void {
+  const link = ev.currentTarget as HTMLAnchorElement | null;
+  if (!link || link.tagName !== 'A') return;
+  if (link.getAttribute('aria-disabled') === 'true') {
+    ev.preventDefault();
+    return;
+  }
+  syncClassroomOpenLink(state, true);
+  if (tryFocusClassroomWindow(state)) {
+    ev.preventDefault();
+  }
+  // Else: default &lt;a&gt; navigation (target _blank or _self).
 }
 
 export function openHubViewer(state: AppState, kind: ViewerKind): boolean {
@@ -1562,7 +1652,6 @@ export function setViewerButtonsEnabled(
     { id: 'openIraBtn', title: VIEWER_OPEN_TITLE_IRA },
     { id: 'openOhifBtn', title: VIEWER_OPEN_TITLE_OHIF },
     { id: 'openSlimBtn', title: 'Slim' },
-    { id: 'openVolviewBtn', title: 'VolView' },
     { id: 'openSceneviewsBtn', title: VIEWER_OPEN_TITLE_SCENEVIEWS },
     ...infoServers.map((server) => ({
       id: server.worklistButtonId,
@@ -1575,6 +1664,8 @@ export function setViewerButtonsEnabled(
   const unavailable: Array<{ id: string; title: string }> = [
     { id: 'openFhirDrBtn', title: 'Not available yet' },
     { id: 'openHl7OruBtn', title: 'Not available yet' },
+    { id: 'openHl7CdaBtn', title: 'Not available yet' },
+    { id: 'openOsirixBtn', title: 'Not available yet' },
   ];
   for (const { id, title } of unavailable) {
     const btn = document.getElementById(id) as HTMLButtonElement | null;
@@ -1587,6 +1678,10 @@ export function setViewerButtonsEnabled(
   const hubMirrorOn = Boolean(state && hasConnectedHubMirror(state));
   const slicerCanOpen = enabled && slicerOn;
   for (const { id, title } of buttons) {
+    if (id === 'openSt444Btn') {
+      syncClassroomOpenLink(state, enabled);
+      continue;
+    }
     const btn = document.getElementById(id) as HTMLButtonElement | null;
     if (!btn) continue;
     if (inferenceButtonIds.has(id)) {
