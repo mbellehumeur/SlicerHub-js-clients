@@ -637,12 +637,6 @@ function hasConnectedReporting(state: AppState): boolean {
   );
 }
 
-function hasConnectedClassroom(state: AppState): boolean {
-  return [...state.connectedApps.values()].some((info) =>
-    matchesHubProduct(info.productName, 'classroom')
-  );
-}
-
 function openSlicerButtonTitle(hubOn: boolean, slicerOn: boolean): string {
   if (!hubOn) return VIEWER_OPEN_TITLE_DISABLED;
   if (!slicerOn) return VIEWER_OPEN_TITLE_SLICER_INACTIVE;
@@ -1284,38 +1278,6 @@ function focusExistingClassroomWindow(): boolean {
   return true;
 }
 
-function reclaimClassroomWindowByName(): boolean {
-  let existing: Window | null = null;
-  try {
-    existing = window.open('', CLASSROOM_WINDOW_NAME);
-  } catch {
-    return false;
-  }
-  if (!existing || existing.closed) return false;
-  let blank = false;
-  try {
-    const href = String(existing.location?.href || '');
-    blank = !href || href === 'about:blank';
-  } catch {
-    /* cross-origin */
-  }
-  if (blank) {
-    try {
-      existing.close();
-    } catch {
-      /* ignore */
-    }
-    return false;
-  }
-  try {
-    existing.focus();
-  } catch {
-    /* ignore */
-  }
-  classroomWindow = existing;
-  return true;
-}
-
 /** Tablets / touch UIs: same-tab navigation avoids blocked window.open / popups. */
 function classroomOpenTarget(): '_blank' | '_self' {
   try {
@@ -1341,6 +1303,8 @@ function classroomViewerUrl(state: AppState): URL {
 /**
  * Keep the Anatomical Planes control as a real &lt;a href&gt; so browsers
  * (especially iPad Safari) treat open as a user link navigation, not a popup.
+ * Desktop uses the shared Classroom window name so the browser reuses one tab
+ * without probing via window.open('', name) (which triggers popup blockers).
  */
 export function syncClassroomOpenLink(
   state: AppState | undefined,
@@ -1369,26 +1333,23 @@ export function syncClassroomOpenLink(
     : new URL(resolveViewerUrls().classroom);
   link.href = url.toString();
   const target = classroomOpenTarget();
-  link.target = target;
-  if (target === '_blank') {
-    link.rel = 'noopener noreferrer';
-  } else {
+  if (target === '_self') {
+    link.target = '_self';
     link.removeAttribute('rel');
+  } else {
+    link.target = CLASSROOM_WINDOW_NAME;
+    link.rel = 'noreferrer';
   }
 }
 
 /**
- * Desktop: try to focus an existing Classroom tab. Coarse pointers skip
- * named-window reclaim (often opens a blank tab on iOS) and navigate via
- * the &lt;a&gt; instead.
+ * Desktop: focus Classroom only when this page already holds a live Window
+ * handle. Never probe with window.open('', name) — that steals the gesture
+ * and trips popup blockers when Classroom is hub-connected but the tab is gone.
  */
-function tryFocusClassroomWindow(state: AppState): boolean {
+function tryFocusClassroomWindow(_state: AppState): boolean {
   if (classroomOpenTarget() === '_self') return false;
-  if (focusExistingClassroomWindow()) return true;
-  if (hasConnectedClassroom(state) && reclaimClassroomWindowByName()) {
-    return true;
-  }
-  return false;
+  return focusExistingClassroomWindow();
 }
 
 /** Navigate to Classroom using the same URL/target as the worklist &lt;a&gt;. */
@@ -1400,8 +1361,8 @@ function navigateClassroomUrl(url: URL): void {
   }
   const a = document.createElement('a');
   a.href = url.toString();
-  a.target = '_blank';
-  a.rel = 'noopener noreferrer';
+  a.target = CLASSROOM_WINDOW_NAME;
+  a.rel = 'noreferrer';
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
@@ -1413,12 +1374,25 @@ function openClassroomViewer(state: AppState): void {
   if (tryFocusClassroomWindow(state)) return;
 
   const url = classroomViewerUrl(state);
+  // User-gesture path: open/reuse the named Classroom tab (real URL, not '').
+  if (classroomOpenTarget() === '_blank') {
+    const win = window.open(url.toString(), CLASSROOM_WINDOW_NAME);
+    if (win) {
+      classroomWindow = win;
+      try {
+        win.focus();
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+  }
   navigateClassroomUrl(url);
 }
 
 /**
- * Click handler for the Classroom &lt;a&gt;: focus/reclaim when possible;
- * otherwise let the browser follow href (no window.open).
+ * Click handler for the Classroom &lt;a&gt;: focus a live handle when we have one;
+ * otherwise open/reuse the named Classroom window under this user gesture.
  */
 export function handleClassroomOpenClick(
   state: AppState,
@@ -1433,8 +1407,25 @@ export function handleClassroomOpenClick(
   syncClassroomOpenLink(state, true);
   if (tryFocusClassroomWindow(state)) {
     ev.preventDefault();
+    return;
   }
-  // Else: default &lt;a&gt; navigation (target _blank or _self).
+  if (classroomOpenTarget() === '_blank') {
+    ev.preventDefault();
+    const url = classroomViewerUrl(state);
+    const win = window.open(url.toString(), CLASSROOM_WINDOW_NAME);
+    if (win) {
+      classroomWindow = win;
+      try {
+        win.focus();
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+    navigateClassroomUrl(url);
+    return;
+  }
+  // Coarse pointers: default &lt;a target=_self&gt; navigation.
 }
 
 export function openHubViewer(state: AppState, kind: ViewerKind): boolean {

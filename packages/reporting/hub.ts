@@ -1568,6 +1568,98 @@ export async function requestPngFullSize(state: AppState): Promise<{
   }
 }
 
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+const seenPngSendMessageIds = new Set<string>();
+
+/** Inbound IRA ``png-send`` → append a ready Snapshots row. */
+async function handlePngSend(
+  state: AppState,
+  message: Record<string, unknown>
+): Promise<boolean> {
+  const event = message?.event as
+    | { 'hub.event'?: string; context?: Record<string, unknown> }
+    | undefined;
+  if (getHubEventLower(event) !== 'png-send') return false;
+  if (!state.client) return true;
+
+  const ctx =
+    event?.context && typeof event.context === 'object' && !Array.isArray(event.context)
+      ? event.context
+      : {};
+  const messageId = String(ctx.messageId || '').trim();
+  if (messageId) {
+    if (seenPngSendMessageIds.has(messageId)) return true;
+    seenPngSendMessageIds.add(messageId);
+    if (seenPngSendMessageIds.size > 200) {
+      const first = seenPngSendMessageIds.values().next().value;
+      if (first) seenPngSendMessageIds.delete(first);
+    }
+  }
+
+  try {
+    const resolved = (await resolveHubFileMessage(
+      state.client,
+      message
+    )) as Record<string, unknown>;
+    const resolvedEvent = (resolved?.event ?? message.event) as Record<
+      string,
+      unknown
+    >;
+    const files = batchContextFiles(resolvedEvent) as Record<string, unknown>[];
+    let added = 0;
+    for (const entry of files) {
+      const bytes = fileBytes(entry);
+      if (!bytes?.length) continue;
+      const dataBase64 = uint8ToBase64(bytes);
+      const contentType =
+        String(entry.mimeType || 'image/png').trim() || 'image/png';
+      const width =
+        typeof ctx.width === 'number' && Number.isFinite(ctx.width)
+          ? ctx.width
+          : undefined;
+      const height =
+        typeof ctx.height === 'number' && Number.isFinite(ctx.height)
+          ? ctx.height
+          : undefined;
+      let thumbBase64 = '';
+      try {
+        const thumb = await makeSnapshotThumbnail(dataBase64, contentType);
+        thumbBase64 = thumb.thumbBase64;
+      } catch (err) {
+        console.warn(`${LOG_PREFIX} png-send thumb failed`, err);
+      }
+      const id = `snap-${Date.now().toString(36)}-${Math.random()
+        .toString(36)
+        .slice(2, 7)}`;
+      const row: ReportSnapshot = {
+        id,
+        filename: nextSnapshotFilename(state),
+        createdAt: new Date().toISOString(),
+        status: 'ready',
+        contentType,
+        dataBase64,
+        thumbBase64: thumbBase64 || undefined,
+        width,
+        height,
+      };
+      state.snapshots = [...state.snapshots, row];
+      added++;
+    }
+    if (added) notifyStudy(state);
+  } catch (err) {
+    console.warn(`${LOG_PREFIX} png-send handler`, err);
+  }
+  return true;
+}
+
 /** Add a pending snapshot row and request a full PNG from IRA. */
 export async function addSnapshotAndRequestPng(state: AppState): Promise<void> {
   const id = `snap-${Date.now().toString(36)}-${Math.random()
@@ -2060,6 +2152,7 @@ function ensureClient(
       if (handleImagingStudyMessage(state, message)) return;
       if (handleStructureReportUpdate(state, message)) return;
       void handleDicomSendMessage(state, message);
+      void handlePngSend(state, message);
     });
 
     state.client.onConnectionStateChange((wsState: string) => {

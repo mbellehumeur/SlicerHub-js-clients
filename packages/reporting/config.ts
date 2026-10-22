@@ -13,6 +13,7 @@ export const SUBSCRIBE_EVENTS = [
   'subscription-removed',
   'status-update',
   'dicom-send',
+  'png-send',
   'structurereport-update',
   'scene-update',
 ];

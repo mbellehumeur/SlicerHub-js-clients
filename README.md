@@ -1,5 +1,9 @@
 # SlicerHub-js-clients
 
+<p align="center">
+  <img src="docs/images/banner.jpg" alt="Slicer Hub Banner" width="100%">
+</p>
+
 JavaScript monorepo for **Slicer Hub** browser apps and the shared hub client library.
 
 ## Packages

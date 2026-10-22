@@ -111,7 +111,7 @@ async function fetchAboutMeta(origin: string | null): Promise<AboutMeta> {
 
 function aboutBannerSrc(origin: string | null): string {
   const base = origin || '';
-  return `${base}/static/images/banner_dark.png`;
+  return `${base}/static/images/banner.jpg`;
 }
 
 function renderAboutContent(
