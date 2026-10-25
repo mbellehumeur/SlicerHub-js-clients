@@ -57,7 +57,7 @@ import {
  * @property {() => CastConferenceDialogSession} getSession
  * @property {(view: CastConferenceView | null) => void} [onConferenceChange]
  * @property {(followHost: boolean) => void} [onFollowChange]
- * @property {(userName: string) => void} [onUserNameChange]
+ * @property {(userName: string) => void | Promise<void>} [onUserNameChange]
  * @property {Partial<import('./conferenceStrings.js').CastConferenceStrings>} [strings]
  */
 
@@ -152,6 +152,7 @@ export function createHubConferenceDialog(options) {
               <div class="${cls(prefix, 'topics')}" data-hub-conference-topics>
                 <p class="${cls(prefix, 'muted')}" data-hub-conference-loading-users></p>
               </div>
+              <p class="${cls(prefix, 'muted')}" data-hub-conference-user-note hidden></p>
             </div>
             <button type="button" class="${cls(prefix, 'primary')}" data-hub-conference-create-btn></button>
           </div>
@@ -170,23 +171,6 @@ export function createHubConferenceDialog(options) {
           <div class="${cls(prefix, 'info')}" data-hub-conference-info></div>
           <button type="button" class="${cls(prefix, 'primary')}" data-hub-conference-exit-btn></button>
         </div>
-      </div>
-      <div class="${cls(prefix, 'section')} ${cls(prefix, 'section-session')}" data-hub-conference-session>
-        <div class="${cls(prefix, 'user-row')}">
-          <span class="${cls(prefix, 'label')}" data-hub-conference-user-label></span>
-          <span
-            class="${cls(prefix, 'user-display')}"
-            data-hub-conference-user-display
-            id="sessionUserNameDisplay"
-          >—</span>
-          <button
-            type="button"
-            id="sessionChangeUserBtn"
-            class="${cls(prefix, 'secondary')}"
-            data-hub-conference-change-user
-          ></button>
-        </div>
-        <p id="sessionChangeUserNote" class="${cls(prefix, 'muted')}" data-hub-conference-user-note hidden></p>
       </div>
     </div>
     <div
@@ -231,14 +215,14 @@ export function createHubConferenceDialog(options) {
         <div class="${cls(prefix, 'change-user-actions')}">
           <button
             type="button"
-            id="openConferenceTestWorklistBtn"
-            class="${cls(prefix, 'secondary')} ${cls(prefix, 'open-another-user')}"
-            data-hub-conference-open-another-user
+            class="${cls(prefix, 'primary')}"
+            data-hub-conference-change-user-done
           ></button>
           <button
             type="button"
-            class="${cls(prefix, 'primary')}"
-            data-hub-conference-change-user-done
+            id="openConferenceTestWorklistBtn"
+            class="${cls(prefix, 'secondary')} ${cls(prefix, 'open-another-user')}"
+            data-hub-conference-open-another-user
           ></button>
         </div>
       </div>
@@ -252,12 +236,6 @@ export function createHubConferenceDialog(options) {
   const openAnotherUserBtn = overlay.querySelector(
     '[data-hub-conference-open-another-user]'
   );
-  const userDisplay = overlay.querySelector(
-    '[data-hub-conference-user-display]'
-  );
-  const changeUserBtn = overlay.querySelector(
-    '[data-hub-conference-change-user]'
-  );
   const changeUserOverlay = overlay.querySelector(
     '[data-hub-conference-change-user-overlay]'
   );
@@ -268,7 +246,7 @@ export function createHubConferenceDialog(options) {
     '[data-hub-conference-change-user-close]'
   );
   const userNameInput = overlay.querySelector('#sessionUserNameInput');
-  const userNote = overlay.querySelector('#sessionChangeUserNote');
+  const userNote = overlay.querySelector('[data-hub-conference-user-note]');
   const onUserNameChange =
     typeof options?.onUserNameChange === 'function'
       ? options.onUserNameChange
@@ -351,10 +329,6 @@ export function createHubConferenceDialog(options) {
     overlay.querySelectorAll('[data-hub-conference-user-label]').forEach((node) => {
       if (node instanceof HTMLElement) node.textContent = s.userLabel;
     });
-    if (changeUserBtn instanceof HTMLElement) {
-      changeUserBtn.textContent = s.changeUserName;
-      changeUserBtn.title = s.changeUserNameTitle;
-    }
     setText('[data-hub-conference-change-user-title]', s.changeUserNameTitle);
     if (openAnotherUserBtn instanceof HTMLElement) {
       openAnotherUserBtn.textContent = s.openAnotherUser;
@@ -386,18 +360,105 @@ export function createHubConferenceDialog(options) {
     /* Topic/session control removed; keep for API compatibility. */
   }
 
-  function syncUserNameDisplay() {
-    const name = String(sessionSnapshot().userName || '').trim() || '—';
-    if (userDisplay instanceof HTMLElement) {
-      userDisplay.textContent = name;
-    }
+  function getUserNameBtn() {
+    return overlay.querySelector('[data-hub-conference-user-name-btn]');
   }
 
-  function openAnotherUserSession() {
+  function syncUserNameDisplay() {
+    const btn = getUserNameBtn();
+    if (!(btn instanceof HTMLElement)) return;
+    const name = String(sessionSnapshot().userName || '').trim() || '—';
+    btn.textContent = name;
+    btn.title = s.changeUserNameTitle;
+    btn.setAttribute('aria-label', s.changeUserName);
+  }
+
+  function createSelfUserNameButton() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `${cls(prefix, 'secondary')} ${cls(prefix, 'user-name-btn')}`;
+    btn.dataset.hubConferenceUserNameBtn = '';
+    const name = String(sessionSnapshot().userName || '').trim() || '—';
+    btn.textContent = name;
+    btn.title = s.changeUserNameTitle;
+    btn.setAttribute('aria-label', s.changeUserName);
+    return btn;
+  }
+
+  /**
+   * Self row: checkbox (participant) + name button (opens change-user dialog).
+   * @param {string} [timezone]
+   */
+  function createSelfTopicRow(timezone = '') {
+    const row = document.createElement('div');
+    row.className = `${cls(prefix, 'topic-row')} ${cls(prefix, 'topic-row-self')}`;
+    const selfTopic = String(sessionSnapshot().topic || '').trim();
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.dataset.hubConferenceTopic = '1';
+    input.value = selfTopic;
+    input.checked = true;
+    row.appendChild(input);
+    row.appendChild(createSelfUserNameButton());
+    const tzLabel = formatTimezoneLabel(timezone);
+    if (tzLabel) {
+      const meta = document.createElement('span');
+      meta.className = cls(prefix, 'topic-timezone');
+      meta.textContent = tzLabel;
+      row.appendChild(meta);
+    }
+    return row;
+  }
+
+  function setUserNote(message, { error = false } = {}) {
+    if (!(userNote instanceof HTMLElement)) return;
+    const text = String(message || '').trim();
+    if (!text) {
+      userNote.hidden = true;
+      userNote.textContent = '';
+      return;
+    }
+    userNote.hidden = false;
+    userNote.textContent = text;
+    userNote.classList.toggle(cls(prefix, 'status-error'), error);
+  }
+
+  /**
+   * @param {string} candidateName
+   * @param {{ excludeSelf?: boolean }} [opts]
+   */
+  async function topicNameAlreadyExists(candidateName, opts = {}) {
+    const name = String(candidateName || '').trim();
+    if (!name) return false;
+    const session = sessionSnapshot();
+    const selfTopic = String(session.topic || '').trim();
+    const selfName = String(session.userName || '').trim();
+    if (opts.excludeSelf !== false) {
+      if (name === selfTopic || name === selfName) return false;
+    }
+    if (!session.hubEndpoint) return false;
+    const topics = await fetchHubConferenceTopics(session.hubEndpoint);
+    return topics.some((entry) => String(entry?.topic || '').trim() === name);
+  }
+
+  async function openAnotherUserSession() {
+    const promptLabel =
+      s.openAnotherUserPrompt || 'User name for new session';
+    const typed = window.prompt(promptLabel, 'STUDENT-1');
+    if (typed === null) return;
+    const next = String(typed).trim();
+    if (!next) return;
+    if (await topicNameAlreadyExists(next, { excludeSelf: false })) {
+      setUserNote(s.userNameAlreadyExists, { error: true });
+      return;
+    }
     const url = new URL(window.location.href);
-    url.searchParams.set('freshUser', '1');
-    url.searchParams.delete('topic');
+    url.searchParams.set('userName', next);
+    url.searchParams.set('topic', next);
+    url.searchParams.delete('freshUser');
     window.open(url.href, '_blank', 'noopener,noreferrer');
+    closeChangeUserDialog();
+    close();
   }
 
   function openChangeUserDialog() {
@@ -405,9 +466,7 @@ export function createHubConferenceDialog(options) {
     if (userNameInput instanceof HTMLInputElement) {
       userNameInput.value = String(sessionSnapshot().userName || '').trim();
     }
-    if (userNote instanceof HTMLElement) {
-      userNote.hidden = true;
-    }
+    setUserNote('', {});
     changeUserOverlay.hidden = false;
     if (userNameInput instanceof HTMLInputElement) {
       userNameInput.focus();
@@ -421,18 +480,44 @@ export function createHubConferenceDialog(options) {
     }
   }
 
-  function saveUserNameFromDialog() {
+  async function saveUserNameFromDialog() {
     if (!(userNameInput instanceof HTMLInputElement)) return;
     const next = userNameInput.value.trim();
-    if (onUserNameChange) onUserNameChange(next);
-    if (userDisplay instanceof HTMLElement) {
-      userDisplay.textContent = next || '—';
+    if (!next) return;
+    const session = sessionSnapshot();
+    const current = String(session.userName || '').trim();
+    if (next === current) {
+      closeChangeUserDialog();
+      return;
     }
-    if (userNote instanceof HTMLElement) {
-      userNote.hidden = false;
-      userNote.textContent = s.userNameSavedNote;
+    if (await topicNameAlreadyExists(next, { excludeSelf: true })) {
+      setUserNote(s.userNameAlreadyExists, { error: true });
+      return;
     }
-    closeChangeUserDialog();
+    if (changeUserDoneBtn instanceof HTMLButtonElement) {
+      changeUserDoneBtn.disabled = true;
+    }
+    setUserNote(s.userNameSwitchingNote || 'Switching user…');
+    try {
+      if (onUserNameChange) await onUserNameChange(next);
+      const btn = getUserNameBtn();
+      if (btn instanceof HTMLElement) {
+        btn.textContent = next || '—';
+      }
+      setUserNote(s.userNameSavedNote);
+      closeChangeUserDialog();
+      void refresh();
+    } catch (err) {
+      const message =
+        err instanceof Error && err.message
+          ? err.message
+          : s.userNameAlreadyExists;
+      setUserNote(message, { error: true });
+    } finally {
+      if (changeUserDoneBtn instanceof HTMLButtonElement) {
+        changeUserDoneBtn.disabled = false;
+      }
+    }
   }
 
   applyStaticLabels();
@@ -526,14 +611,12 @@ export function createHubConferenceDialog(options) {
       return;
     }
     topicsPanel.replaceChildren();
-    if (!topics.length) {
-      const empty = document.createElement('p');
-      empty.className = cls(prefix, 'muted');
-      empty.textContent = s.noUsers;
-      topicsPanel.appendChild(empty);
-      return;
-    }
-    for (const entry of topics) {
+    const selfTopic = String(sessionSnapshot().topic || '').trim();
+    let renderedSelf = false;
+    let rowCount = 0;
+    const list = Array.isArray(topics) ? topics : [];
+
+    for (const entry of list) {
       const topic =
         typeof entry === 'string'
           ? String(entry).trim()
@@ -543,6 +626,12 @@ export function createHubConferenceDialog(options) {
         typeof entry === 'string'
           ? ''
           : String(entry?.timezone ?? '').trim();
+      if (selfTopic && topic === selfTopic) {
+        topicsPanel.appendChild(createSelfTopicRow(timezone));
+        renderedSelf = true;
+        rowCount += 1;
+        continue;
+      }
       const row = document.createElement('label');
       row.className = cls(prefix, 'topic-row');
       const input = document.createElement('input');
@@ -563,7 +652,24 @@ export function createHubConferenceDialog(options) {
         row.appendChild(meta);
       }
       topicsPanel.appendChild(row);
+      rowCount += 1;
     }
+
+    if (selfTopic && !renderedSelf) {
+      topicsPanel.insertBefore(
+        createSelfTopicRow(''),
+        topicsPanel.firstChild
+      );
+      rowCount += 1;
+    }
+
+    if (!rowCount) {
+      const empty = document.createElement('p');
+      empty.className = cls(prefix, 'muted');
+      empty.textContent = s.noUsers;
+      topicsPanel.appendChild(empty);
+    }
+    syncUserNameDisplay();
   }
 
   /**
@@ -949,13 +1055,17 @@ export function createHubConferenceDialog(options) {
     event.stopPropagation();
     close();
   });
-  changeUserBtn?.addEventListener('click', (event) => {
+  topicsPanel?.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const btn = target.closest('[data-hub-conference-user-name-btn]');
+    if (!(btn instanceof HTMLElement) || !topicsPanel.contains(btn)) return;
     event.stopPropagation();
     openChangeUserDialog();
   });
   changeUserDoneBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
-    saveUserNameFromDialog();
+    void saveUserNameFromDialog();
   });
   changeUserCloseBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -963,13 +1073,12 @@ export function createHubConferenceDialog(options) {
   });
   openAnotherUserBtn?.addEventListener('click', (event) => {
     event.stopPropagation();
-    openAnotherUserSession();
-    close();
+    void openAnotherUserSession();
   });
   userNameInput?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      saveUserNameFromDialog();
+      void saveUserNameFromDialog();
     } else if (event.key === 'Escape') {
       event.preventDefault();
       closeChangeUserDialog();

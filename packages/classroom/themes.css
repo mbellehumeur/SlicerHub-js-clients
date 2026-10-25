@@ -361,41 +361,16 @@ button {
   border-bottom: 0;
 }
 
-.hub-conference-section-session {
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 10px 14px 14px;
-  border-bottom: 0;
-  border-top: 1px solid var(--rp-border);
-  overflow: visible;
-}
-
-.hub-conference-user-row {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0;
-}
-
-.hub-conference-user-row .hub-conference-label {
-  flex: 0 0 auto;
-  margin: 0;
-  white-space: nowrap;
-}
-
-.hub-conference-user-display {
+.hub-conference-topic-row-self .hub-conference-user-name-btn {
   flex: 1 1 auto;
   min-width: 0;
-  font: 600 13px/1.3 var(--rp-font);
-  color: var(--rp-fg);
+  min-height: 24px;
+  justify-content: flex-start;
+  padding: 2px 8px;
+  font: 600 12px/1.3 var(--rp-font);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.hub-conference-user-row #sessionChangeUserBtn {
-  flex: 0 0 auto;
 }
 
 .hub-conference-change-user-overlay {
@@ -447,16 +422,18 @@ button {
 
 .hub-conference-change-user-actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
 }
 
-.hub-conference-change-user-actions .hub-conference-primary {
-  margin-left: auto;
+.hub-conference-change-user-actions .hub-conference-primary,
+.hub-conference-change-user-actions .hub-conference-open-another-user {
+  width: 100%;
+  margin: 0;
 }
 
-#sessionChangeUserNote {
+[data-hub-conference-user-note] {
   margin: 8px 0 0;
 }
 

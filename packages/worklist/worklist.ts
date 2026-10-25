@@ -40,6 +40,7 @@ import {
   openHubViewer,
   openHubMirrorViewer,
   publishSegrouletteOpen,
+  rebindSessionUserName,
   requestStatusFromHostWorklist,
   setConferenceFollowHost,
   setConferenceHubHandler,
@@ -58,7 +59,6 @@ import {
   WORKLIST_ORG_FLEXRAY,
   getStoredUserName,
   isIdcCategoryFilterValue,
-  setStoredUserName,
 } from './config';
 import {
   setStoredTheme,
@@ -262,9 +262,8 @@ async function boot(): Promise<void> {
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
       },
-      onUserNameChange: (userName) => {
-        setStoredUserName(userName);
-        state.userName = userName;
+      onUserNameChange: async (userName) => {
+        await rebindSessionUserName(state, userName);
       },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());

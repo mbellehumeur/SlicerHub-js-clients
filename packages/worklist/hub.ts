@@ -138,8 +138,6 @@ export type AppState = {
   topic: string;
   subscriberName: string;
   userName: string;
-  /** When true, skip localStorage identity so this tab gets a new hub user/topic. */
-  freshUser: boolean;
   hubStartedAt: string;
   lastAuthCode: string;
   lastImagingStudyOpenContext: unknown[];
@@ -211,16 +209,15 @@ export function createInitialState(): AppState {
   if (hubOverride === 'local' || hubOverride === 'cloud') {
     resolvedKey = hubOverride;
   }
-  const freshUser =
-    params.get('freshUser') === '1' || params.get('freshUser') === 'true';
+  const urlUserName = String(params.get('userName') || '').trim();
+  const urlTopic = String(params.get('topic') || '').trim();
 
   return {
     client: null,
     hubKey: resolvedKey,
-    topic: freshUser ? '' : params.get('topic') || '',
+    topic: urlTopic,
     subscriberName: generateSubscriberName(PRODUCT_NAME),
-    userName: freshUser ? '' : getStoredUserName(),
-    freshUser,
+    userName: urlUserName || getStoredUserName(),
     hubStartedAt: '',
     lastAuthCode: '',
     lastImagingStudyOpenContext: [],
@@ -1723,7 +1720,6 @@ export function setViewerButtonsEnabled(
 }
 
 async function syncStoredUserNameWithHub(state: AppState): Promise<void> {
-  if (state.freshUser) return;
   const endpoint = hubEndpoint(state);
   const currentOrigin = hubOriginFromEndpoint(endpoint) || '';
   const currentStartedAt = await fetchHubStartedAt(endpoint);
@@ -1797,7 +1793,7 @@ function handleIncomingStatusRequest(
     return false;
   }
 
-  if (context.dataType !== 'STATUS') return false;
+  if (String(context.dataType || '').toUpperCase() !== 'STATUS') return false;
 
   markConnectedApp(state, message);
   // Startup probe already delivered studies → do not send another status-request.
@@ -1859,9 +1855,10 @@ function ensureClient(state: AppState, recreate = false) {
         events: SUBSCRIBE_EVENTS,
         lease: 7200,
         defaultTargetActor: '*',
-        userName: state.freshUser
-          ? undefined
-          : getStoredUserName() || undefined,
+        userName:
+          String(state.userName || '').trim() ||
+          getStoredUserName() ||
+          undefined,
       },
       callbackUrl: `${window.location.origin}/castCallback`,
       autoReconnect: true,
@@ -1889,12 +1886,9 @@ function ensureClient(state: AppState, recreate = false) {
   }
 
   state.client.setTopic(state.topic);
-  if (!state.freshUser) {
-    const storedUserName = getStoredUserName();
-    if (storedUserName) state.client.setUserName(storedUserName);
-  } else {
-    state.client.setUserName('');
-  }
+  const bootUserName =
+    String(state.userName || '').trim() || getStoredUserName();
+  state.client.setUserName(bootUserName || '');
   return state.client;
 }
 
@@ -2621,31 +2615,81 @@ export function handleWorklistRowAction(
   });
 }
 
+/**
+ * Change hub user name: unsubscribe old topic, auth/subscribe as the new name.
+ */
+export async function rebindSessionUserName(
+  state: AppState,
+  userName: string
+): Promise<void> {
+  const next = String(userName || '').trim();
+  if (!next) throw new Error('User name is required');
+  const client = state.client;
+  if (!client) {
+    state.userName = next;
+    setStoredUserName(next);
+    notifyStatus(state);
+    return;
+  }
+  setConnection(state, 'connecting', 'Switching user');
+  try {
+    const result = await client.rebindUserName(next);
+    const session = client.getSessionConfig();
+    state.userName = String(result.user_name || next).trim() || next;
+    state.topic = String(result.topic || session.topic || next).trim() || next;
+    if (session.subscriberName) state.subscriberName = session.subscriberName;
+    const startedAt =
+      state.hubStartedAt || (await fetchHubStartedAt(hubEndpoint(state)));
+    if (startedAt) state.hubStartedAt = startedAt;
+    setStoredUserName(
+      state.userName,
+      startedAt,
+      hubOriginFromEndpoint(hubEndpoint(state))
+    );
+    if (result.status === 202) {
+      setConnection(state, 'connected', 'Websocket connected');
+    } else {
+      setConnection(
+        state,
+        'disconnected',
+        `Subscribe failed (${String(result.status)})`
+      );
+    }
+  } catch (err) {
+    setConnection(
+      state,
+      'error',
+      err instanceof Error ? err.message : String(err)
+    );
+    throw err;
+  }
+}
+
 export async function autoConnect(state: AppState): Promise<void> {
   await syncStoredUserNameWithHub(state);
   setConnection(state, 'connecting', 'Authenticating');
 
   try {
     const client = ensureClient(state, true);
-    const storedUserName = state.freshUser ? '' : getStoredUserName();
-    if (storedUserName) client.setUserName(storedUserName);
+    const preferredName =
+      String(state.userName || '').trim() || getStoredUserName();
+    if (preferredName) client.setUserName(preferredName);
     else client.setUserName('');
+    if (state.topic) client.setTopic(state.topic);
 
     console.info(`${LOG_PREFIX} auto-connect: authenticate`);
     const result = await client.authenticate();
-    const userName = result?.user_name || storedUserName || '';
+    const userName = result?.user_name || preferredName || '';
     const code = result?.code || '';
     if (userName) {
       const startedAt =
         state.hubStartedAt || (await fetchHubStartedAt(hubEndpoint(state)));
       if (startedAt) state.hubStartedAt = startedAt;
-      if (!state.freshUser) {
-        setStoredUserName(
-          userName,
-          startedAt,
-          hubOriginFromEndpoint(hubEndpoint(state))
-        );
-      }
+      setStoredUserName(
+        userName,
+        startedAt,
+        hubOriginFromEndpoint(hubEndpoint(state))
+      );
       state.userName = userName;
     }
     state.lastAuthCode = code;

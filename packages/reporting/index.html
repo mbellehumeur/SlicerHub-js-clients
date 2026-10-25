@@ -12,18 +12,39 @@
       <div class="rp-header-start">
         <span class="rp-brand">DICOM SR</span>
       </div>
-      <div class="rp-header-spacer" aria-hidden="true"></div>
+      <div class="rp-header-center">
+        <section class="rp-panel rp-panel-compact rp-capsule" aria-labelledby="reportContext">
+          <div class="rp-panel-header">
+            <h1 id="reportContext" aria-live="polite">
+              <span class="rp-context-label">Current context:</span>
+              <span class="rp-context-value">none</span>
+            </h1>
+            <div class="rp-panel-header-end">
+              <button
+                type="button"
+                id="closeContextBtn"
+                class="rp-viewer-btn"
+                data-i18n-rp="close"
+                data-i18n-rp-title="closeContext"
+                title="Close current context"
+                hidden
+                disabled
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
       <div class="rp-header-actions">
         <button
           type="button"
           id="startConferenceBtn"
-          class="rp-icon-btn rp-header-text-btn"
+          class="rp-icon-btn"
           aria-label="Conferencing"
           title="Subscribe to the hub first"
           disabled
-        >
-          Conferencing
-        </button>
+        ></button>
         <div class="rp-lang-wrap">
           <button
             type="button"
@@ -92,34 +113,20 @@
       </div>
     </header>
 
-    <div class="rp-capsule-row">
-      <section class="rp-panel rp-panel-compact rp-capsule" aria-labelledby="reportContext">
-        <div class="rp-panel-header">
-          <h1 id="reportContext" aria-live="polite">
-            <span class="rp-context-label">Current context:</span>
-            <span class="rp-context-value">none</span>
-          </h1>
-          <div class="rp-panel-header-end">
-            <button
-              type="button"
-              id="closeContextBtn"
-              class="rp-viewer-btn"
-              data-i18n-rp="close"
-              data-i18n-rp-title="closeContext"
-              title="Close current context"
-              hidden
-              disabled
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <section class="rp-apps" aria-label="Clients and viewers">
+    <section class="rp-apps" aria-label="Clients and image displays">
       <div class="rp-viewer-btns">
-        <span class="rp-viewer-label rp-viewer-label-first" data-i18n-rp="viewers">Viewers:</span>
+        <span class="rp-viewer-label rp-viewer-label-first" data-i18n-rp="worklistLabel">Worklist:</span>
+        <button
+          type="button"
+          id="openWorklistBtn"
+          class="rp-viewer-btn"
+          data-i18n-rp="slicerWorklist"
+          title="Subscribe to the hub first"
+          disabled
+        >
+          SlicerWorklist
+        </button>
+        <span class="rp-viewer-label" data-i18n-rp="viewers">Image Displays:</span>
         <button
           type="button"
           id="openSlicerBtn"
@@ -173,17 +180,6 @@
           disabled
         >
           VolView
-        </button>
-        <span class="rp-viewer-label" data-i18n-rp="worklistLabel">Worklist:</span>
-        <button
-          type="button"
-          id="openWorklistBtn"
-          class="rp-viewer-btn"
-          data-i18n-rp="slicerWorklist"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerWorklist
         </button>
       </div>
     </section>

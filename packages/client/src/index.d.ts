@@ -149,6 +149,15 @@ export interface HubClientInstance {
   setSubscriberName(subscriberName: string): void;
   setUserName(userName: string): void;
   /**
+   * Unsubscribe, then authenticate and subscribe as ``userName`` (hub topic
+   * defaults to that name). Throws on auth/token failure.
+   */
+  rebindUserName(userName: string): Promise<{
+    user_name: string;
+    topic: string;
+    status: number | string;
+  }>;
+  /**
    * Start the OAuth authorize flow against the hub.
    * @throws When no authorize endpoint is configured or the hub rejects.
    */
@@ -805,7 +814,7 @@ export function createHubConferenceDialog(options: {
   getSession: () => CastConferenceDialogSession;
   onConferenceChange?: (view: CastConferenceView | null) => void;
   onFollowChange?: (followHost: boolean) => void;
-  onUserNameChange?: (userName: string) => void;
+  onUserNameChange?: (userName: string) => void | Promise<void>;
   strings?: Partial<CastConferenceStrings>;
 }): CastConferenceDialogController;
 

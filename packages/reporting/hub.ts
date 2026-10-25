@@ -155,8 +155,6 @@ export type AppState = {
   iraOnline: boolean;
   /** Peers from STATUS / cleared on subscription-removed; keyed by subscriber.name. */
   connectedApps: Map<string, ConnectedAppInfo>;
-  /** Open a second reporting tab that authenticates as a new hub user. */
-  freshUser: boolean;
 };
 
 export type ConnectedAppInfo = {
@@ -203,14 +201,15 @@ export function createInitialState(): AppState {
   if (hubOverride === 'local' || hubOverride === 'cloud') {
     resolvedKey = hubOverride;
   }
-  const freshUser = params.get('freshUser') === '1';
+  const urlUserName = String(params.get('userName') || '').trim();
+  const urlTopic = String(params.get('topic') || '').trim();
 
   return {
     client: null,
     hubKey: resolvedKey,
-    topic: params.get('topic') || '',
+    topic: urlTopic,
     subscriberName: generateSubscriberName(PRODUCT_NAME),
-    userName: freshUser ? '' : getStoredUserName(),
+    userName: urlUserName || getStoredUserName(),
     hubStartedAt: '',
     lastAuthCode: '',
     connection: 'idle',
@@ -242,7 +241,6 @@ export function createInitialState(): AppState {
     worklistOnline: false,
     iraOnline: false,
     connectedApps: new Map(),
-    freshUser,
   };
 }
 
@@ -1265,7 +1263,14 @@ export async function refreshReportContextFromStatus(
     notifyStatus(state);
 
     if (parsed.foundIdResponder) {
-      if (parsed.idImagingContext) {
+      // Worklist is source of truth for open study / Current context label.
+      // Image Display STATUS often returns ImagingStudy with LiveScene+SEG only
+      // (no study.description), which used to block adopting the worklist context.
+      const adoptedFromWorklist = adoptImagingStudyContext(
+        state,
+        parsed.worklistImagingContext
+      );
+      if (!adoptedFromWorklist) {
         adoptImagingStudyContext(state, parsed.idImagingContext);
       }
       state.segCatalog = parsed.catalog ?? EMPTY_SEG_CATALOG;
@@ -1276,10 +1281,7 @@ export async function refreshReportContextFromStatus(
         0
       );
 
-      const needWorklistStudy =
-        !state.openStudy && !parsed.idImagingContext?.length;
-      if (needWorklistStudy && parsed.worklistImagingContext) {
-        adoptImagingStudyContext(state, parsed.worklistImagingContext);
+      if (adoptedFromWorklist) {
         state.segLoadDetail = withResponderName(
           n > 0
             ? `Loaded ${n} segment${n === 1 ? '' : 's'} from Image Display; study from worklist`
@@ -2084,7 +2086,6 @@ function stripCastParamsFromUrl(): void {
 }
 
 async function syncStoredUserNameWithHub(state: AppState): Promise<void> {
-  if (state.freshUser) return;
   const endpoint = hubEndpoint(state);
   const currentOrigin = hubOriginFromEndpoint(endpoint) || '';
   const currentStartedAt = await fetchHubStartedAt(endpoint);
@@ -2336,11 +2337,64 @@ export async function requestStatusFromHostWorklist(
   }
 }
 
+/**
+ * Change hub user name: unsubscribe old topic, auth/subscribe as the new name.
+ */
+export async function rebindSessionUserName(
+  state: AppState,
+  userName: string
+): Promise<void> {
+  const next = String(userName || '').trim();
+  if (!next) throw new Error('User name is required');
+  const client = state.client;
+  if (!client) {
+    state.userName = next;
+    setStoredUserName(next);
+    notifyStatus(state);
+    return;
+  }
+  setConnection(state, 'connecting', 'Switching user');
+  try {
+    const result = await client.rebindUserName(next);
+    const session = client.getSessionConfig();
+    state.userName = String(result.user_name || next).trim() || next;
+    state.topic = String(result.topic || session.topic || next).trim() || next;
+    if (session.subscriberName) state.subscriberName = session.subscriberName;
+    const startedAt =
+      state.hubStartedAt || (await fetchHubStartedAt(hubEndpoint(state)));
+    if (startedAt) state.hubStartedAt = startedAt;
+    setStoredUserName(
+      state.userName,
+      startedAt,
+      hubOriginFromEndpoint(hubEndpoint(state))
+    );
+    if (result.status === 202) {
+      setConnection(state, 'connected', 'Websocket connected');
+    } else {
+      setConnection(
+        state,
+        'disconnected',
+        `Subscribe failed (${String(result.status)})`
+      );
+    }
+  } catch (err) {
+    setConnection(
+      state,
+      'error',
+      err instanceof Error ? err.message : String(err)
+    );
+    throw err;
+  }
+}
+
 export async function autoConnect(state: AppState): Promise<void> {
   const params = new URLSearchParams(window.location.search);
   const urlToken = params.get('id-token')?.trim() || '';
   if (params.get('topic')?.trim()) {
     state.topic = params.get('topic')!.trim();
+  }
+  if (params.get('userName')?.trim()) {
+    state.userName = params.get('userName')!.trim();
   }
 
   await syncStoredUserNameWithHub(state);
@@ -2350,15 +2404,17 @@ export async function autoConnect(state: AppState): Promise<void> {
     const client = ensureClient(state, true, {
       preserveSessionTopicFromToken: Boolean(state.topic && urlToken),
     });
-    const storedUserName = state.freshUser ? '' : getStoredUserName();
+    const preferredName =
+      String(state.userName || '').trim() || getStoredUserName();
     // Deep-link: prefer URL topic over a stale reporting-local user name.
     if (urlToken && state.topic) {
       client.setUserName(state.topic);
-    } else if (storedUserName) {
-      client.setUserName(storedUserName);
+    } else if (preferredName) {
+      client.setUserName(preferredName);
     } else {
       client.setUserName('');
     }
+    if (state.topic && !urlToken) client.setTopic(state.topic);
 
     if (urlToken) {
       console.info(`${LOG_PREFIX} auto-connect: id-token deep-link`);
@@ -2367,19 +2423,17 @@ export async function autoConnect(state: AppState): Promise<void> {
     } else {
       console.info(`${LOG_PREFIX} auto-connect: authenticate`);
       const result = await client.authenticate();
-      const userName = result?.user_name || storedUserName || '';
+      const userName = result?.user_name || preferredName || '';
       const code = result?.code || '';
       if (userName) {
         const startedAt =
           state.hubStartedAt || (await fetchHubStartedAt(hubEndpoint(state)));
         if (startedAt) state.hubStartedAt = startedAt;
-        if (!state.freshUser) {
-          setStoredUserName(
-            userName,
-            startedAt,
-            hubOriginFromEndpoint(hubEndpoint(state))
-          );
-        }
+        setStoredUserName(
+          userName,
+          startedAt,
+          hubOriginFromEndpoint(hubEndpoint(state))
+        );
         state.userName = userName;
       }
       state.lastAuthCode = code;
@@ -2407,8 +2461,8 @@ export async function autoConnect(state: AppState): Promise<void> {
     const alignedUser =
       String(session.userName || '').trim() ||
       String(state.topic || '').trim() ||
-      storedUserName;
-    if (alignedUser && !state.freshUser) {
+      preferredName;
+    if (alignedUser) {
       state.userName = alignedUser;
       client.setUserName(alignedUser);
       const startedAt =
@@ -2419,9 +2473,6 @@ export async function autoConnect(state: AppState): Promise<void> {
         startedAt,
         hubOriginFromEndpoint(hubEndpoint(state))
       );
-    } else if (alignedUser && state.freshUser) {
-      state.userName = alignedUser;
-      client.setUserName(alignedUser);
     }
     notifyStatus(state);
 

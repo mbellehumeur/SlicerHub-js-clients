@@ -2,6 +2,7 @@ import {
   createHubConferenceDialog,
   createHubConferenceInviteController,
   deleteHubConference,
+  HUB_CONFERENCE_ICON_SVG,
   shouldShowConferenceInvite,
   showHubInfoToast,
 } from '@slicer-hub/client';
@@ -28,6 +29,7 @@ import {
   refreshReportContextFromStatus,
   removeMeasurement,
   removeSnapshot,
+  rebindSessionUserName,
   requestStatusFromHostWorklist,
   selectMeasurement,
   selectSegment,
@@ -53,7 +55,6 @@ import {
   getStoredTheme,
   REPORTING_ACTOR,
   setStoredTheme,
-  setStoredUserName,
   THEME_OHIF,
   THEME_SLICERLIVE,
 } from './config';
@@ -315,7 +316,7 @@ function boot(): void {
     'startConferenceBtn'
   ) as HTMLButtonElement | null;
   if (startBtn) {
-    startBtn.textContent = conf.conferencing;
+    startBtn.innerHTML = HUB_CONFERENCE_ICON_SVG;
     startBtn.setAttribute('aria-label', conf.conferencing);
     if (!startBtn.disabled) startBtn.title = conf.conferencing;
     else startBtn.title = conf.subscribeHubFirst;
@@ -372,9 +373,8 @@ function boot(): void {
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
       },
-      onUserNameChange: (userName) => {
-        setStoredUserName(userName);
-        state.userName = userName;
+      onUserNameChange: async (userName) => {
+        await rebindSessionUserName(state, userName);
       },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());
@@ -437,7 +437,9 @@ function boot(): void {
         'startConferenceBtn'
       ) as HTMLButtonElement | null;
       if (startBtn) {
-        startBtn.textContent = strings.conferencing;
+        if (!startBtn.querySelector('svg')) {
+          startBtn.innerHTML = HUB_CONFERENCE_ICON_SVG;
+        }
         startBtn.setAttribute('aria-label', strings.conferencing);
         if (!startBtn.disabled) startBtn.title = strings.conferencing;
         else startBtn.title = strings.subscribeHubFirst;

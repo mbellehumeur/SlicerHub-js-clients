@@ -1080,6 +1080,64 @@ function hubClient(publicAPI, model) {
 
   // --------------------------------------------------------------------------
 
+  /**
+   * Drop the current hub subscription and re-authenticate/subscribe as a new
+   * user name (topic defaults to that name on the hub).
+   *
+   * @param {string} userName
+   * @returns {Promise<{ user_name: string, topic: string, status: number|string }>}
+   */
+  publicAPI.rebindUserName = async (userName) => {
+    const next = String(userName || '').trim();
+    if (!next) {
+      throw new Error('HubClient.rebindUserName: user name is required');
+    }
+    const currentName = String(model.session.userName || '').trim();
+    const currentTopic = String(model.session.topic || '').trim();
+    if (
+      next === currentName &&
+      (currentTopic === next || currentTopic === currentName) &&
+      model.hub.subscribed
+    ) {
+      return {
+        user_name: currentName,
+        topic: currentTopic,
+        status: 202,
+      };
+    }
+
+    await publicAPI.unsubscribe();
+    model.hub.lastIdToken = '';
+    publicAPI.setUserName(next);
+    publicAPI.setTopic('');
+
+    const { code, user_name: authorizedName } = await publicAPI.authenticate();
+    if (!code) {
+      throw new Error('HubClient.rebindUserName: authenticate failed');
+    }
+    const prevAutoStart = model.config.autoStart;
+    model.config.autoStart = false;
+    let ok = false;
+    try {
+      ok = await publicAPI.getToken(code);
+    } finally {
+      model.config.autoStart = prevAutoStart;
+    }
+    if (!ok) {
+      throw new Error('HubClient.rebindUserName: token exchange failed');
+    }
+
+    const status = await publicAPI.subscribe();
+    return {
+      user_name:
+        String(authorizedName || model.session.userName || next).trim() || next,
+      topic: String(model.session.topic || '').trim(),
+      status,
+    };
+  };
+
+  // --------------------------------------------------------------------------
+
   function preparePublishMessage(castMessage, hub = model.hub) {
     const msg = { ...castMessage, timestamp: new Date().toJSON() };
     msg.id = generateMessageId(messageIdPrefix());

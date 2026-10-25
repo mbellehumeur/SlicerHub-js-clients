@@ -40,7 +40,7 @@ export type ReportingChrome = {
 };
 
 const en: ReportingChrome = {
-  viewers: 'Viewers:',
+  viewers: 'Image Displays:',
   worklistLabel: 'Worklist:',
   slicerWorklist: 'SlicerWorklist',
   snapshots: 'Snapshots',

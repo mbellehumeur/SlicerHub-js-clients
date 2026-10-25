@@ -155,9 +155,12 @@ export function renderReportContext(state: AppState): void {
   if (!el) return;
   const capsule = el.closest('.rp-capsule');
   const open = state.lastImagingStudyOpenContext.length > 0;
-  const description = open
+  const fromContext = open
     ? imagingStudyContextDescription(state.lastImagingStudyOpenContext)
     : '';
+  const fallback = open ? studyContextLabel(state.openStudy).text : '';
+  const description =
+    fromContext || (fallback && fallback !== 'none' ? fallback : '');
   const hasContext = Boolean(open && description);
   capsule?.classList.toggle('is-open', hasContext);
 
@@ -169,7 +172,7 @@ export function renderReportContext(state: AppState): void {
   const value = document.createElement('span');
   value.className = 'rp-context-value';
   value.textContent = hasContext ? description : rp.none;
-  value.title = description;
+  value.title = description || studyContextLabel(state.openStudy).title;
   el.append(label, ' ', value);
 
   const closeBtn = document.getElementById(

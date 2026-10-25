@@ -23,8 +23,11 @@ export const HUB_CONFERENCE_STRINGS_EN = Object.freeze({
   userNamePlaceholder: 'Enter user name',
   openAnotherUser: 'Open another user',
   openAnotherUserTitle: 'Open another user session to test conferencing',
-  userNameSavedNote: 'Saved. Reload the page to apply.',
-  done: 'Done',
+  openAnotherUserPrompt: 'User name for new session',
+  userNameSavedNote: 'Switched user.',
+  userNameSwitchingNote: 'Switching user…',
+  userNameAlreadyExists: 'A user with this name already exists.',
+  done: 'OK',
 
   // Create
   createSection: 'Create a conference',

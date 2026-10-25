@@ -27,6 +27,7 @@ import {
   openSnapshotFullView,
   refreshReportContextFromStatus,
   removeSnapshot,
+  rebindSessionUserName,
   requestStatusFromHostWorklist,
   selectCourseTerm,
   selectSegment,
@@ -62,7 +63,6 @@ import {
   getStoredTheme,
   REPORTING_ACTOR,
   setStoredTheme,
-  setStoredUserName,
   THEME_OHIF,
   THEME_SLICERLIVE,
 } from './config';
@@ -415,9 +415,8 @@ function boot(): void {
       onFollowChange: (followHost) => {
         setConferenceFollowHost(state, followHost);
       },
-      onUserNameChange: (userName) => {
-        setStoredUserName(userName);
-        state.userName = userName;
+      onUserNameChange: async (userName) => {
+        await rebindSessionUserName(state, userName);
       },
     });
     setSessionStatusControl(conferenceDialog.getSessionControl());
