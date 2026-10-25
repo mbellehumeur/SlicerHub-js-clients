@@ -3,6 +3,7 @@ import HubClient, {
   buildDicomwebImagingStudyOpenContext,
   buildFilesImagingStudyOpenContext,
   buildLocalDicomImagingStudyOpenContext,
+  DICOMSR_UPDATE,
   HUB_OPEN_MODE_DICOM_URL,
   HUB_OPEN_MODE_DICOMWEB,
   HUB_OPEN_MODE_IDC,
@@ -15,6 +16,8 @@ import HubClient, {
   extractVolviewSampleId,
   generateSubscriberName,
   getHubEventLower,
+  IMAGINGSTUDY_CLOSE,
+  IMAGINGSTUDY_OPEN,
   inferenceServerInfoText,
   isRequestEvent,
   isRunningInCloud,
@@ -1827,7 +1830,7 @@ function handleStructureReportUpdate(
   message: Record<string, unknown>
 ): boolean {
   const event = message?.event as { 'hub.event'?: string } | undefined;
-  if (getHubEventLower(event) !== 'structurereport-update') return false;
+  if (getHubEventLower(event) !== DICOMSR_UPDATE) return false;
   focusExistingReportingWindow();
   return true;
 }
@@ -2143,7 +2146,7 @@ async function publishImagingStudyOpen(
     console.warn(`${LOG_PREFIX} open study: subscribe first`);
     return false;
   }
-  const payload = buildPublishPayload(state, 'ImagingStudy-open', context);
+  const payload = buildPublishPayload(state, IMAGINGSTUDY_OPEN, context);
   try {
     const res = await state.client.publish(payload);
     if (res && res.ok) {
@@ -2284,7 +2287,7 @@ async function publishImagingStudyClose(state: AppState): Promise<boolean> {
     return false;
   }
   const context = cloneContextArray(state.lastImagingStudyOpenContext);
-  const payload = buildPublishPayload(state, 'ImagingStudy-close', context);
+  const payload = buildPublishPayload(state, IMAGINGSTUDY_CLOSE, context);
   try {
     const res = await state.client.publish(payload);
     if (res && res.ok) {

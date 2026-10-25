@@ -2,14 +2,29 @@
 //
 // Per-dataType events: '<dataType.lower()>-request' / '-response'.
 // isRequestEvent / isResponseEvent use the suffixes only.
+// Fixed wire events are always lowercase.
 //
 // Keep this mapping in sync with:
-// - VolView/server/cast_api/cast_client.py
-// - VolView/src/io/hub/event-names.ts
-// - the OHIF Hub extension's event-names.ts
+// - SlicerHub HubInterface/python_client/src/hub_client/client.py
 
 export const REQUEST_SUFFIX = '-request';
 export const RESPONSE_SUFFIX = '-response';
+
+/** Fixed hub.event names — always lowercase on the wire. */
+export const IMAGINGSTUDY_OPEN = 'imagingstudy-open';
+export const IMAGINGSTUDY_CLOSE = 'imagingstudy-close';
+export const STATUS_UPDATE = 'status-update';
+export const SCENE_UPDATE = 'scene-update';
+export const ANNOTATION_UPDATE = 'annotation-update';
+export const ANNOTATION_DELETE = 'annotation-delete';
+export const DICOM_SEND = 'dicom-send';
+export const NIFTI_SEND = 'nifti-send';
+export const PNG_SEND = 'png-send';
+export const IDC_CLAUDE_SEND = 'idc-claude-send';
+export const CONFERENCE_CHAT = 'conference-chat';
+export const DICOMSR_UPDATE = 'dicomsr-update';
+export const SUBSCRIPTION_REMOVED = 'subscription-removed';
+export const HEARTBEAT = 'heartbeat';
 
 export function normalizeDataType(dataType) {
   if (typeof dataType !== 'string') {
@@ -62,7 +77,7 @@ export function dataTypeFromEventName(name) {
 }
 
 /** Ensures image-display STATUS requests are received when events are listed explicitly. */
-export function ensureCastSubscribeEvents(events) {
+export function ensureHubSubscribeEvents(events) {
   if (!events?.length) {
     return ['*'];
   }
@@ -78,20 +93,38 @@ export function ensureCastSubscribeEvents(events) {
     extras.push(statusRequest);
     normalized.add(statusRequest.toLowerCase());
   }
-  if (!normalized.has('status-update')) {
-    extras.push('status-update');
+  if (!normalized.has(STATUS_UPDATE)) {
+    extras.push(STATUS_UPDATE);
   }
   return extras.length ? [...events, ...extras] : [...events];
 }
 
+/** @deprecated Use ensureHubSubscribeEvents. */
+export const ensureCastSubscribeEvents = ensureHubSubscribeEvents;
+
 export default {
   REQUEST_SUFFIX,
   RESPONSE_SUFFIX,
+  IMAGINGSTUDY_OPEN,
+  IMAGINGSTUDY_CLOSE,
+  STATUS_UPDATE,
+  SCENE_UPDATE,
+  ANNOTATION_UPDATE,
+  ANNOTATION_DELETE,
+  DICOM_SEND,
+  NIFTI_SEND,
+  PNG_SEND,
+  IDC_CLAUDE_SEND,
+  CONFERENCE_CHAT,
+  DICOMSR_UPDATE,
+  SUBSCRIPTION_REMOVED,
+  HEARTBEAT,
   normalizeDataType,
   requestEventFor,
   responseEventFor,
   isRequestEvent,
   isResponseEvent,
   dataTypeFromEventName,
+  ensureHubSubscribeEvents,
   ensureCastSubscribeEvents,
 };

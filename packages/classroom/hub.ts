@@ -1,5 +1,6 @@
 import HubClient, {
   cloneContextArray,
+  DICOMSR_UPDATE,
   extractDicomSeriesUid,
   extractDicomStudyUid,
   extractDicomwebRoot,
@@ -8,6 +9,7 @@ import HubClient, {
   extractVolviewSampleId,
   generateSubscriberName,
   getHubEventLower,
+  IMAGINGSTUDY_CLOSE,
   isRequestEvent,
   isRunningInCloud,
   messageActor,
@@ -2098,7 +2100,7 @@ function handleStructureReportUpdate(
   message: Record<string, unknown>
 ): boolean {
   const event = message?.event as { 'hub.event'?: string } | undefined;
-  if (getHubEventLower(event) !== 'structurereport-update') return false;
+  if (getHubEventLower(event) !== DICOMSR_UPDATE) return false;
 
   const prevCount = countCatalogSegments(state.segCatalog);
   const context = cloneContextArray(messageEventContext(message));
@@ -2264,7 +2266,7 @@ async function publishImagingStudyClose(state: AppState): Promise<boolean> {
     return false;
   }
   const context = cloneContextArray(state.lastImagingStudyOpenContext);
-  const payload = buildPublishPayload(state, 'ImagingStudy-close', context);
+  const payload = buildPublishPayload(state, IMAGINGSTUDY_CLOSE, context);
   try {
     const res = await state.client.publish(payload);
     if (res && res.ok) {

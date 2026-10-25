@@ -235,12 +235,34 @@ export function generateSubscriberName(productName?: string): string;
 export const REQUEST_SUFFIX: string;
 export const RESPONSE_SUFFIX: string;
 
+/** Fixed hub.event names — always lowercase on the wire. */
+export const IMAGINGSTUDY_OPEN: string;
+export const IMAGINGSTUDY_CLOSE: string;
+export const STATUS_UPDATE: string;
+export const SCENE_UPDATE: string;
+export const ANNOTATION_UPDATE: string;
+export const ANNOTATION_DELETE: string;
+export const DICOM_SEND: string;
+export const NIFTI_SEND: string;
+export const PNG_SEND: string;
+export const IDC_CLAUDE_SEND: string;
+export const CONFERENCE_CHAT: string;
+export const DICOMSR_UPDATE: string;
+export const SUBSCRIPTION_REMOVED: string;
+export const HEARTBEAT: string;
+
 export function requestEventFor(dataType: string): string;
 export function responseEventFor(dataType: string): string;
 export function isRequestEvent(name: string): boolean;
 export function isResponseEvent(name: string): boolean;
 export function dataTypeFromEventName(name: string): string;
 export function normalizeDataType(dataType: string): string;
+export function ensureHubSubscribeEvents(events?: string[]): string[];
+/** @deprecated Use ensureHubSubscribeEvents. */
+export function ensureCastSubscribeEvents(events?: string[]): string[];
+export function isHubBinaryEvent(eventName: string): boolean;
+/** @deprecated Use isHubBinaryEvent. */
+export function isCastBinaryEvent(eventName: string): boolean;
 
 export function parseCollatedRequestResult(
   data: unknown
@@ -1038,7 +1060,6 @@ export function openCastHubPopup(
   windowName: string,
   size?: { width: number; height: number }
 ): void;
-export function ensureCastSubscribeEvents(events?: string[]): string[];
 export function normalizeImagingStudyContext(context: unknown): unknown;
 export function resolveImagingStudyOpenPlan(
   context: unknown
@@ -1372,7 +1393,24 @@ export declare const HubClient: {
   DEFAULT_CAST_PUBLISH_ENVELOPE_FIELDS: typeof DEFAULT_CAST_PUBLISH_ENVELOPE_FIELDS;
   deleteHubConference: typeof deleteHubConference;
   transferHubConferenceLead: typeof transferHubConferenceLead;
+  ensureHubSubscribeEvents: typeof ensureHubSubscribeEvents;
   ensureCastSubscribeEvents: typeof ensureCastSubscribeEvents;
+  IMAGINGSTUDY_OPEN: typeof IMAGINGSTUDY_OPEN;
+  IMAGINGSTUDY_CLOSE: typeof IMAGINGSTUDY_CLOSE;
+  STATUS_UPDATE: typeof STATUS_UPDATE;
+  SCENE_UPDATE: typeof SCENE_UPDATE;
+  ANNOTATION_UPDATE: typeof ANNOTATION_UPDATE;
+  ANNOTATION_DELETE: typeof ANNOTATION_DELETE;
+  DICOM_SEND: typeof DICOM_SEND;
+  NIFTI_SEND: typeof NIFTI_SEND;
+  PNG_SEND: typeof PNG_SEND;
+  IDC_CLAUDE_SEND: typeof IDC_CLAUDE_SEND;
+  CONFERENCE_CHAT: typeof CONFERENCE_CHAT;
+  DICOMSR_UPDATE: typeof DICOMSR_UPDATE;
+  SUBSCRIPTION_REMOVED: typeof SUBSCRIPTION_REMOVED;
+  HEARTBEAT: typeof HEARTBEAT;
+  isHubBinaryEvent: typeof isHubBinaryEvent;
+  isCastBinaryEvent: typeof isCastBinaryEvent;
   extractDicomSeriesUid: typeof extractDicomSeriesUid;
   extractDicomStudyUid: typeof extractDicomStudyUid;
   extractDicomwebRoot: typeof extractDicomwebRoot;

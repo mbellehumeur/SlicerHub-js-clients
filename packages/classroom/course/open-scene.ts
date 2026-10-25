@@ -6,6 +6,7 @@ import {
   buildIdcImagingStudyOpenContext,
   cloneContextArray,
   HUB_OPEN_MODE_IDC,
+  IMAGINGSTUDY_OPEN,
 } from '@slicer-hub/client';
 import type { AppState } from '../hub';
 import { LOG_PREFIX, REPORTING_ACTOR } from '../config';
@@ -167,7 +168,7 @@ async function publishOpenAndShowIra(
   const payload = {
     event: {
       'hub.topic': state.topic,
-      'hub.event': 'ImagingStudy-open',
+      'hub.event': IMAGINGSTUDY_OPEN,
       context,
     },
     actor: REPORTING_ACTOR,

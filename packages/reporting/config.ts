@@ -1,4 +1,15 @@
-import { isRunningInCloud } from '@slicer-hub/client';
+import {
+  DICOM_SEND,
+  DICOMSR_UPDATE,
+  IMAGINGSTUDY_CLOSE,
+  IMAGINGSTUDY_OPEN,
+  PNG_SEND,
+  SCENE_UPDATE,
+  STATUS_UPDATE,
+  SUBSCRIPTION_REMOVED,
+  isRunningInCloud,
+  requestEventFor,
+} from '@slicer-hub/client';
 
 export const LOG_PREFIX = '[@slicer-hub/reporting]';
 
@@ -7,15 +18,15 @@ export const REPORTING_ACTOR = 'REPORTING_CLIENT';
 
 /** Subscribe to study open/close so the report panel can show study info. */
 export const SUBSCRIBE_EVENTS = [
-  'imagingstudy-open',
-  'imagingstudy-close',
-  'status-request',
-  'subscription-removed',
-  'status-update',
-  'dicom-send',
-  'png-send',
-  'structurereport-update',
-  'scene-update',
+  IMAGINGSTUDY_OPEN,
+  IMAGINGSTUDY_CLOSE,
+  requestEventFor('STATUS'),
+  SUBSCRIPTION_REMOVED,
+  STATUS_UPDATE,
+  DICOM_SEND,
+  PNG_SEND,
+  DICOMSR_UPDATE,
+  SCENE_UPDATE,
 ];
 
 export const THEME_STORAGE_KEY = 'pw46.reporting.theme';

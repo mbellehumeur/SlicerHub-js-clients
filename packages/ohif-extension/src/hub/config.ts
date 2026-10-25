@@ -1,11 +1,12 @@
 import {
   ensureCastSubscribeEvents,
+  ensureHubSubscribeEvents,
   isHubEndpointInCloud,
   isRunningInCloud,
 } from '@slicer-hub/client';
 import type { HubConfig } from '@slicer-hub/client';
 
-export { ensureCastSubscribeEvents };
+export { ensureHubSubscribeEvents, ensureCastSubscribeEvents };
 
 export type ConfigHubEntry = HubConfig & {
   events?: string[];

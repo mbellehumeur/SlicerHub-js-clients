@@ -82,9 +82,9 @@ Inference server catalog copy lives next to each service-provider script as
 
 ## Protocol parity
 
-Keep `eventNames.js` and wire helpers in sync with:
+Keep `eventNames.js` (and binary prefixes in `sendNormalize.js`) in sync with:
 
-- `SlicerHub/cast_py_client`
-- vtk-js / VolView / OHIF copies (when the wire contract changes)
+- `SlicerHub/HubInterface/python_client/src/hub_client/client.py`
+- Hub handlers / product subscribe lists that hardcode event names
 
-See [AGENTS.md](../SlicerHub/AGENTS.md) in the slicer monorepo.
+See `AGENTS.md` in the SlicerHub repo.

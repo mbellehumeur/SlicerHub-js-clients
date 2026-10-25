@@ -44,7 +44,7 @@ import {
 } from '../../hub/constants';
 import {
   HubExtensionConfig,
-  ensureCastSubscribeEvents,
+  ensureHubSubscribeEvents,
   resolveHubFromConfig,
 } from '../../hub/config';
 import { setOhifHubRuntime, type OhifHubExtensionManagerLike } from '../../hub/ohif-hub-runtime';
@@ -249,7 +249,7 @@ export default class HubService extends PubSubService {
       session: {
         actors: ensureIdActor(hubExtensionConfig.actors),
         topic: initialTopic,
-        events: ensureCastSubscribeEvents(selectedHub.events ?? ['*']),
+        events: ensureHubSubscribeEvents(selectedHub.events ?? ['*']),
         lease: selectedHub.lease ?? 999,
         productName,
         productVersion,

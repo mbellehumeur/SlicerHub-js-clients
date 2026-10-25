@@ -1,4 +1,12 @@
-import { isRunningInCloud } from '@slicer-hub/client';
+import {
+  DICOMSR_UPDATE,
+  IMAGINGSTUDY_CLOSE,
+  IMAGINGSTUDY_OPEN,
+  STATUS_UPDATE,
+  SUBSCRIPTION_REMOVED,
+  isRunningInCloud,
+  requestEventFor,
+} from '@slicer-hub/client';
 
 export const LOG_PREFIX = '[@slicer-hub/worklist]';
 
@@ -7,12 +15,12 @@ export const WORKLIST_ACTOR = 'WORKLIST_CLIENT';
 export const IMAGE_DISPLAY_ACTOR = 'ID';
 
 export const SUBSCRIBE_EVENTS = [
-  'imagingstudy-open',
-  'imagingstudy-close',
-  'status-request',
-  'subscription-removed',
-  'status-update',
-  'structurereport-update',
+  IMAGINGSTUDY_OPEN,
+  IMAGINGSTUDY_CLOSE,
+  requestEventFor('STATUS'),
+  SUBSCRIPTION_REMOVED,
+  STATUS_UPDATE,
+  DICOMSR_UPDATE,
 ];
 
 export const EMPTY_CAST_CONTEXT = {

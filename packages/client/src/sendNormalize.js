@@ -13,7 +13,7 @@ const HUB_BINARY_EVENT_PREFIXES = [
   'scene', // scene-update (LiveSync HubBlobs multipart)
 ];
 
-export function isCastBinaryEvent(eventName) {
+export function isHubBinaryEvent(eventName) {
   if (typeof eventName !== 'string') return false;
   const name = eventName.trim().toLowerCase();
   if (!name) return false;
@@ -25,6 +25,9 @@ export function isCastBinaryEvent(eventName) {
   }
   return false;
 }
+
+/** @deprecated Use isHubBinaryEvent. */
+export const isCastBinaryEvent = isHubBinaryEvent;
 
 function isArrayBufferView(value) {
   return typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView(value);
@@ -155,7 +158,7 @@ function defaultBinaryBatchMimeType(hubEvent) {
 
 export function coerceBinaryPublishToFiles(msg) {
   const event = msg && msg.event;
-  if (!event || !isCastBinaryEvent(event['hub.event'])) {
+  if (!event || !isHubBinaryEvent(event['hub.event'])) {
     return msg;
   }
   if (contextFilesFromEvent(event).length) {
@@ -254,7 +257,7 @@ export function fileIndicesNeedingBinaryBatchPart(files) {
 
 export function messageNeedsBinaryBatchPublish(msg) {
   const event = msg && msg.event;
-  if (!event || !isCastBinaryEvent(event['hub.event'])) {
+  if (!event || !isHubBinaryEvent(event['hub.event'])) {
     return false;
   }
   const files = contextFilesFromEvent(event);
@@ -338,7 +341,7 @@ export async function normalizeBinaryBatchMessageMetadataOnly(msg) {
     throw new Error('HubClient: binary batch publish requires event object');
   }
   const event = msg.event;
-  if (!isCastBinaryEvent(event['hub.event'])) {
+  if (!isHubBinaryEvent(event['hub.event'])) {
     return msg;
   }
   const ctx = event.context;
