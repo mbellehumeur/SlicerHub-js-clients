@@ -154,6 +154,8 @@ export function navigateToHubViewer(
     useLocalDataSource?: boolean;
     /** OHIF mode route segment (default `viewer`). */
     modeRoute?: string;
+    /** OHIF hanging protocol id (e.g. `fourUp` for Slicer Image Display opens). */
+    hangingProtocolId?: string;
   }
 ): void {
   if (!studyUIDs.length) {
@@ -174,6 +176,10 @@ export function navigateToHubViewer(
     console.info(
       `${LOG_PREFIX} navigateToHubViewer: study already open — omitting SeriesInstanceUIDs filter`
     );
+  }
+  const hangingProtocolId = String(options?.hangingProtocolId || '').trim();
+  if (hangingProtocolId) {
+    query.set('hangingProtocolId', hangingProtocolId);
   }
 
   const modeRoute = resolveHubModeRoute(studyUIDs, options?.modeRoute);

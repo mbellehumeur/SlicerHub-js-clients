@@ -26,8 +26,8 @@ import HubClient, {
   messageSubscriberName,
   parseCollatedRequestResult,
   placeHubPopupWindow,
-  requestCastLiveScene,
-  requestCastStatus,
+  requestHubLiveScene,
+  requestHubStatus,
   requestEventFor,
   resolveHubConferenceView,
   resolveHubAdminUrl,
@@ -406,7 +406,7 @@ const CONNECTED_PRODUCT_BUTTONS: Array<{
     match: (p) => matchesHubProduct(p, 'reporting'),
   },
   {
-    // UI label is "Anatomical Planes" (i18n chrome:anatomicalPlanes)
+    // UI label is "Classroom" (i18n chrome:anatomicalPlanes)
     id: 'openSt444Btn',
     match: (p) => matchesHubProduct(p, 'classroom'),
   },
@@ -865,7 +865,7 @@ async function probeTopicStatus(state: AppState): Promise<void> {
     '';
   if (!subscriber) return;
   try {
-    const result = await requestCastStatus(state.client, {
+    const result = await requestHubStatus(state.client, {
       subscriberName: subscriber,
       subscriberProductName: PRODUCT_NAME,
       subscriberActor: WORKLIST_ACTOR,
@@ -2320,7 +2320,7 @@ async function requestLiveSceneFromSlicer(state: AppState): Promise<void> {
   }
   try {
     console.info(`${LOG_PREFIX} requesting LiveScene publish from 3D Slicer…`);
-    const result = await requestCastLiveScene(state.client, {
+    const result = await requestHubLiveScene(state.client, {
       subscriberName: subscriber,
       subscriberProductName: PRODUCT_NAME,
       subscriberActor: WORKLIST_ACTOR,

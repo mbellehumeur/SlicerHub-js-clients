@@ -8,6 +8,7 @@ import {
 } from '@slicer-hub/client';
 import { navigateToStudy } from './imaging-study-handler';
 import { ingestNiftiFile } from './ingest-hub-nifti';
+import { hangingProtocolIdFromSlicerPublisher } from './slicer-four-up';
 
 type DicomIngestCallbacks = {
   scheduleHubDicomSendLayer: (meta: {
@@ -18,14 +19,21 @@ type DicomIngestCallbacks = {
 
 export async function ingestDicomArrayBuffer(
   arrayBuffer: ArrayBuffer,
-  callbacks: DicomIngestCallbacks
+  callbacks: DicomIngestCallbacks,
+  hangingProtocolId?: string
 ): Promise<void> {
   try {
     const ingested = addHubDicomToMetadataStore(arrayBuffer);
     if (!ingested) {
       return;
     }
-    navigateToStudy(ingested.studyUID, undefined, true);
+    navigateToStudy(
+      ingested.studyUID,
+      undefined,
+      true,
+      undefined,
+      hangingProtocolId
+    );
     callbacks.scheduleHubDicomSendLayer({
       SeriesInstanceUID: ingested.seriesInstanceUID,
       SOPInstanceUID: ingested.sopInstanceUID,
@@ -42,11 +50,12 @@ export async function handleDicomSendMessage(
   if (getHubEventLower(message.event) !== 'dicom-send') {
     return;
   }
+  const hangingProtocolId = hangingProtocolIdFromSlicerPublisher(message);
   const payloads = extractFilePayloadsForEvent(message, 'dicom-send');
   for (const payload of payloads) {
     const arrayBuffer = filePayloadToArrayBuffer(payload);
     if (arrayBuffer) {
-      await ingestDicomArrayBuffer(arrayBuffer, callbacks);
+      await ingestDicomArrayBuffer(arrayBuffer, callbacks, hangingProtocolId);
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Normalize collated ``POST /api/hub/request`` response shape.
+ * Normalize collated hub ``*-request`` response shape (``POST /api/hub``).
  *
  * @param {unknown} data
  * @returns {{

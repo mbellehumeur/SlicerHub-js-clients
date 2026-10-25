@@ -21,7 +21,7 @@ export const cs: LocaleBundle = {
     localAi: 'Evidence Creators:',
     remoteAi: 'Evidence Creators:',
     classroom: 'Kurz:',
-    anatomicalPlanes: 'Anatomical Planes',
+    anatomicalPlanes: 'Classroom',
     currentContext: 'Aktuální kontext:',
     none: 'žádný',
     colStudy: 'Studie',

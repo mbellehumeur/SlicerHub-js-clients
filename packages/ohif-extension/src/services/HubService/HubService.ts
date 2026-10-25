@@ -17,6 +17,7 @@ import HubClient, {
   normalizeImagingStudyContext,
   probeCastInferenceServers,
   requestEventFor,
+  requestHubDicom,
   resolveHubConferenceState,
   resolveHubFileMessage,
   resolveHubPublishEnvelopeFields,
@@ -266,9 +267,14 @@ export default class HubService extends PubSubService {
       extensionManager: extensionManager as OhifHubExtensionManagerLike,
     });
 
-    this._imagingStudyHandler = new ImagingStudyHandler({
-      scheduleHubDicomSendLayer: meta => this._scheduleHubDicomSendLayer(meta),
-    });
+    this._imagingStudyHandler = new ImagingStudyHandler(
+      {
+        scheduleHubDicomSendLayer: meta => this._scheduleHubDicomSendLayer(meta),
+      },
+      {
+        requestLocalDicom: args => this._requestLocalDicomFromImageDisplay(args),
+      }
+    );
 
     this._registerMessageHandlers();
 
@@ -527,6 +533,27 @@ export default class HubService extends PubSubService {
       subscriberProductName: session.productName,
       subscriberActor: this._publishEnvelopeFields.subscriberActor,
       topic: session.topic,
+    });
+  }
+
+  /**
+   * Ask Slicer Image Display to publish local-dicom study bytes via dicom-send.
+   */
+  private async _requestLocalDicomFromImageDisplay(args: {
+    studyInstanceUID: string;
+    seriesInstanceUID?: string;
+  }): Promise<unknown> {
+    const session = this._client.getSessionConfig();
+    const subscriberName =
+      this._subscriberName.trim() || session.subscriberName?.trim() || '';
+    return requestHubDicom(this._client, {
+      subscriberName,
+      subscriberProductName: session.productName,
+      subscriberActor: this._publishEnvelopeFields.subscriberActor,
+      topic: session.topic,
+      studyInstanceUID: args.studyInstanceUID,
+      seriesInstanceUID: args.seriesInstanceUID,
+      targetActor: 'ID',
     });
   }
 

@@ -30,6 +30,7 @@ import {
   requestStatusFromHostWorklist,
   selectCourseTerm,
   selectSegment,
+  setCourse,
   sendConferenceChat,
   setConferenceFollowHost,
   setConferenceHubHandler,
@@ -50,14 +51,13 @@ import {
   toggleVolumeVisibility,
   type AppState,
 } from './hub';
+import { renderCoursePanel } from './course/course-ui';
 import {
-  advanceQuiz,
-  applyQuizChoice,
-  createQuizState,
-  renderCoursePanel,
-  type QuizState,
-} from './course/course-ui';
-import { courseChromeFor } from './course/strings';
+  COURSES,
+  getCourse,
+  pickLocale,
+} from './course/registry';
+import { sharedChromeFor } from './course/strings';
 import {
   getStoredTheme,
   REPORTING_ACTOR,
@@ -295,26 +295,43 @@ function boot(): void {
   }
   applyTheme(getStoredTheme());
 
+  const state = createInitialState();
+  let statusWrap: HTMLElement | null = null;
+  const reportDisplay = document.getElementById('reportDisplay') as HTMLElement;
+  const glossaryPanel = document.getElementById('glossaryPanel') as HTMLElement;
+  const courseSelect = document.getElementById(
+    'courseSelect'
+  ) as HTMLSelectElement | null;
+  const confStrings = () => conferenceStringsFor(resolveStoredLocale());
+
+  const fillCourseSelect = (localeCode?: AppLocale): void => {
+    if (!courseSelect) return;
+    const loc = localeCode || resolveStoredLocale();
+    const shared = sharedChromeFor(loc);
+    courseSelect.setAttribute('aria-label', shared.courseSelectAria);
+    courseSelect.title = shared.courseSelectAria;
+    courseSelect.innerHTML = COURSES.map(
+      (c) =>
+        `<option value="${c.id}">${pickLocale(c.title, loc)}</option>`
+    ).join('');
+    courseSelect.value = state.courseId;
+  };
+
   const syncHeaderTitle = (localeCode?: AppLocale): void => {
-    const chrome = courseChromeFor(localeCode || resolveStoredLocale());
+    const loc = localeCode || resolveStoredLocale();
+    const shared = sharedChromeFor(loc);
+    const content = getCourse(state.courseId).contentFor(loc);
     const brandEl = document.querySelector('.rp-brand');
-    if (brandEl) brandEl.textContent = chrome.brand;
-    const titleEl = document.getElementById('classroomHeaderTitle');
-    if (titleEl) titleEl.textContent = chrome.headerTitle;
-    document.title = chrome.headerTitle;
+    if (brandEl) brandEl.textContent = shared.brand;
+    document.title = content.headerTitle;
+    fillCourseSelect(loc);
+    const panel = document.querySelector('.rp-course-panel');
+    if (panel) panel.setAttribute('aria-label', content.course);
   };
   syncHeaderTitle(locale);
 
-  const state = createInitialState();
-  let statusWrap: HTMLElement | null = null;
-  let quiz: QuizState = createQuizState();
-  const reportDisplay = document.getElementById('reportDisplay') as HTMLElement;
-  const glossaryPanel = document.getElementById('glossaryPanel') as HTMLElement;
-  const quizPanel = document.getElementById('quizPanel') as HTMLElement;
-  const confStrings = () => conferenceStringsFor(resolveStoredLocale());
-
   const syncConferenceChatChrome = (s: AppState): void => {
-    const chrome = courseChromeFor(resolveStoredLocale());
+    const chrome = sharedChromeFor(resolveStoredLocale());
     const title = document.getElementById('conferenceLogTitle');
     if (title) title.textContent = chrome.conferenceLog;
     const input = document.getElementById(
@@ -338,8 +355,13 @@ function boot(): void {
   };
 
   const remountCourse = (s: AppState): void => {
-    renderCoursePanel(glossaryPanel, quizPanel, s, quiz);
+    renderCoursePanel(glossaryPanel, s);
   };
+
+  courseSelect?.addEventListener('change', () => {
+    setCourse(state, courseSelect.value);
+    syncHeaderTitle();
+  });
 
   const syncConferenceLogUi = (s: AppState): void => {
     const log = document.getElementById(
@@ -556,26 +578,9 @@ function boot(): void {
     if (row?.dataset.termId && !t?.closest('[data-illustrate-term]')) {
       selectCourseTerm(state, row.dataset.termId);
       remountCourse(state);
-      return;
-    }
-    if (t?.closest('[data-quiz-restart]')) {
-      quiz = createQuizState();
-      remountCourse(state);
-      return;
-    }
-    if (t?.closest('[data-quiz-next]')) {
-      quiz = advanceQuiz(quiz);
-      remountCourse(state);
-      return;
-    }
-    const choice = t?.closest('[data-quiz-choice]') as HTMLElement | null;
-    if (choice?.dataset.quizChoice) {
-      quiz = applyQuizChoice(quiz, choice.dataset.quizChoice);
-      remountCourse(state);
     }
   };
   glossaryPanel?.addEventListener('click', onCourseClick);
-  quizPanel?.addEventListener('click', onCourseClick);
 
   document
     .getElementById('conferenceChatForm')

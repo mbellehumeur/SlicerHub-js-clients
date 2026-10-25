@@ -1,26 +1,10 @@
 /** Body sections and anatomical planes — EN/FR course content for Classroom. */
 
+import type { CourseTerm } from '../types';
+
 export type TermId = 'sagittal' | 'frontal' | 'transverse';
 
-export type Localized = { en: string; fr: string };
-
-export type DemoKind = 'axis' | 'relative';
-
-export type ViewUpHint = 'S' | 'I' | 'A' | 'P' | 'L' | 'R' | null;
-
-export type DirectionalTerm = {
-  id: TermId;
-  term: Localized;
-  definition: Localized;
-  examples: Localized[];
-  antonymId?: TermId;
-  demo: {
-    kind: DemoKind;
-    viewUpHint: ViewUpHint;
-  };
-};
-
-export const DIRECTIONAL_TERMS: DirectionalTerm[] = [
+export const DIRECTIONAL_TERMS: CourseTerm[] = [
   {
     id: 'sagittal',
     term: {
@@ -89,10 +73,6 @@ export const DIRECTIONAL_TERMS: DirectionalTerm[] = [
   },
 ];
 
-export function termById(id: string): DirectionalTerm | undefined {
+export function termById(id: string): CourseTerm | undefined {
   return DIRECTIONAL_TERMS.find((t) => t.id === id);
-}
-
-export function pickLocale(loc: Localized, locale: string): string {
-  return locale.startsWith('fr') ? loc.fr : loc.en;
 }

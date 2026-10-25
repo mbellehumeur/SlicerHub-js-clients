@@ -105,9 +105,14 @@ button {
   min-width: 0;
 }
 
+.rp-header-title-wrap {
+  justify-self: center;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .rp-header-title {
   margin: 0;
-  justify-self: center;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,6 +122,48 @@ button {
   letter-spacing: 0.01em;
   color: #fff;
   text-align: center;
+}
+
+.rp-course-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  padding: 4px 28px 4px 10px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  text-align-last: center;
+}
+
+.rp-course-select:hover,
+.rp-course-select:focus {
+  border-color: rgba(255, 255, 255, 0.65);
+  outline: none;
+}
+
+.rp-course-select option {
+  color: #111;
+  background: #fff;
+}
+
+.rp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .rp-brand {

@@ -200,9 +200,10 @@ import {
   mapInferenceServersFromStatusResult,
   parseProductStatusProbe,
   publishCastUrlSend,
-  requestCastLiveScene,
-  requestCastProductStatus,
-  requestCastStatus,
+  requestHubDicom,
+  requestHubLiveScene,
+  requestHubProductStatus,
+  requestHubStatus,
   probeCastInferenceServers,
 } from './statusProbe';
 import {
@@ -394,9 +395,10 @@ export {
   normalizeHubProductName,
   parseProductStatusProbe,
   publishCastUrlSend,
-  requestCastLiveScene,
-  requestCastProductStatus,
-  requestCastStatus,
+  requestHubDicom,
+  requestHubLiveScene,
+  requestHubProductStatus,
+  requestHubStatus,
   mapInferenceServersFromStatusResult,
   probeCastInferenceServers,
   cloneContextArray,
@@ -1197,7 +1199,7 @@ function hubClient(publicAPI, model) {
   // --------------------------------------------------------------------------
 
   /**
-   * Fan-out request via ``POST /api/hub/request``.
+   * Fan-out request via ``POST /api/hub`` (``event.hub.event`` must end with ``-request``).
    *
    * @param {object} args
    * @param {string} args['subscriber.name']
@@ -1221,10 +1223,7 @@ function hubClient(publicAPI, model) {
       );
     }
 
-    const requestUrl = `${(hub.hub_endpoint || '').replace(
-      /\/+$/,
-      ''
-    )}/request`;
+    const requestUrl = (hub.hub_endpoint || '').replace(/\/+$/, '');
 
     const body = {
       'subscriber.name': subscriber,
@@ -1550,9 +1549,10 @@ export default {
   normalizeHubProductName,
   parseProductStatusProbe,
   publishCastUrlSend,
-  requestCastLiveScene,
-  requestCastProductStatus,
-  requestCastStatus,
+  requestHubDicom,
+  requestHubLiveScene,
+  requestHubProductStatus,
+  requestHubStatus,
   mapInferenceServersFromStatusResult,
   probeCastInferenceServers,
   cloneContextArray,

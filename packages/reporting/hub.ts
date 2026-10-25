@@ -17,7 +17,7 @@ import HubClient, {
   matchesHubProduct,
   normalizeImagingStudyContext,
   parseCollatedRequestResult,
-  requestCastStatus,
+  requestHubStatus,
   requestEventFor,
   resolveHubConferenceView,
   resolveHubFileMessage,
@@ -430,7 +430,7 @@ async function requestStatus(
     state.client?.getSessionConfig?.()?.subscriberName?.trim() ||
     '';
   if (!state.client || !subscriber) return [];
-  const result = await requestCastStatus(state.client, {
+  const result = await requestHubStatus(state.client, {
     subscriberName: subscriber,
     subscriberProductName: PRODUCT_NAME,
     subscriberActor: REPORTING_ACTOR,

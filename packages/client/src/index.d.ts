@@ -55,8 +55,8 @@ export interface CastEvent {
   [key: string]: unknown;
 }
 /**
- * Hub JSON envelope: publish (`POST /api/hub/`), request (`POST /api/hub/request`),
- * and WebSocket notifications.
+ * Hub JSON envelope: publish (`POST /api/hub/`), request (`POST /api/hub` with
+ * `*-request` event), and WebSocket notifications.
  */
 export interface CastMessage {
   id?: string;
@@ -215,7 +215,7 @@ export interface HubClientInstance {
     topic?: string
   ): void;
   /**
-   * Fan-out request via ``POST /api/hub/request``.
+   * Fan-out request via ``POST /api/hub`` (``event.hub.event`` must end with ``-request``).
    * @throws When required fields or token are missing.
    */
   request(args: CastRequestArgs): Promise<CastRequestResult>;
@@ -557,7 +557,7 @@ export interface CastProductStatusProbe {
 export function parseProductStatusProbe(
   requestResult: unknown
 ): CastProductStatusProbe;
-export function requestCastStatus(
+export function requestHubStatus(
   client: { request: (args: Record<string, unknown>) => Promise<unknown> },
   opts: {
     subscriberName: string;
@@ -568,7 +568,7 @@ export function requestCastStatus(
     targetProductName?: string;
   }
 ): Promise<unknown>;
-export function requestCastLiveScene(
+export function requestHubLiveScene(
   client: { request: (args: Record<string, unknown>) => Promise<unknown> },
   opts: {
     subscriberName: string;
@@ -579,7 +579,20 @@ export function requestCastLiveScene(
     targetProductName?: string;
   }
 ): Promise<unknown>;
-export function requestCastProductStatus(
+export function requestHubDicom(
+  client: { request: (args: Record<string, unknown>) => Promise<unknown> },
+  opts: {
+    subscriberName: string;
+    studyInstanceUID: string;
+    seriesInstanceUID?: string;
+    subscriberProductName?: string;
+    subscriberActor?: string;
+    topic?: string;
+    targetActor?: string;
+    targetProductName?: string;
+  }
+): Promise<unknown>;
+export function requestHubProductStatus(
   client: { request: (args: Record<string, unknown>) => Promise<unknown> },
   opts: {
     targetProductName: string;
@@ -1230,7 +1243,7 @@ export function isHubConferenceParticipant(
 
 /**
  * Slicer hub client: OAuth, subscribe, WebSocket bind, publish, and typed
- * request/response (`POST /api/hub/request` fan-out).
+ * request/response (`POST /api/hub` with `*-request` fan-out).
  *
  * Typical flow: `onMessage` → `authenticate` → `getToken` → `subscribe` →
  * `publish` / `request` → `sendCastRequestResponse` on inbound `*-request` events.
@@ -1417,9 +1430,10 @@ export declare const HubClient: {
   normalizeHubProductName: typeof normalizeHubProductName;
   parseProductStatusProbe: typeof parseProductStatusProbe;
   publishCastUrlSend: typeof publishCastUrlSend;
-  requestCastLiveScene: typeof requestCastLiveScene;
-  requestCastProductStatus: typeof requestCastProductStatus;
-  requestCastStatus: typeof requestCastStatus;
+  requestHubDicom: typeof requestHubDicom;
+  requestHubLiveScene: typeof requestHubLiveScene;
+  requestHubProductStatus: typeof requestHubProductStatus;
+  requestHubStatus: typeof requestHubStatus;
   mapInferenceServersFromStatusResult: typeof mapInferenceServersFromStatusResult;
   probeCastInferenceServers: typeof probeCastInferenceServers;
   cloneContextArray: typeof cloneContextArray;

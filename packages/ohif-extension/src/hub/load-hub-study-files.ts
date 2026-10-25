@@ -417,7 +417,8 @@ async function expandIdcPlanFiles(files: IdcPlanFile[]): Promise<IdcPlanFile[]> 
 
 export async function loadHubIdcStudyFiles(
   plan: ImagingStudyIdcOpen,
-  callbacks: DicomIngestCallbacks
+  callbacks: DicomIngestCallbacks,
+  options?: { hangingProtocolId?: string }
 ): Promise<void> {
   const studyUIDs = new Set<string>();
   const seriesUIDs = new Set<string>();
@@ -476,6 +477,7 @@ export async function loadHubIdcStudyFiles(
     seriesUID,
     dataSource: HUB_IDC_DATA_SOURCE,
     modeRoute: plan.ohifMode,
+    hangingProtocolId: options?.hangingProtocolId,
   });
 
   console.info(`${LOG_PREFIX} imagingstudy-open loaded IDC study`, {
@@ -493,7 +495,7 @@ function isDirectNiftiUrl(url: string, fileName?: string): boolean {
 export async function loadHubStudyFilesFromUrls(
   fileEntries: Array<{ url: string; fileName?: string; label?: string }>,
   callbacks: DicomIngestCallbacks,
-  options?: { ohifMode?: string }
+  options?: { ohifMode?: string; hangingProtocolId?: string }
 ): Promise<void> {
   const studyUIDs = new Set<string>();
 
@@ -543,6 +545,7 @@ export async function loadHubStudyFilesFromUrls(
   navigateToHubViewer(studyList, {
     useLocalDataSource: true,
     modeRoute: options?.ohifMode,
+    hangingProtocolId: options?.hangingProtocolId,
   });
 
   console.info(`${LOG_PREFIX} imagingstudy-open loaded ${studyList.length} study(s)`, {
@@ -553,7 +556,8 @@ export async function loadHubStudyFilesFromUrls(
 
 export async function loadHubStudyFilesFromPayloads(
   payloads: FilePayload[],
-  callbacks: DicomIngestCallbacks
+  callbacks: DicomIngestCallbacks,
+  options?: { hangingProtocolId?: string }
 ): Promise<void> {
   const downloaded = await payloadsToFiles(payloads);
   const expanded: File[] = [];
@@ -565,5 +569,8 @@ export async function loadHubStudyFilesFromPayloads(
   if (!studyUIDs.length) {
     return;
   }
-  navigateToHubViewer(studyUIDs, { useLocalDataSource: true });
+  navigateToHubViewer(studyUIDs, {
+    useLocalDataSource: true,
+    hangingProtocolId: options?.hangingProtocolId,
+  });
 }

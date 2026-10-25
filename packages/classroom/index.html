@@ -12,9 +12,14 @@
       <div class="rp-header-start">
         <span class="rp-brand">Classroom</span>
       </div>
-      <h1 id="classroomHeaderTitle" class="rp-header-title">
-        Anatomical Planes Identification
-      </h1>
+      <div class="rp-header-title-wrap">
+        <label class="rp-visually-hidden" for="courseSelect">Course</label>
+        <select
+          id="courseSelect"
+          class="rp-header-title rp-course-select"
+          aria-label="Select course"
+        ></select>
+      </div>
       <div class="rp-header-actions">
         <button
           type="button"
@@ -65,7 +70,7 @@
     </header>
 
     <main class="rp-main rp-main-classroom">
-      <section class="rp-panel rp-course-panel" aria-label="Anatomical planes">
+      <section class="rp-panel rp-course-panel" aria-label="Course">
         <div id="glossaryPanel" class="rp-course-display"></div>
       </section>
 
@@ -109,10 +114,6 @@
             </form>
           </div>
         </details>
-      </section>
-
-      <section class="rp-panel rp-quiz-panel" aria-label="Quiz">
-        <div id="quizPanel" class="rp-course-display"></div>
       </section>
     </main>
   </div>

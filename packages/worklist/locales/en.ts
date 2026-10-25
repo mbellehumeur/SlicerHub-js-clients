@@ -17,7 +17,7 @@ export const en = {
     omiFhirTitle:
       'Open Medical Inference (OMI) registry for all inference models',
     classroom: 'Classrooms:',
-    anatomicalPlanes: 'Anatomical Planes',
+    anatomicalPlanes: 'Classroom',
     currentContext: 'Current context:',
     none: 'none',
     colStudy: 'Study',

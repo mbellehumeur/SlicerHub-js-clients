@@ -17,7 +17,7 @@ import HubClient, {
   matchesHubProduct,
   normalizeImagingStudyContext,
   parseCollatedRequestResult,
-  requestCastStatus,
+  requestHubStatus,
   requestEventFor,
   resolveHubConferenceView,
   resolveHubFileMessage,
@@ -67,7 +67,13 @@ import {
   type SceneDoc,
   type SceneSegEntry,
 } from './scene-update';
-import { termById } from './course/directional-terms';
+import {
+  DEFAULT_COURSE_ID,
+  getCourse,
+  isCourseId,
+  termByIdInCourse,
+  type CourseId,
+} from './course/registry';
 import {
   openClassroomSceneInIra,
   type ClassroomSceneKey,
@@ -157,6 +163,8 @@ export type AppState = {
   freshUser: boolean;
   /** Conference activity + chat lines (in-session only). */
   conferenceLogLines: string[];
+  /** Active classroom course (glossary / content panel). */
+  courseId: CourseId;
   /** Selected glossary term id for course UI. */
   selectedTermId: string | null;
   /** Relative-term demo note shown in course panel. */
@@ -246,6 +254,7 @@ export function createInitialState(): AppState {
     connectedApps: new Map(),
     freshUser,
     conferenceLogLines: [],
+    courseId: DEFAULT_COURSE_ID,
     selectedTermId: null,
     courseDemoNote: '',
   };
@@ -548,7 +557,7 @@ async function requestStatus(
     state.client?.getSessionConfig?.()?.subscriberName?.trim() ||
     '';
   if (!state.client || !subscriber) return [];
-  const result = await requestCastStatus(state.client, {
+  const result = await requestHubStatus(state.client, {
     subscriberName: subscriber,
     subscriberProductName: PRODUCT_NAME,
     subscriberActor: REPORTING_ACTOR,
@@ -1346,16 +1355,18 @@ export async function illustrateTerm(
   state: AppState,
   termId: string
 ): Promise<{ ok: boolean; relative: boolean }> {
-  const term = termById(termId);
+  const course = getCourse(state.courseId);
+  const term = termByIdInCourse(course, termId);
   state.selectedTermId = termId;
   if (!term) {
     state.courseDemoNote = '';
     notifyStudy(state);
     return { ok: false, relative: false };
   }
-  if (term.demo.kind === 'relative' || !term.demo.viewUpHint) {
-    const chrome = courseChromeFor(resolveStoredLocale());
-    state.courseDemoNote = chrome.relativeDemoNote;
+  const demo = term.demo;
+  if (!demo || demo.kind === 'relative' || !demo.viewUpHint) {
+    const content = course.contentFor(resolveStoredLocale());
+    state.courseDemoNote = content.relativeDemoNote;
     notifyStudy(state);
     return { ok: true, relative: true };
   }
@@ -1375,6 +1386,16 @@ export async function illustrateTerm(
 export function selectCourseTerm(state: AppState, termId: string | null): void {
   state.selectedTermId = termId;
   state.courseDemoNote = '';
+  notifyStudy(state);
+}
+
+/** Switch classroom course; clears term selection only (volumes/chat unchanged). */
+export function setCourse(state: AppState, courseId: string): void {
+  if (!isCourseId(courseId) || state.courseId === courseId) return;
+  state.courseId = courseId;
+  state.selectedTermId = null;
+  state.courseDemoNote = '';
+  notifyStatus(state);
   notifyStudy(state);
 }
 

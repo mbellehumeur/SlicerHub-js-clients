@@ -21,7 +21,7 @@ export const ko: LocaleBundle = {
     localAi: 'Evidence Creators:',
     remoteAi: 'Evidence Creators:',
     classroom: '강의:',
-    anatomicalPlanes: 'Anatomical Planes',
+    anatomicalPlanes: 'Classroom',
     currentContext: '현재 컨텍스트:',
     none: '없음',
     colStudy: '검사',

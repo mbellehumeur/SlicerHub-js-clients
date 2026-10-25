@@ -96,7 +96,7 @@ export function parseProductStatusProbe(requestResult) {
  * }} opts
  * @returns {Promise<unknown>}
  */
-export async function requestCastStatus(client, opts) {
+export async function requestHubStatus(client, opts) {
   const subscriberName = String(opts?.subscriberName || '').trim();
   if (!client?.request) {
     return { ok: false, status: 0, data: { error: 'No Hub client' } };
@@ -137,7 +137,7 @@ export async function requestCastStatus(client, opts) {
  *   targetProductName?: string,
  * }} opts
  */
-export async function requestCastLiveScene(client, opts) {
+export async function requestHubLiveScene(client, opts) {
   const subscriberName = String(opts?.subscriberName || '').trim();
   if (!client?.request) {
     return { ok: false, status: 0, data: { error: 'No Hub client' } };
@@ -167,6 +167,58 @@ export async function requestCastLiveScene(client, opts) {
 }
 
 /**
+ * Ask Image Display (ID) to publish local DICOM DB files as dicom-send.
+ * @param {{ request: (args: Record<string, unknown>) => Promise<unknown> }} client
+ * @param {{
+ *   subscriberName: string,
+ *   studyInstanceUID: string,
+ *   seriesInstanceUID?: string,
+ *   subscriberProductName?: string,
+ *   subscriberActor?: string,
+ *   topic?: string,
+ *   targetActor?: string,
+ *   targetProductName?: string,
+ * }} opts
+ */
+export async function requestHubDicom(client, opts) {
+  const subscriberName = String(opts?.subscriberName || '').trim();
+  const studyInstanceUID = String(opts?.studyInstanceUID || '').trim();
+  if (!client?.request) {
+    return { ok: false, status: 0, data: { error: 'No Hub client' } };
+  }
+  if (!subscriberName) {
+    return { ok: false, status: 0, data: { error: 'No subscriber name' } };
+  }
+  if (!studyInstanceUID) {
+    return { ok: false, status: 0, data: { error: 'No studyInstanceUID' } };
+  }
+  const topic = String(opts?.topic || '').trim();
+  const seriesInstanceUID = String(opts?.seriesInstanceUID || '').trim();
+  const subscriberProductName = String(opts?.subscriberProductName || '').trim();
+  const subscriberActor = String(opts?.subscriberActor || '').trim();
+  const targetActor = String(opts?.targetActor || 'ID').trim() || 'ID';
+  const targetProductName = String(opts?.targetProductName || '').trim();
+  return client.request({
+    'subscriber.name': subscriberName,
+    ...(subscriberProductName
+      ? { 'subscriber.product.name': subscriberProductName }
+      : {}),
+    ...(subscriberActor ? { 'subscriber.actor': subscriberActor } : {}),
+    'target.actor': targetActor,
+    ...(targetProductName ? { 'target.product.name': targetProductName } : {}),
+    event: {
+      'hub.event': requestEventFor('DICOM'),
+      ...(topic ? { 'hub.topic': topic } : {}),
+      context: {
+        dataType: 'DICOM',
+        studyInstanceUID,
+        ...(seriesInstanceUID ? { seriesInstanceUID } : {}),
+      },
+    },
+  });
+}
+
+/**
  * STATUS hub-request targeting one product.
  * @param {{ request: (args: Record<string, unknown>) => Promise<unknown> }} client
  * @param {{
@@ -178,7 +230,7 @@ export async function requestCastLiveScene(client, opts) {
  * }} opts
  * @returns {Promise<CastProductStatusProbe>}
  */
-export async function requestCastProductStatus(client, opts) {
+export async function requestHubProductStatus(client, opts) {
   const targetProductName = String(opts?.targetProductName || '').trim();
   const subscriberName = String(opts?.subscriberName || '').trim();
   if (!client?.request) {
@@ -191,7 +243,7 @@ export async function requestCastProductStatus(client, opts) {
     return { online: false, items: [], error: 'No target product' };
   }
   try {
-    const result = await requestCastStatus(client, {
+    const result = await requestHubStatus(client, {
       subscriberName,
       subscriberProductName: opts?.subscriberProductName,
       subscriberActor: opts?.subscriberActor,
@@ -295,7 +347,7 @@ export async function probeCastInferenceServers(client, opts) {
     }));
   }
   try {
-    const result = await requestCastStatus(client, {
+    const result = await requestHubStatus(client, {
       subscriberName,
       subscriberProductName: opts?.subscriberProductName,
       subscriberActor: opts?.subscriberActor,
