@@ -78,10 +78,12 @@ import {
   updateConnectionStatusUi,
 } from './classroom-ui';
 import {
+  ensureSlicerLiveViewer,
   openHubViewer,
   setViewerButtonsEnabled,
+  wireViewerButtons,
 } from './viewers';
-import { initI18n, setLocale as setWorklistLocale, t } from '../worklist/i18n';
+import { classroomAboutFor } from './about-content';
 
 function applyTheme(theme: string): void {
   const next = theme === THEME_OHIF ? THEME_OHIF : THEME_SLICERLIVE;
@@ -231,14 +233,13 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
   });
 }
 
-async function fillClassroomAbout(
+function fillClassroomAbout(
   content: HTMLElement,
   titleEl: HTMLElement | null
-): Promise<void> {
-  await initI18n();
-  await setWorklistLocale(resolveStoredLocale());
-  if (titleEl) titleEl.textContent = t('help:aboutSummary');
-  content.innerHTML = `<div class="rp-help-intro">${t('help:introHtml')}</div>`;
+): void {
+  const about = classroomAboutFor(resolveStoredLocale());
+  if (titleEl) titleEl.textContent = about.title;
+  content.innerHTML = `<div class="rp-help-intro">${about.bodyHtml}</div>`;
 }
 
 function wireAbout(): void {
@@ -256,7 +257,7 @@ function wireAbout(): void {
 
   aboutBtn.addEventListener('click', () => {
     aboutModal.hidden = false;
-    void fillClassroomAbout(aboutContent, aboutTitle);
+    fillClassroomAbout(aboutContent, aboutTitle);
   });
 
   document.querySelectorAll('[data-close-modal]').forEach((el) => {
@@ -448,6 +449,11 @@ function boot(): void {
       },
       onFollowChange: (followHost, invite) => {
         setConferenceFollowHost(state, followHost);
+        if (followHost) {
+          // Open IRA under the invite click gesture so later ImagingStudy-open
+          // can focus the tab instead of hitting a popup blocker.
+          ensureSlicerLiveViewer(state, { reason: 'conference-join-follow' });
+        }
         const hostTopic = String(invite?.hostTopic || '').trim();
         if (followHost && hostTopic) {
           void requestStatusFromHostWorklist(state, hostTopic);
@@ -499,6 +505,19 @@ function boot(): void {
       remountCourse(state);
       syncConferenceChatChrome(state);
       syncHeaderTitle(code);
+      const aboutModal = document.getElementById('aboutModal');
+      const aboutContent = document.getElementById('aboutModalContent');
+      const aboutTitle = document.getElementById('aboutTitle');
+      if (
+        aboutModal &&
+        !aboutModal.hidden &&
+        aboutContent instanceof HTMLElement
+      ) {
+        fillClassroomAbout(
+          aboutContent,
+          aboutTitle instanceof HTMLElement ? aboutTitle : null
+        );
+      }
     },
   });
 
@@ -595,7 +614,7 @@ function boot(): void {
     });
 
   updateConnectionStatusUi(statusWrap, state);
-  setViewerButtonsEnabled(state.connection === 'connected', state);
+  wireViewerButtons(state);
   remountDisplay(state, reportDisplay);
   remountCourse(state);
   syncConferenceLogUi(state);

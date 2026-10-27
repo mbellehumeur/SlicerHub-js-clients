@@ -3,7 +3,7 @@
  *
  * Button enablement is local (not in @slicer-hub/client). Worklist owns the
  * full presence-aware rules; reporting only launches IRA/Slim when hub-connected.
- * SlicerDesktop / SlicerMirror / OHIF / VolView stay non-openable here (presence or N/A).
+ * SlicerDesktop / OHIF stay non-openable here (presence or N/A).
  */
 import { HUB_WORKLIST_WINDOW_NAME } from '@slicer-hub/client';
 import {
@@ -20,16 +20,13 @@ import {
 
 const TITLE_DISABLED = 'Subscribe to the hub first';
 const TITLE_SLICER = '3D Slicer Image Display (connect from Slicer)';
-const TITLE_HUB_MIRROR =
-  'SlicerMirror requires a connected 3D Slicer Image Display';
-const TITLE_VOLVIEW = 'VolView (not available from reporting)';
 const TITLE_IRA = 'Open SlicerLive';
 const TITLE_IRA_ONLINE = 'SlicerLive is connected on this topic';
 const TITLE_IRA_OFFLINE = 'Open SlicerLive (no IRA responded on this topic)';
-const TITLE_WORKLIST = 'Open SlicerWorklist';
-const TITLE_WORKLIST_ONLINE = 'SlicerWorklist is connected on this topic';
+const TITLE_WORKLIST = 'Open Worklist';
+const TITLE_WORKLIST_ONLINE = 'Worklist is connected on this topic';
 const TITLE_WORKLIST_OFFLINE =
-  'Open SlicerWorklist (no worklist responded on this topic)';
+  'Open Worklist (no worklist responded on this topic)';
 
 const WORKLIST_WINDOW_NAME = HUB_WORKLIST_WINDOW_NAME;
 let worklistWindow: Window | null = null;
@@ -205,11 +202,6 @@ export function setViewerButtonsEnabled(
   const slicer = byId('openSlicerBtn');
   if (slicer) setDisabled(slicer, true, enabled ? TITLE_SLICER : TITLE_DISABLED);
 
-  const hubMirror = byId('openHubMirrorBtn');
-  if (hubMirror) {
-    setDisabled(hubMirror, true, enabled ? TITLE_HUB_MIRROR : TITLE_DISABLED);
-  }
-
   const ira = byId('openIraBtn');
   if (ira) {
     setDisabled(ira, !enabled, enabled ? TITLE_IRA : TITLE_DISABLED);
@@ -228,11 +220,6 @@ export function setViewerButtonsEnabled(
   const slim = byId('openSlimBtn');
   if (slim) {
     setDisabled(slim, !enabled, enabled ? 'Open Slim' : TITLE_DISABLED);
-  }
-
-  const volview = byId('openVolviewBtn');
-  if (volview) {
-    setDisabled(volview, true, enabled ? TITLE_VOLVIEW : TITLE_DISABLED);
   }
 
   const worklist = byId('openWorklistBtn');

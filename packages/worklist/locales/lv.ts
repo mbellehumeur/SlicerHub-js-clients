@@ -14,7 +14,7 @@ export const lv: LocaleBundle = {
     close: 'Aizvērt',
     searchPortal: 'Meklēšanas portāls',
     searchPortalTitle: 'Atvērt IDC meklēšanas portālu',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Izpētiet NCI Imaging Data Commons:',
     viewers: 'Skatītāji:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const lv: LocaleBundle = {
     closeStudy: 'Aizvērt atvērto pētījumu',
     closeContext: 'Aizvērt pašreizējo kontekstu',
     cannotOpen: 'Nevar atvērt',
+    saveWorklist: 'Saglabāt',
+    loadWorklist: 'Ielādēt',
+    saveWorklistTitle: 'Saglabāt manu darba sarakstu kā JSON',
+    loadWorklistTitle: 'Ielādēt manu darba sarakstu no JSON',
   },
   conference: CONFERENCE_BY_LOCALE.lv,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Par šo lietotni',
     aboutLinkLabel: 'Par',
     aboutLinkSuffix: '— licences, pateicības un preču zīmes.',
@@ -87,7 +91,7 @@ export const lv: LocaleBundle = {
           bez iepriekšējas saglabāšanas PACS. Tā atbalsta arī pētniecības formātus, piemēram, NIfTI, NRRD un Zarr.
         </p>
     `,
-    howto0Title: 'Kā savienot SlicerWorklist ar 3D Slicer.',
+    howto0Title: 'Kā savienot Worklist ar 3D Slicer.',
     howto0Body:
       `
       <ol class="wl-help-steps">
@@ -100,7 +104,7 @@ export const lv: LocaleBundle = {
         </li>
         <li>Pēc savienojuma worklist <strong>SlicerDesktop</strong> skatītāja poga iedegas, selektors mainās uz «3D Slicer», un saraksts rāda Slicer DICOM datubāzes saturu. Atveriet pētījumu — tas ielādējas desktop Slicer.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist ar skatītājiem (izvēlēts SlicerDesktop), attālo AI un pētījumu sarakstu" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist ar skatītājiem (izvēlēts SlicerDesktop), attālo AI un pētījumu sarakstu" width="870" height="498" />
         </li>
         <li>Pārlūkprogrammas konferencei / tiešraidei izmantojiet <strong>SlicerLive</strong> un <strong>Konference</strong>, kad citi seko jūsu mezglu un kameras/prezentācijas izmaiņām.</li>
       </ol>

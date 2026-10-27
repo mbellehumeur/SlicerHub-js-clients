@@ -14,7 +14,7 @@ export const lt: LocaleBundle = {
     close: 'Uždaryti',
     searchPortal: 'Paieškos portalas',
     searchPortalTitle: 'Atidaryti IDC paieškos portalą',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Naršykite NCI Imaging Data Commons:',
     viewers: 'Peržiūros programos:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const lt: LocaleBundle = {
     closeStudy: 'Uždaryti atidarytą tyrimą',
     closeContext: 'Uždaryti dabartinį kontekstą',
     cannotOpen: 'Nepavyksta atidaryti',
+    saveWorklist: 'Išsaugoti',
+    loadWorklist: 'Įkelti',
+    saveWorklistTitle: 'Išsaugoti mano darbų sąrašą kaip JSON',
+    loadWorklistTitle: 'Įkelti mano darbų sąrašą iš JSON',
   },
   conference: CONFERENCE_BY_LOCALE.lt,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Apie šią programą',
     aboutLinkLabel: 'Apie',
     aboutLinkSuffix: '— licencijos, padėkos ir prekių ženklai.',
@@ -87,7 +91,7 @@ export const lt: LocaleBundle = {
           neišsaugant jų iš pradžių PACS. Taip pat palaikomi tyrimų formatai, pvz., NIfTI, NRRD ir Zarr.
         </p>
     `,
-    howto0Title: 'Kaip prijungti SlicerWorklist prie 3D Slicer.',
+    howto0Title: 'Kaip prijungti Worklist prie 3D Slicer.',
     howto0Body:
       `
       <ol class="wl-help-steps">
@@ -100,7 +104,7 @@ export const lt: LocaleBundle = {
         </li>
         <li>Prisijungus worklist <strong>SlicerDesktop</strong> peržiūros mygtukas užsidega, selektorius pasikeičia į «3D Slicer», o sąrašas rodo Slicer DICOM duomenų bazės turinį. Atidarykite tyrimą — jis įkeliamas į darbalaukio Slicer.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist su peržiūros programomis (pasirinktas SlicerDesktop), nuotoliniu AI ir tyrimų sąrašu" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist su peržiūros programomis (pasirinktas SlicerDesktop), nuotoliniu AI ir tyrimų sąrašu" width="870" height="498" />
         </li>
         <li>Naršyklės konferencijai / tiesioginei peržiūrai naudokite <strong>SlicerLive</strong> ir <strong>Konferencija</strong>, kai kiti seka mazgo ir kameros/prezentacijos pakeitimus.</li>
       </ol>

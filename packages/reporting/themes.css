@@ -383,10 +383,31 @@ button {
   gap: 8px;
 }
 
-.hub-conference-change-user-actions .hub-conference-primary,
-.hub-conference-change-user-actions .hub-conference-open-another-user {
+.hub-conference-change-user-actions .hub-conference-primary {
   width: 100%;
   margin: 0;
+}
+
+.hub-conference-body > .hub-conference-open-another-user {
+  width: auto;
+  align-self: flex-start;
+  min-height: 0;
+  margin-top: 12px;
+  padding: 2px 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--rp-fg-muted);
+  font: 500 11px/1.3 var(--rp-font);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.85;
+}
+
+.hub-conference-body > .hub-conference-open-another-user:hover:not(:disabled) {
+  color: var(--rp-fg);
+  background: transparent;
+  opacity: 1;
 }
 
 [data-hub-conference-user-note] {
@@ -566,6 +587,60 @@ button {
   margin: 6px 0 10px;
   font-size: 12px;
   line-height: 1.45;
+  color: var(--rp-fg-muted);
+}
+
+.hub-conference-info strong {
+  color: var(--rp-fg);
+}
+
+.hub-conference-places-label {
+  margin: 8px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rp-fg);
+}
+
+.hub-conference-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.hub-conference-place {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius);
+  background: var(--rp-surface);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.hub-conference-place-self {
+  border-color: var(--rp-accent);
+}
+
+.hub-conference-place-leading {
+  box-shadow: inset 3px 0 0 var(--rp-accent);
+}
+
+.hub-conference-place-following {
+  border-color: var(--rp-ok);
+  box-shadow: inset 3px 0 0 var(--rp-ok);
+}
+
+.hub-conference-place-name {
+  font-weight: 600;
+  color: var(--rp-fg);
+}
+
+.hub-conference-place-status {
+  font-size: 11px;
   color: var(--rp-fg-muted);
 }
 
@@ -1056,9 +1131,9 @@ button {
 
 .rp-viewer-label {
   margin: 0 2px 0 18px;
-  color: var(--rp-fg-muted);
-  font-size: 12px;
-  font-weight: 600;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
   letter-spacing: 0.02em;
 }
 
@@ -1311,6 +1386,14 @@ button {
   align-items: center;
   gap: 8px;
   margin-left: auto;
+}
+
+.rp-column-order-label {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .rp-section-title {

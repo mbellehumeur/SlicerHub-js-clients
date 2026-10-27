@@ -14,7 +14,7 @@ export const es: LocaleBundle = {
     close: 'Cerrar',
     searchPortal: 'Portal de búsqueda',
     searchPortalTitle: 'Abrir el portal de búsqueda IDC',
-    worklist: 'Lista de trabajo',
+    worklist: 'Lista de trabajo:',
     exploreIdc: 'Explorar el NCI Imaging Data Commons:',
     viewers: 'Visores:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const es: LocaleBundle = {
     closeStudy: 'Cerrar el estudio abierto',
     closeContext: 'Cerrar el contexto actual',
     cannotOpen: 'No se puede abrir',
+    saveWorklist: 'Guardar',
+    loadWorklist: 'Cargar',
+    saveWorklistTitle: 'Guardar mi lista de trabajo como JSON',
+    loadWorklistTitle: 'Cargar mi lista de trabajo desde JSON',
   },
   conference: CONFERENCE_BY_LOCALE.es,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Acerca de esta aplicación',
     aboutLinkLabel: 'Acerca de',
     aboutLinkSuffix: '— licencias, agradecimientos y marcas.',
@@ -87,7 +91,7 @@ export const es: LocaleBundle = {
           sin almacenarlos primero en un PACS. También admite formatos de investigación como NIfTI, NRRD y Zarr.
         </p>
     `,
-    howto0Title: 'Cómo conectar SlicerWorklist a 3D Slicer.',
+    howto0Title: 'Cómo conectar Worklist a 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Instala la extensión Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const es: LocaleBundle = {
         </li>
         <li>Al conectar, el botón <strong>SlicerDesktop</strong> se activa, el selector pasa a «3D Slicer» y la lista muestra la base DICOM de Slicer. Abre un estudio — se carga en Slicer de escritorio.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist con visores, IA remota y lista de estudios" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist con visores, IA remota y lista de estudios" width="870" height="498" />
         </li>
         <li>Para conferencia / vista en vivo en el navegador, usa <strong>SlicerLive</strong> y <strong>Conferencia</strong> cuando otros sigan tus cambios de nodos y cámara/presentación.</li>
       </ol>

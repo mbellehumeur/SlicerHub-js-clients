@@ -12,7 +12,11 @@ import {
 } from '@slicer-hub/i18n';
 import type { AppState, StudyInfo } from './hub';
 import { hubEndpoint } from './hub';
-import { hubOriginFromEndpoint } from './config';
+import {
+  getStoredTableColumnOrder,
+  hubOriginFromEndpoint,
+  type TableColumnOrder,
+} from './config';
 import type { ReportMeasurement, SegCatalog, SegCatalogSegment } from './seg-catalog';
 import { enrichTerminologyFromSegdb } from './segdb-lookup';
 import { openVrPresetMenu } from './vr-preset-menu';
@@ -431,6 +435,37 @@ function loadStatusHtml(state: AppState): string {
   `;
 }
 
+/** Join table cells in identity-first or full-reverse (controls-first) order. */
+function orderedCells(
+  order: TableColumnOrder,
+  identityFirstCells: string[]
+): string {
+  const cells =
+    order === 'controls-first'
+      ? [...identityFirstCells].reverse()
+      : identityFirstCells;
+  return cells.join('');
+}
+
+function columnOrderSwitchHtml(id: string): string {
+  const controlsFirst = getStoredTableColumnOrder() === 'controls-first';
+  return `
+    <div class="rp-section-controls">
+      <span class="rp-column-order-label">Controls first</span>
+      <button
+        type="button"
+        id="${escapeHtml(id)}"
+        class="rp-switch"
+        data-column-order-switch
+        role="switch"
+        aria-checked="${controlsFirst ? 'true' : 'false'}"
+        title="Column order"
+        aria-label="Controls first column order"
+      ><span class="rp-switch-thumb" aria-hidden="true"></span></button>
+    </div>
+  `;
+}
+
 function volumesTableHtml(state: AppState): string {
   const shift = Math.round(Number(state.volumeShift) || 0);
   const shiftRange = Math.max(
@@ -445,27 +480,23 @@ function volumesTableHtml(state: AppState): string {
   const cropOn = Boolean(state.volumeCropEnabled);
   const boxOn = Boolean(state.volumeRoiVisible);
   const rp = reportingChromeFor();
-  return `
-    <table class="rp-table">
-      <thead>
-        <tr>
-          <th>${escapeHtml(rp.colName)}</th>
-          <th class="rp-switch-col">${escapeHtml(rp.colCrop)}</th>
-          <th class="rp-switch-col">${escapeHtml(rp.colBox)}</th>
-          <th>${escapeHtml(rp.colShift)}</th>
-          <th>${escapeHtml(rp.colPreset)}</th>
-          <th class="rp-opacity-col"></th>
-          <th class="rp-vis-col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="rp-measure-row">
-          <td>
+  const order = getStoredTableColumnOrder();
+  const head = orderedCells(order, [
+    `<th>${escapeHtml(rp.colName)}</th>`,
+    `<th class="rp-switch-col">${escapeHtml(rp.colCrop)}</th>`,
+    `<th class="rp-switch-col">${escapeHtml(rp.colBox)}</th>`,
+    `<th>${escapeHtml(rp.colShift)}</th>`,
+    `<th>${escapeHtml(rp.colPreset)}</th>`,
+    `<th class="rp-opacity-col"></th>`,
+    `<th class="rp-vis-col"></th>`,
+  ]);
+  const body = orderedCells(order, [
+    `<td>
             <span class="rp-volume-name" title="${escapeHtml(name)}">${escapeHtml(
               name
             )}</span>
-          </td>
-          <td class="rp-switch-cell">
+          </td>`,
+    `<td class="rp-switch-cell">
             <button
               type="button"
               id="rpVolCropSwitch"
@@ -476,8 +507,8 @@ function volumesTableHtml(state: AppState): string {
               title="Crop volume (3D)"
               aria-label="Crop volume"
             ><span class="rp-switch-thumb" aria-hidden="true"></span></button>
-          </td>
-          <td class="rp-switch-cell">
+          </td>`,
+    `<td class="rp-switch-cell">
             <button
               type="button"
               id="rpVolRoiBoxSwitch"
@@ -488,8 +519,8 @@ function volumesTableHtml(state: AppState): string {
               title="Show ROI box"
               aria-label="Show ROI box"
             ><span class="rp-switch-thumb" aria-hidden="true"></span></button>
-          </td>
-          <td class="rp-shift-cell">
+          </td>`,
+    `<td class="rp-shift-cell">
             <input
               type="range"
               id="rpVolShiftSlider"
@@ -508,8 +539,8 @@ function volumesTableHtml(state: AppState): string {
             <span id="rpVolShiftValue" class="rp-shift-value">${escapeHtml(
               shiftLabel
             )}</span>
-          </td>
-          <td>
+          </td>`,
+    `<td>
             <button
               type="button"
               id="rpVolPresetBtn"
@@ -518,8 +549,8 @@ function volumesTableHtml(state: AppState): string {
               aria-label="Volume-render preset"
               title="Volume-rendering transfer-function preset"
             >${escapeHtml(vrPresetLabel(preset))}</button>
-          </td>
-          <td class="rp-opacity-cell">
+          </td>`,
+    `<td class="rp-opacity-cell">
             <div
               id="rpVolOpacityChip"
               class="rp-opacity-chip"
@@ -530,8 +561,8 @@ function volumesTableHtml(state: AppState): string {
               aria-label="Volume opacity"
               title="Click: 100% → 50% → off · Drag sideways for a live opacity slider"
             ></div>
-          </td>
-          <td class="rp-vis-cell">
+          </td>`,
+    `<td class="rp-vis-cell">
             <button
               type="button"
               id="rpVolVisBtn"
@@ -540,7 +571,18 @@ function volumesTableHtml(state: AppState): string {
               title="${volOff ? 'Show volume' : 'Hide volume'}"
               aria-label="${volOff ? 'Show volume' : 'Hide volume'}"
             >${volOff ? EYE_OFF_ICON : EYE_ON_ICON}</button>
-          </td>
+          </td>`,
+  ]);
+  return `
+    <table class="rp-table">
+      <thead>
+        <tr>
+          ${head}
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="rp-measure-row">
+          ${body}
         </tr>
       </tbody>
     </table>
@@ -577,6 +619,7 @@ function segmentationsTableHtml(
   segOpacity: number
 ): string {
   const rows: string[] = [];
+  const order = getStoredTableColumnOrder();
 
   for (const inst of catalog.segmentations) {
     for (const seg of inst.segments || []) {
@@ -601,23 +644,20 @@ function segmentationsTableHtml(
         (!selectedSegSop || !sop || selectedSegSop === sop)
           ? ' rp-row-selected'
           : '';
-      rows.push(`
-        <tr class="rp-measure-row${selected}" data-seg-number="${escapeHtml(
-          num
-        )}" data-seg-sop="${escapeHtml(sop)}" tabindex="0">
-          <td><span class="rp-swatch" style="background:${swatch}"></span>${escapeHtml(
-            seg.number
-          )}</td>
-          <td class="rp-label-cell">
+      const body = orderedCells(order, [
+        `<td><span class="rp-swatch" style="background:${swatch}"></span>${escapeHtml(
+          seg.number
+        )}</td>`,
+        `<td class="rp-label-cell">
             <span class="rp-seg-label" data-seg-label-en="${escapeHtml(
               seg.label || ''
             )}">${escapeHtml(displayLabel)}</span>
-          </td>
-          <td class="rp-mono" title="${escapeHtml(snomed.title)}">${escapeHtml(
-            snomed.text
-          )}</td>
-          <td class="rp-num">${escapeHtml(seg.voxelCount)}</td>
-          <td class="rp-vis-cell">
+          </td>`,
+        `<td class="rp-mono" title="${escapeHtml(snomed.title)}">${escapeHtml(
+          snomed.text
+        )}</td>`,
+        `<td class="rp-num">${escapeHtml(seg.voxelCount)}</td>`,
+        `<td class="rp-vis-cell">
             <button
               type="button"
               class="rp-eye-btn"
@@ -660,7 +700,13 @@ function segmentationsTableHtml(
               title="${visible ? 'Hide segment' : 'Show segment'}"
               aria-label="${visible ? 'Hide' : 'Show'} segment ${escapeHtml(displayLabel || num)}"
             >${visible ? EYE_ON_ICON : EYE_OFF_ICON}</button>
-          </td>
+          </td>`,
+      ]);
+      rows.push(`
+        <tr class="rp-measure-row${selected}" data-seg-number="${escapeHtml(
+          num
+        )}" data-seg-sop="${escapeHtml(sop)}" tabindex="0">
+          ${body}
         </tr>
       `);
     }
@@ -670,12 +716,9 @@ function segmentationsTableHtml(
   if (!rows.length) {
     return `<p class="rp-muted">${escapeHtml(rp.noSegmentations)}</p>`;
   }
-  return `
-    <table class="rp-table">
-      <thead>
-        <tr>
-          <th>${escapeHtml(rp.colNum)}</th>
-          <th class="rp-label-col">
+  const head = orderedCells(order, [
+    `<th>${escapeHtml(rp.colNum)}</th>`,
+    `<th class="rp-label-col">
             ${escapeHtml(rp.colLabel)}
             <button
               type="button"
@@ -685,10 +728,10 @@ function segmentationsTableHtml(
               title="${labelsVisible ? 'Hide 3D segment label cards' : 'Show 3D segment label cards'}"
               aria-label="${labelsVisible ? 'Hide 3D segment label cards' : 'Show 3D segment label cards'}"
             >${labelsVisible ? LABEL_CARD_ON_ICON : LABEL_CARD_OFF_ICON}</button>
-          </th>
-          <th>${escapeHtml(rp.colSnomed)}</th>
-          <th class="rp-num">${escapeHtml(rp.colVoxels)}</th>
-          <th class="rp-vis-col">
+          </th>`,
+    `<th>${escapeHtml(rp.colSnomed)}</th>`,
+    `<th class="rp-num">${escapeHtml(rp.colVoxels)}</th>`,
+    `<th class="rp-vis-col">
             <button
               type="button"
               class="rp-eye-btn"
@@ -727,7 +770,13 @@ function segmentationsTableHtml(
               title="${allVisible ? 'Hide all segmentations' : 'Show all segmentations'}"
               aria-label="${allVisible ? 'Hide all segmentations' : 'Show all segmentations'}"
             >${allVisible ? EYE_ON_ICON : EYE_OFF_ICON}</button>
-          </th>
+          </th>`,
+  ]);
+  return `
+    <table class="rp-table">
+      <thead>
+        <tr>
+          ${head}
         </tr>
       </thead>
       <tbody>${rows.join('')}</tbody>
@@ -812,6 +861,7 @@ export function renderReportDisplay(container: HTMLElement, state: AppState): vo
     <div class="rp-section">
       <div class="rp-section-head">
         <h2 class="rp-section-title">${escapeHtml(rp.volumes)}</h2>
+        ${columnOrderSwitchHtml('rpColumnOrderSwitch')}
       </div>
       ${volumesTableHtml(state)}
     </div>
@@ -819,6 +869,7 @@ export function renderReportDisplay(container: HTMLElement, state: AppState): vo
       <div class="rp-section-head">
         <h2 class="rp-section-title">${escapeHtml(rp.segmentations)}</h2>
         ${loadStatusHtml(state)}
+        ${columnOrderSwitchHtml('rpColumnOrderSwitchSeg')}
       </div>
       ${segmentationsTableHtml(
         state.segCatalog,

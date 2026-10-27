@@ -14,7 +14,7 @@ export const de: LocaleBundle = {
     close: 'Schließen',
     searchPortal: 'Suchportal',
     searchPortalTitle: 'IDC-Suchportal öffnen',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'NCI Imaging Data Commons erkunden:',
     viewers: 'Viewer:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const de: LocaleBundle = {
     closeStudy: 'Offene Studie schließen',
     closeContext: 'Aktuellen Kontext schließen',
     cannotOpen: 'Kann nicht geöffnet werden',
+    saveWorklist: 'Speichern',
+    loadWorklist: 'Laden',
+    saveWorklistTitle: 'Meine Worklist als JSON speichern',
+    loadWorklistTitle: 'Meine Worklist aus JSON laden',
   },
   conference: CONFERENCE_BY_LOCALE.de,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Über diese Anwendung',
     aboutLinkLabel: 'Info',
     aboutLinkSuffix: '— Lizenzen, Danksagungen und Marken.',
@@ -87,7 +91,7 @@ export const de: LocaleBundle = {
           ohne sie zuerst im PACS zu speichern. Sie unterstützt auch Forschungsformate wie NIfTI, NRRD und Zarr.
         </p>
     `,
-    howto0Title: 'So verbinden Sie SlicerWorklist mit 3D Slicer.',
+    howto0Title: 'So verbinden Sie Worklist mit 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Installieren Sie die Slicer Hub Interface Extension</li>
@@ -99,7 +103,7 @@ export const de: LocaleBundle = {
         </li>
         <li>Nach der Verbindung leuchtet der Viewer-Button <strong>SlicerDesktop</strong>, die Worklist-Auswahl wechselt zu „3D Slicer“ und zeigt den Inhalt der Slicer-DICOM-Datenbank. Öffnen Sie eine Studie — sie wird in Desktop-Slicer geladen.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist mit Viewern (SlicerDesktop ausgewählt), Remote-KI und Studienliste" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist mit Viewern (SlicerDesktop ausgewählt), Remote-KI und Studienliste" width="870" height="498" />
         </li>
         <li>Für Browser-Konferenz / Live-Ansicht nutzen Sie <strong>SlicerLive</strong> und <strong>Konferenz</strong>, wenn andere Ihre Knoten- und Kamera-/Präsentationsänderungen folgen.</li>
       </ol>

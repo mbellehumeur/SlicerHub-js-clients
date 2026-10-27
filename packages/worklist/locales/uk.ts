@@ -14,7 +14,7 @@ export const uk: LocaleBundle = {
     close: 'Закрити',
     searchPortal: 'Портал пошуку',
     searchPortalTitle: 'Відкрити портал пошуку IDC',
-    worklist: 'Робочий список',
+    worklist: 'Робочий список:',
     exploreIdc: 'Огляд NCI Imaging Data Commons:',
     viewers: 'Переглядачі:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const uk: LocaleBundle = {
     closeStudy: 'Закрити відкрите дослідження',
     closeContext: 'Закрити поточний контекст',
     cannotOpen: 'Неможливо відкрити',
+    saveWorklist: 'Зберегти',
+    loadWorklist: 'Завантажити',
+    saveWorklistTitle: 'Зберегти мій робочий список як JSON',
+    loadWorklistTitle: 'Завантажити мій робочий список з JSON',
   },
   conference: CONFERENCE_BY_LOCALE.uk,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Про цю програму',
     aboutLinkLabel: 'Про програму',
     aboutLinkSuffix: '— ліцензії, подяки та торговельні марки.',
@@ -87,7 +91,7 @@ export const uk: LocaleBundle = {
           без попереднього збереження в PACS. Також підтримуються дослідницькі формати на кшталт NIfTI, NRRD і Zarr.
         </p>
     `,
-    howto0Title: 'Як підключити SlicerWorklist до 3D Slicer.',
+    howto0Title: 'Як підключити Worklist до 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Установіть розширення Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const uk: LocaleBundle = {
         </li>
         <li>Після підключення кнопка переглядача <strong>SlicerDesktop</strong> активується, селектор змінюється на «3D Slicer», а список показує вміст DICOM-бази Slicer. Відкрийте дослідження — воно завантажиться в настільний Slicer.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist з переглядачами (обрано SlicerDesktop), віддаленим ШІ та списком досліджень" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist з переглядачами (обрано SlicerDesktop), віддаленим ШІ та списком досліджень" width="870" height="498" />
         </li>
         <li>Для конференції / живого перегляду в браузері використовуйте <strong>SlicerLive</strong> і <strong>Конференцію</strong>, коли інші стежать за змінами вузлів і камери/презентації.</li>
       </ol>

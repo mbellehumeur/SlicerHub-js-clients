@@ -14,7 +14,7 @@ export const ca: LocaleBundle = {
     close: 'Tancar',
     searchPortal: 'Portal de cerca',
     searchPortalTitle: 'Obrir el portal de cerca IDC',
-    worklist: 'Llista de treball',
+    worklist: 'Llista de treball:',
     exploreIdc: 'Explorar el NCI Imaging Data Commons:',
     viewers: 'Visualitzadors:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const ca: LocaleBundle = {
     closeStudy: 'Tancar l’estudi obert',
     closeContext: 'Tancar el context actual',
     cannotOpen: 'No es pot obrir',
+    saveWorklist: 'Desa',
+    loadWorklist: 'Carrega',
+    saveWorklistTitle: 'Desa la meva llista de treball com a JSON',
+    loadWorklistTitle: 'Carrega la meva llista de treball des de JSON',
   },
   conference: CONFERENCE_BY_LOCALE.ca,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Quant a aquesta aplicació',
     aboutLinkLabel: 'Quant a',
     aboutLinkSuffix: '— llicències, agraïments i marques.',
@@ -87,7 +91,7 @@ export const ca: LocaleBundle = {
           sense emmagatzemar-los primer en un PACS. També admet formats de recerca com NIfTI, NRRD i Zarr.
         </p>
     `,
-    howto0Title: 'Com connectar SlicerWorklist a 3D Slicer.',
+    howto0Title: 'Com connectar Worklist a 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Instal·leu l’extensió Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const ca: LocaleBundle = {
         </li>
         <li>Un cop connectat, el botó <strong>SlicerDesktop</strong> s’activa, el selector passa a «3D Slicer» i la llista mostra la base DICOM de Slicer. Obriu un estudi — es carrega a Slicer d’escriptori.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist amb visualitzadors i llista d’estudis" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist amb visualitzadors i llista d’estudis" width="870" height="498" />
         </li>
         <li>Per a conferència / vista en viu al navegador, useu <strong>SlicerLive</strong> i <strong>Conferència</strong> quan altres segueixin els canvis de nodes i càmera/presentació.</li>
       </ol>

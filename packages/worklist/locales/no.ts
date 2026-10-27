@@ -14,7 +14,7 @@ export const no: LocaleBundle = {
     close: 'Lukk',
     searchPortal: 'Søkeportal',
     searchPortalTitle: 'Åpne IDC-søkeportalen',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Utforsk NCI Imaging Data Commons:',
     viewers: 'Visere:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const no: LocaleBundle = {
     closeStudy: 'Lukk åpen studie',
     closeContext: 'Lukk gjeldende kontekst',
     cannotOpen: 'Kan ikke åpne',
+    saveWorklist: 'Lagre',
+    loadWorklist: 'Last inn',
+    saveWorklistTitle: 'Lagre min worklist som JSON',
+    loadWorklistTitle: 'Last inn min worklist fra JSON',
   },
   conference: CONFERENCE_BY_LOCALE.no,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Om denne applikasjonen',
     aboutLinkLabel: 'Om',
     aboutLinkSuffix: '— lisenser, takk og varemerker.',
@@ -87,7 +91,7 @@ export const no: LocaleBundle = {
           uten å lagre dem i PACS først. Den støtter også forskningsformater som NIfTI, NRRD og Zarr.
         </p>
     `,
-    howto0Title: 'Slik kobler du SlicerWorklist til 3D Slicer.',
+    howto0Title: 'Slik kobler du Worklist til 3D Slicer.',
     howto0Body:
       `
       <ol class="wl-help-steps">
@@ -100,7 +104,7 @@ export const no: LocaleBundle = {
         </li>
         <li>Når du er tilkoblet, lyser worklist-knappen <strong>SlicerDesktop</strong> opp, velgeren endres til «3D Slicer», og listen viser innholdet i Slicer DICOM-databasen. Åpne en studie — den lastes i desktop Slicer.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist med visere (SlicerDesktop valgt), ekstern AI og studieliste" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist med visere (SlicerDesktop valgt), ekstern AI og studieliste" width="870" height="498" />
         </li>
         <li>For nettleserkonferanse / direktevisning, bruk <strong>SlicerLive</strong> og <strong>Konferanse</strong> når andre følger node- og kamera-/presentasjonsendringene dine.</li>
       </ol>

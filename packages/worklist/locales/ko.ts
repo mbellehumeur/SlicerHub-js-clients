@@ -14,7 +14,7 @@ export const ko: LocaleBundle = {
     close: '닫기',
     searchPortal: '검색 포털',
     searchPortalTitle: 'IDC 검색 포털 열기',
-    worklist: '워크리스트',
+    worklist: '워크리스트:',
     exploreIdc: 'NCI Imaging Data Commons 탐색:',
     viewers: '뷰어:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const ko: LocaleBundle = {
     closeStudy: '열린 검사 닫기',
     closeContext: '현재 컨텍스트 닫기',
     cannotOpen: '열 수 없음',
+    saveWorklist: '저장',
+    loadWorklist: '불러오기',
+    saveWorklistTitle: '내 워크리스트를 JSON으로 저장',
+    loadWorklistTitle: 'JSON에서 내 워크리스트 불러오기',
   },
   conference: CONFERENCE_BY_LOCALE.ko,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: '이 애플리케이션 정보',
     aboutLinkLabel: '정보',
     aboutLinkSuffix: '— 라이선스, 감사의 글, 상표.',
@@ -86,7 +90,7 @@ export const ko: LocaleBundle = {
           NIfTI, NRRD, Zarr 같은 연구 파일 형식도 지원합니다.
         </p>
     `,
-    howto0Title: '3D Slicer에 SlicerWorklist 연결하기.',
+    howto0Title: '3D Slicer에 Worklist 연결하기.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Slicer Hub Interface 확장을 설치합니다</li>
@@ -98,7 +102,7 @@ export const ko: LocaleBundle = {
         </li>
         <li>연결되면 워크리스트의 <strong>SlicerDesktop</strong> 뷰어 버튼이 활성화되고, 선택기가 «3D Slicer»로 바뀌며 Slicer DICOM 데이터베이스 내용이 표시됩니다. 목록에서 검사를 열면 데스크톱 Slicer에 로드됩니다.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="뷰어(SlicerDesktop 선택), 원격 AI, 검사 목록이 있는 SlicerWorklist" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="뷰어(SlicerDesktop 선택), 원격 AI, 검사 목록이 있는 Worklist" width="870" height="498" />
         </li>
         <li>브라우저 화상회의 / 라이브 보기는 <strong>SlicerLive</strong>와 <strong>화상회의</strong>를 사용하세요. 다른 사용자가 노드·카메라/프레젠테이션 변경을 따라갑니다.</li>
       </ol>

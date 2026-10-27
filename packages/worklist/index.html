@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SlicerWorklist</title>
+  <title>Worklist</title>
   <link rel="icon" type="image/png" href="./3DSlicer-DesktopIcon.png">
   <link rel="stylesheet" href="themes.css">
 </head>
@@ -11,7 +11,19 @@
   <div id="app">
     <header class="wl-header">
       <div class="wl-header-start">
-        <div class="wl-brand">SlicerWorklist</div>
+        <div class="wl-brand">Worklist</div>
+        <a
+          id="openSt444Btn"
+          class="wl-viewer-btn"
+          href="#"
+          data-i18n="chrome:anatomicalPlanes"
+          data-i18n-title="chrome:anatomicalPlanes"
+          title="Classroom"
+          aria-disabled="true"
+          tabindex="-1"
+        >
+          Classroom
+        </a>
       </div>
       <div class="wl-header-center">
         <section class="wl-panel wl-panel-compact wl-capsule" aria-labelledby="worklistContext">
@@ -44,23 +56,6 @@
           disabled
           data-i18n-aria="chrome:conferencing"
         ></button>
-        <div class="wl-lang-wrap">
-          <button
-            type="button"
-            id="langPickerBtn"
-            class="wl-icon-btn"
-            aria-label="Language"
-            title="Language"
-            aria-haspopup="listbox"
-            aria-expanded="false"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.25"/>
-              <path fill="none" stroke="currentColor" stroke-width="1.25" d="M2 8h12M8 2c1.8 1.8 2.7 3.7 2.7 6S9.8 12.2 8 14C6.2 12.2 5.3 10.3 5.3 8S6.2 3.8 8 2z"/>
-            </svg>
-          </button>
-          <ul id="langPickerMenu" class="wl-lang-menu" role="listbox" hidden></ul>
-        </div>
         <button
           type="button"
           id="endConferenceBtn"
@@ -98,6 +93,23 @@
         >
           Take over
         </button>
+        <div class="wl-lang-wrap">
+          <button
+            type="button"
+            id="langPickerBtn"
+            class="wl-icon-btn"
+            aria-label="Language"
+            title="Language"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.25"/>
+              <path fill="none" stroke="currentColor" stroke-width="1.25" d="M2 8h12M8 2c1.8 1.8 2.7 3.7 2.7 6S9.8 12.2 8 14C6.2 12.2 5.3 10.3 5.3 8S6.2 3.8 8 2z"/>
+            </svg>
+          </button>
+          <ul id="langPickerMenu" class="wl-lang-menu" role="listbox" hidden></ul>
+        </div>
         <button
           type="button"
           id="castHelpBtn"
@@ -196,18 +208,6 @@
           >
             Scene Views
           </button>
-          <a
-            id="openSt444Btn"
-            class="wl-viewer-btn"
-            href="#"
-            data-i18n="chrome:anatomicalPlanes"
-            data-i18n-title="chrome:anatomicalPlanes"
-            title="Classroom"
-            aria-disabled="true"
-            tabindex="-1"
-          >
-            Classroom
-          </a>
         </div>
         <div class="wl-viewer-btns">
           <span class="wl-viewer-label wl-viewer-label-first" data-i18n="chrome:localAi">Evidence Creators:</span>
@@ -311,35 +311,7 @@
             Claude
           </button>
           <div class="wl-panel-header-end">
-            <button
-              type="button"
-              id="downloadWorklistBtn"
-              class="wl-icon-btn"
-              aria-label="Download My Worklist as JSON"
-              title="Download My Worklist as JSON"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path
-                  fill="currentColor"
-                  d="M8 1.5a.75.75 0 0 1 .75.75v6.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06l2.22 2.22V2.25A.75.75 0 0 1 8 1.5ZM2.75 12a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
-                />
-              </svg>
-            </button>
-            <button
-              type="button"
-              id="uploadWorklistBtn"
-              class="wl-icon-btn"
-              aria-label="Upload My Worklist from JSON"
-              title="Upload My Worklist from JSON"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path
-                  fill="currentColor"
-                  d="M8 14.5a.75.75 0 0 1-.75-.75V7.56L5.03 9.78a.75.75 0 1 1-1.06-1.06l3.5-3.5a.75.75 0 0 1 1.06 0l3.5 3.5a.75.75 0 1 1-1.06 1.06L8.75 7.56v6.19a.75.75 0 0 1-.75.75ZM2.75 2.5a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
-                />
-              </svg>
-            </button>
-            <h1 id="worklistTitle" data-i18n="chrome:worklist">Worklist</h1>
+            <h1 id="worklistTitle" data-i18n="chrome:worklist">Worklist:</h1>
             <select
               id="worklistOrgSelect"
               class="wl-org-select"
@@ -378,6 +350,40 @@
               <option value="idc-category:PROSTATE">IDC · PROSTATE</option>
               <option value="idc-category:WHOLEBODY">IDC · WHOLEBODY</option>
             </select>
+            <button
+              type="button"
+              id="downloadWorklistBtn"
+              class="wl-icon-btn wl-icon-btn-labeled"
+              data-i18n-aria="chrome:saveWorklistTitle"
+              data-i18n-title="chrome:saveWorklistTitle"
+              aria-label="Save My Worklist as JSON"
+              title="Save My Worklist as JSON"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M8 1.5a.75.75 0 0 1 .75.75v6.19l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06l2.22 2.22V2.25A.75.75 0 0 1 8 1.5ZM2.75 12a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
+                />
+              </svg>
+              <span data-i18n="chrome:saveWorklist">Save</span>
+            </button>
+            <button
+              type="button"
+              id="uploadWorklistBtn"
+              class="wl-icon-btn wl-icon-btn-labeled"
+              data-i18n-aria="chrome:loadWorklistTitle"
+              data-i18n-title="chrome:loadWorklistTitle"
+              aria-label="Load My Worklist from JSON"
+              title="Load My Worklist from JSON"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M8 14.5a.75.75 0 0 1-.75-.75V7.56L5.03 9.78a.75.75 0 1 1-1.06-1.06l3.5-3.5a.75.75 0 0 1 1.06 0l3.5 3.5a.75.75 0 1 1-1.06 1.06L8.75 7.56v6.19a.75.75 0 0 1-.75.75ZM2.75 2.5a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75Z"
+                />
+              </svg>
+              <span data-i18n="chrome:loadWorklist">Load</span>
+            </button>
           </div>
         </div>
         <div class="wl-table-wrap">
@@ -448,7 +454,7 @@
     <div class="wl-modal wl-help-modal" role="dialog" aria-labelledby="helpTitle">
       <div class="wl-modal-header wl-help-header">
         <div class="wl-help-header-text">
-          <h2 id="helpTitle">SlicerWorklist</h2>
+          <h2 id="helpTitle">Worklist</h2>
           <p id="helpQuickStart" class="wl-help-quick-start"></p>
         </div>
         <button type="button" class="wl-modal-close" data-close-modal aria-label="Close">×</button>

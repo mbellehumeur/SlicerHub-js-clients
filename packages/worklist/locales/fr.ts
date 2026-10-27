@@ -14,7 +14,7 @@ export const fr: LocaleBundle = {
     close: 'Fermer',
     searchPortal: 'Portail de recherche',
     searchPortalTitle: 'Ouvrir le portail de recherche IDC',
-    worklist: 'Liste de travail',
+    worklist: 'Liste de travail:',
     exploreIdc: 'Explorer le NCI Imaging Data Commons :',
     viewers: 'Visionneuses :',
     reportingClients: 'Créateurs de rapports :',
@@ -33,10 +33,14 @@ export const fr: LocaleBundle = {
     closeStudy: 'Fermer l’étude ouverte',
     closeContext: 'Fermer le contexte actuel',
     cannotOpen: 'Impossible d’ouvrir',
+    saveWorklist: 'Enregistrer',
+    loadWorklist: 'Charger',
+    saveWorklistTitle: 'Enregistrer ma liste de travail en JSON',
+    loadWorklistTitle: 'Charger ma liste de travail depuis un JSON',
   },
   conference: CONFERENCE_BY_LOCALE.fr,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'À propos de cette application',
     aboutLinkLabel: 'À propos',
     aboutLinkSuffix: '— licences, remerciements et marques.',
@@ -87,7 +91,7 @@ export const fr: LocaleBundle = {
           sans les stocker d’abord dans un PACS. Il prend aussi en charge des formats de recherche comme NIfTI, NRRD et Zarr.
         </p>
     `,
-    howto0Title: 'Comment connecter SlicerWorklist à 3D Slicer.',
+    howto0Title: 'Comment connecter Worklist à 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Installez l’extension Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const fr: LocaleBundle = {
         </li>
         <li>Une fois connecté, le bouton visionneuse <strong>SlicerDesktop</strong> s’allume, le sélecteur de liste passe à « 3D Slicer » et la liste affiche le contenu de la base DICOM de Slicer. Ouvrez une étude — elle se charge dans Slicer bureau.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist avec visionneuses (SlicerDesktop sélectionné), IA distante et liste d’études" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist avec visionneuses (SlicerDesktop sélectionné), IA distante et liste d’études" width="870" height="498" />
         </li>
         <li>Pour la conférence / vue live dans le navigateur, utilisez <strong>SlicerLive</strong> et <strong>Conférence</strong> lorsque d’autres suivent vos changements de nœuds et de caméra/présentation.</li>
       </ol>

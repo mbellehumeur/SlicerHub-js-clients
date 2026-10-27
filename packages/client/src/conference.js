@@ -355,7 +355,7 @@ export function buildCastConferenceView(session, conference) {
     const isFollowing = isLeading && selfRole === 'following';
     let statusLabel = '';
     if (isSelf) {
-      statusLabel = selfRole === 'leading' ? 'You · leading' : 'You';
+      statusLabel = selfRole === 'leading' ? '(You) · leading' : '(You)';
     } else if (isFollowing) {
       statusLabel = 'Following';
     } else if (selfRole === 'leading') {

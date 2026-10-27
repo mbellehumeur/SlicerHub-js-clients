@@ -14,7 +14,7 @@ export const nl: LocaleBundle = {
     close: 'Sluiten',
     searchPortal: 'Zoekportaal',
     searchPortalTitle: 'IDC-zoekportaal openen',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'NCI Imaging Data Commons verkennen:',
     viewers: 'Viewers:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const nl: LocaleBundle = {
     closeStudy: 'Open studie sluiten',
     closeContext: 'Huidige context sluiten',
     cannotOpen: 'Kan niet openen',
+    saveWorklist: 'Opslaan',
+    loadWorklist: 'Laden',
+    saveWorklistTitle: 'Mijn worklist opslaan als JSON',
+    loadWorklistTitle: 'Mijn worklist laden uit JSON',
   },
   conference: CONFERENCE_BY_LOCALE.nl,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Over deze toepassing',
     aboutLinkLabel: 'Over',
     aboutLinkSuffix: '— licenties, dankbetuigingen en handelsmerken.',
@@ -87,7 +91,7 @@ export const nl: LocaleBundle = {
           zonder ze eerst in een PACS op te slaan. Het ondersteunt ook onderzoeksformaten zoals NIfTI, NRRD en Zarr.
         </p>
     `,
-    howto0Title: 'Hoe SlicerWorklist te verbinden met 3D Slicer.',
+    howto0Title: 'Hoe Worklist te verbinden met 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Installeer de Slicer Hub Interface-extensie</li>
@@ -99,7 +103,7 @@ export const nl: LocaleBundle = {
         </li>
         <li>Na verbinding licht de viewerknop <strong>SlicerDesktop</strong> op, de selector verandert naar «3D Slicer» en de lijst toont de inhoud van de Slicer DICOM-database. Open een studie — deze wordt in desktop-Slicer geladen.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist met viewers (SlicerDesktop geselecteerd), externe AI en studielijst" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist met viewers (SlicerDesktop geselecteerd), externe AI en studielijst" width="870" height="498" />
         </li>
         <li>Voor browserconferentie / liveweergave gebruikt u <strong>SlicerLive</strong> en <strong>Conferentie</strong> wanneer anderen uw knoop- en camera-/presentatiewijzigingen volgen.</li>
       </ol>

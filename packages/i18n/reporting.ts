@@ -4,8 +4,7 @@ import { resolveStoredLocale } from './storage';
 /** Reporting app chrome (section titles, column headers, labels). */
 export type ReportingChrome = {
   viewers: string;
-  worklistLabel: string;
-  slicerWorklist: string;
+  worklist: string;
   snapshots: string;
   volumes: string;
   segmentations: string;
@@ -41,8 +40,7 @@ export type ReportingChrome = {
 
 const en: ReportingChrome = {
   viewers: 'Image Displays:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Snapshots',
   volumes: 'Volumes',
   segmentations: 'Segmentations',
@@ -80,8 +78,7 @@ const en: ReportingChrome = {
 
 const de: ReportingChrome = {
   viewers: 'Viewer:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Snapshots',
   volumes: 'Volumina',
   segmentations: 'Segmentierungen',
@@ -119,8 +116,7 @@ const de: ReportingChrome = {
 
 const fr: ReportingChrome = {
   viewers: 'Visionneuses :',
-  worklistLabel: 'Liste de travail :',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Instantanés',
   volumes: 'Volumes',
   segmentations: 'Segmentations',
@@ -158,8 +154,7 @@ const fr: ReportingChrome = {
 
 const es: ReportingChrome = {
   viewers: 'Visores:',
-  worklistLabel: 'Lista de trabajo:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Capturas',
   volumes: 'Volúmenes',
   segmentations: 'Segmentaciones',
@@ -198,8 +193,7 @@ const es: ReportingChrome = {
 
 const ca: ReportingChrome = {
   viewers: 'Visualitzadors:',
-  worklistLabel: 'Llista de treball:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Captures',
   volumes: 'Volums',
   segmentations: 'Segmentacions',
@@ -237,8 +231,7 @@ const ca: ReportingChrome = {
 
 const it: ReportingChrome = {
   viewers: 'Viewer:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Istantanee',
   volumes: 'Volumi',
   segmentations: 'Segmentazioni',
@@ -276,8 +269,7 @@ const it: ReportingChrome = {
 
 const pt: ReportingChrome = {
   viewers: 'Visualizadores:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Instantâneos',
   volumes: 'Volumes',
   segmentations: 'Segmentações',
@@ -315,8 +307,7 @@ const pt: ReportingChrome = {
 
 const ko: ReportingChrome = {
   viewers: '뷰어:',
-  worklistLabel: '워크리스트:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: '스냅샷',
   volumes: '볼륨',
   segmentations: '세그멘테이션',
@@ -354,8 +345,7 @@ const ko: ReportingChrome = {
 
 const pl: ReportingChrome = {
   viewers: 'Przeglądarki:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Migawki',
   volumes: 'Wolumeny',
   segmentations: 'Segmentacje',
@@ -393,8 +383,7 @@ const pl: ReportingChrome = {
 
 const uk: ReportingChrome = {
   viewers: 'Переглядачі:',
-  worklistLabel: 'Робочий список:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Знімки',
   volumes: 'Об’єми',
   segmentations: 'Сегментації',
@@ -432,8 +421,7 @@ const uk: ReportingChrome = {
 
 const cs: ReportingChrome = {
   viewers: 'Prohlížeče:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Snímky',
   volumes: 'Volumeny',
   segmentations: 'Segmentace',
@@ -471,8 +459,7 @@ const cs: ReportingChrome = {
 
 const nl: ReportingChrome = {
   viewers: 'Viewers:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Snapshots',
   volumes: 'Volumes',
   segmentations: 'Segmentaties',
@@ -510,8 +497,7 @@ const nl: ReportingChrome = {
 
 const el: ReportingChrome = {
   viewers: 'Προβολείς:',
-  worklistLabel: 'Λίστα εργασίας:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Στιγμιότυπα',
   volumes: 'Όγκοι',
   segmentations: 'Τμηματοποιήσεις',
@@ -549,8 +535,7 @@ const el: ReportingChrome = {
 
 const lv: ReportingChrome = {
   viewers: 'Skatītāji:',
-  worklistLabel: 'Darba saraksts:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Momentuzņēmumi',
   volumes: 'Tilpumi',
   segmentations: 'Segmentācijas',
@@ -588,8 +573,7 @@ const lv: ReportingChrome = {
 
 const hu: ReportingChrome = {
   viewers: 'Megjelenítők:',
-  worklistLabel: 'Munkalista:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Pillanatképek',
   volumes: 'Térfogatok',
   segmentations: 'Szegmentációk',
@@ -627,8 +611,7 @@ const hu: ReportingChrome = {
 
 const lt: ReportingChrome = {
   viewers: 'Peržiūros priemonės:',
-  worklistLabel: 'Darbų sąrašas:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Momentinės nuotraukos',
   volumes: 'Tūriai',
   segmentations: 'Segmentacijos',
@@ -666,8 +649,7 @@ const lt: ReportingChrome = {
 
 const ro: ReportingChrome = {
   viewers: 'Vizualizatoare:',
-  worklistLabel: 'Listă de lucru:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Capturi',
   volumes: 'Volume',
   segmentations: 'Segmentări',
@@ -705,8 +687,7 @@ const ro: ReportingChrome = {
 
 const noRp: ReportingChrome = {
   viewers: 'Visningsprogrammer:',
-  worklistLabel: 'Worklist:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'Øyeblikksbilder',
   volumes: 'Volumer',
   segmentations: 'Segmenteringer',
@@ -744,8 +725,7 @@ const noRp: ReportingChrome = {
 
 const ar: ReportingChrome = {
   viewers: 'العارضات:',
-  worklistLabel: 'قائمة العمل:',
-  slicerWorklist: 'SlicerWorklist',
+  worklist: 'Worklist',
   snapshots: 'لقطات',
   volumes: 'الحجمات',
   segmentations: 'التجزئات',

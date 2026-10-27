@@ -14,7 +14,7 @@ export const it: LocaleBundle = {
     close: 'Chiudi',
     searchPortal: 'Portale di ricerca',
     searchPortalTitle: 'Apri il portale di ricerca IDC',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Esplora l’NCI Imaging Data Commons:',
     viewers: 'Viewer:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const it: LocaleBundle = {
     closeStudy: 'Chiudi lo studio aperto',
     closeContext: 'Chiudi il contesto attuale',
     cannotOpen: 'Impossibile aprire',
+    saveWorklist: 'Salva',
+    loadWorklist: 'Carica',
+    saveWorklistTitle: 'Salva la mia worklist come JSON',
+    loadWorklistTitle: 'Carica la mia worklist da JSON',
   },
   conference: CONFERENCE_BY_LOCALE.it,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Informazioni su questa applicazione',
     aboutLinkLabel: 'Informazioni',
     aboutLinkSuffix: '— licenze, riconoscimenti e marchi.',
@@ -87,7 +91,7 @@ export const it: LocaleBundle = {
           senza salvarli prima in un PACS. Supporta anche formati di ricerca come NIfTI, NRRD e Zarr.
         </p>
     `,
-    howto0Title: 'Come collegare SlicerWorklist a 3D Slicer.',
+    howto0Title: 'Come collegare Worklist a 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Installa l’estensione Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const it: LocaleBundle = {
         </li>
         <li>Una volta connesso, il pulsante viewer <strong>SlicerDesktop</strong> si attiva, il selettore passa a «3D Slicer» e la lista mostra il contenuto del database DICOM di Slicer. Apri uno studio — viene caricato in Slicer desktop.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist con viewer (SlicerDesktop selezionato), IA remota e elenco studi" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist con viewer (SlicerDesktop selezionato), IA remota e elenco studi" width="870" height="498" />
         </li>
         <li>Per la conferenza / vista live nel browser, usa <strong>SlicerLive</strong> e <strong>Conferenza</strong> quando altri seguono le modifiche ai nodi e alla telecamera/presentazione.</li>
       </ol>

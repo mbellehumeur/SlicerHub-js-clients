@@ -14,7 +14,7 @@ export const pt: LocaleBundle = {
     close: 'Fechar',
     searchPortal: 'Portal de pesquisa',
     searchPortalTitle: 'Abrir o portal de pesquisa IDC',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Explorar o NCI Imaging Data Commons:',
     viewers: 'Visualizadores:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const pt: LocaleBundle = {
     closeStudy: 'Fechar o estudo aberto',
     closeContext: 'Fechar o contexto atual',
     cannotOpen: 'Não é possível abrir',
+    saveWorklist: 'Guardar',
+    loadWorklist: 'Carregar',
+    saveWorklistTitle: 'Guardar a minha worklist como JSON',
+    loadWorklistTitle: 'Carregar a minha worklist a partir de JSON',
   },
   conference: CONFERENCE_BY_LOCALE.pt,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Acerca desta aplicação',
     aboutLinkLabel: 'Acerca',
     aboutLinkSuffix: '— licenças, agradecimentos e marcas.',
@@ -87,7 +91,7 @@ export const pt: LocaleBundle = {
           sem os armazenar primeiro num PACS. Também suporta formatos de investigação como NIfTI, NRRD e Zarr.
         </p>
     `,
-    howto0Title: 'Como ligar o SlicerWorklist ao 3D Slicer.',
+    howto0Title: 'Como ligar o Worklist ao 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Instale a extensão Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const pt: LocaleBundle = {
         </li>
         <li>Ao ligar, o botão <strong>SlicerDesktop</strong> ativa-se, o seletor passa a «3D Slicer» e a lista mostra a base DICOM do Slicer. Abra um estudo — carrega no Slicer de ambiente de trabalho.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist com visualizadores (SlicerDesktop selecionado), IA remota e lista de estudos" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist com visualizadores (SlicerDesktop selecionado), IA remota e lista de estudos" width="870" height="498" />
         </li>
         <li>Para conferência / vista live no browser, use <strong>SlicerLive</strong> e <strong>Conferência</strong> quando outros seguem as suas alterações de nós e câmara/apresentação.</li>
       </ol>

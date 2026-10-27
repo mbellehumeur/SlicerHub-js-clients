@@ -11,6 +11,16 @@
     <header class="rp-header">
       <div class="rp-header-start">
         <span class="rp-brand">DICOM SR</span>
+        <button
+          type="button"
+          id="openWorklistBtn"
+          class="rp-viewer-btn"
+          data-i18n-rp="worklist"
+          title="Subscribe to the hub first"
+          disabled
+        >
+          Worklist
+        </button>
       </div>
       <div class="rp-header-center">
         <section class="rp-panel rp-panel-compact rp-capsule" aria-labelledby="reportContext">
@@ -45,6 +55,17 @@
           title="Subscribe to the hub first"
           disabled
         ></button>
+        <button
+          type="button"
+          id="endConferenceBtn"
+          class="rp-conference-leave-badge"
+          aria-label="Leave conference"
+          title="Leave conference"
+          hidden
+          disabled
+        >
+          Leave conference
+        </button>
         <div class="rp-lang-wrap">
           <button
             type="button"
@@ -62,17 +83,6 @@
           </button>
           <ul id="langPickerMenu" class="rp-lang-menu" role="listbox" hidden></ul>
         </div>
-        <button
-          type="button"
-          id="endConferenceBtn"
-          class="rp-conference-leave-badge"
-          aria-label="Leave conference"
-          title="Leave conference"
-          hidden
-          disabled
-        >
-          Leave conference
-        </button>
         <div class="rp-menu-wrap">
           <button
             type="button"
@@ -115,18 +125,7 @@
 
     <section class="rp-apps" aria-label="Clients and image displays">
       <div class="rp-viewer-btns">
-        <span class="rp-viewer-label rp-viewer-label-first" data-i18n-rp="worklistLabel">Worklist:</span>
-        <button
-          type="button"
-          id="openWorklistBtn"
-          class="rp-viewer-btn"
-          data-i18n-rp="slicerWorklist"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerWorklist
-        </button>
-        <span class="rp-viewer-label" data-i18n-rp="viewers">Image Displays:</span>
+        <span class="rp-viewer-label rp-viewer-label-first" data-i18n-rp="viewers">Image Displays:</span>
         <button
           type="button"
           id="openSlicerBtn"
@@ -147,15 +146,6 @@
         </button>
         <button
           type="button"
-          id="openHubMirrorBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          SlicerMirror
-        </button>
-        <button
-          type="button"
           id="openOhifBtn"
           class="rp-viewer-btn"
           title="Subscribe to the hub first"
@@ -171,15 +161,6 @@
           disabled
         >
           Slim
-        </button>
-        <button
-          type="button"
-          id="openVolviewBtn"
-          class="rp-viewer-btn"
-          title="Subscribe to the hub first"
-          disabled
-        >
-          VolView
         </button>
       </div>
     </section>

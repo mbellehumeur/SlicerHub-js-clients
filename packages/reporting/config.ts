@@ -33,6 +33,11 @@ export const THEME_STORAGE_KEY = 'pw46.reporting.theme';
 export const THEME_SLICERLIVE = 'slicerlive';
 export const THEME_OHIF = 'ohif';
 
+/** Volumes / Segmentations table column order preference. */
+export const COLUMN_ORDER_STORAGE_KEY = 'pw46.reporting.tableColumnOrder';
+export type TableColumnOrder = 'controls-first' | 'identity-first';
+export const TABLE_COLUMN_ORDER_DEFAULT: TableColumnOrder = 'controls-first';
+
 export const USER_NAME_KEY = 'pw46.reporting.userName';
 export const USER_HUB_STARTED_AT_KEY = 'pw46.reporting.userName.hubStartedAt';
 export const USER_HUB_ORIGIN_KEY = 'pw46.reporting.userName.hubOrigin';
@@ -275,6 +280,24 @@ export function getStoredTheme(): string {
 export function setStoredTheme(theme: string): void {
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getStoredTableColumnOrder(): TableColumnOrder {
+  try {
+    const value = localStorage.getItem(COLUMN_ORDER_STORAGE_KEY)?.trim();
+    if (value === 'controls-first' || value === 'identity-first') return value;
+  } catch {
+    /* ignore */
+  }
+  return TABLE_COLUMN_ORDER_DEFAULT;
+}
+
+export function setStoredTableColumnOrder(order: TableColumnOrder): void {
+  try {
+    localStorage.setItem(COLUMN_ORDER_STORAGE_KEY, order);
   } catch {
     /* ignore */
   }

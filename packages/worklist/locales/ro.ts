@@ -14,7 +14,7 @@ export const ro: LocaleBundle = {
     close: 'Închide',
     searchPortal: 'Portal de căutare',
     searchPortalTitle: 'Deschide portalul de căutare IDC',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Explorați NCI Imaging Data Commons:',
     viewers: 'Vizualizatoare:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const ro: LocaleBundle = {
     closeStudy: 'Închide studiul deschis',
     closeContext: 'Închide contextul curent',
     cannotOpen: 'Nu se poate deschide',
+    saveWorklist: 'Salvează',
+    loadWorklist: 'Încarcă',
+    saveWorklistTitle: 'Salvează worklist-ul meu ca JSON',
+    loadWorklistTitle: 'Încarcă worklist-ul meu din JSON',
   },
   conference: CONFERENCE_BY_LOCALE.ro,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Despre această aplicație',
     aboutLinkLabel: 'Despre',
     aboutLinkSuffix: '— licențe, mulțumiri și mărci comerciale.',
@@ -87,7 +91,7 @@ export const ro: LocaleBundle = {
           fără a le stoca mai întâi într-un PACS. Acceptă și formate de cercetare precum NIfTI, NRRD și Zarr.
         </p>
     `,
-    howto0Title: 'Cum se conectează SlicerWorklist la 3D Slicer.',
+    howto0Title: 'Cum se conectează Worklist la 3D Slicer.',
     howto0Body:
       `
       <ol class="wl-help-steps">
@@ -100,7 +104,7 @@ export const ro: LocaleBundle = {
         </li>
         <li>După conectare, butonul vizualizator <strong>SlicerDesktop</strong> se activează, selectorul trece la «3D Slicer», iar lista afișează conținutul bazei DICOM Slicer. Deschideți un studiu — se încarcă în Slicer desktop.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist cu vizualizatoare (SlicerDesktop selectat), AI la distanță și listă de studii" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist cu vizualizatoare (SlicerDesktop selectat), AI la distanță și listă de studii" width="870" height="498" />
         </li>
         <li>Pentru conferință în browser / vizualizare live, folosiți <strong>SlicerLive</strong> și <strong>Conferință</strong> când alții urmăresc modificările de nod și cameră/prezentare.</li>
       </ol>

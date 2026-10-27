@@ -14,7 +14,7 @@ export const ar: LocaleBundle = {
     close: 'إغلاق',
     searchPortal: 'بوابة البحث',
     searchPortalTitle: 'فتح بوابة بحث IDC',
-    worklist: 'قائمة العمل',
+    worklist: 'قائمة العمل:',
     exploreIdc: 'استكشف NCI Imaging Data Commons:',
     viewers: 'العارضات:',
     reportingClients: 'منشئو التقارير:',
@@ -33,10 +33,14 @@ export const ar: LocaleBundle = {
     closeStudy: 'إغلاق الدراسة المفتوحة',
     closeContext: 'إغلاق السياق الحالي',
     cannotOpen: 'تعذّر الفتح',
+    saveWorklist: 'حفظ',
+    loadWorklist: 'تحميل',
+    saveWorklistTitle: 'حفظ قائمة عملي كـ JSON',
+    loadWorklistTitle: 'تحميل قائمة عملي من JSON',
   },
   conference: CONFERENCE_BY_LOCALE.ar,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'حول هذا التطبيق',
     aboutLinkLabel: 'حول',
     aboutLinkSuffix: '— التراخيص والإقرارات والعلامات التجارية.',
@@ -87,7 +91,7 @@ export const ar: LocaleBundle = {
           دون تخزينها أولاً في PACS. ويدعم أيضاً تنسيقات بحث مثل NIfTI وNRRD وZarr.
         </p>
     `,
-    howto0Title: 'كيفية ربط SlicerWorklist بـ 3D Slicer.',
+    howto0Title: 'كيفية ربط Worklist بـ 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>ثبّت امتداد Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const ar: LocaleBundle = {
         </li>
         <li>عند الاتصال، يضيء زر العارض <strong>SlicerDesktop</strong>، ويتغيّر محدد القائمة إلى «3D Slicer» وتعرض القائمة محتوى قاعدة DICOM في Slicer. افتح دراسة من القائمة — تُحمَّل في Slicer لسطح المكتب.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist مع العارضات (SlicerDesktop محدّد) والذكاء الاصطناعي عن بُعد وقائمة الدراسات" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist مع العارضات (SlicerDesktop محدّد) والذكاء الاصطناعي عن بُعد وقائمة الدراسات" width="870" height="498" />
         </li>
         <li>للمؤتمرات / العرض المباشر في المتصفح، استخدم <strong>SlicerLive</strong> و<strong>المؤتمرات</strong> عندما يتابع الآخرون تغييرات العقدة والكاميرا/العرض.</li>
       </ol>

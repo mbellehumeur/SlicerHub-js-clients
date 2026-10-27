@@ -10,6 +10,7 @@ import HubClient, {
   generateSubscriberName,
   getHubEventLower,
   IMAGINGSTUDY_CLOSE,
+  IMAGINGSTUDY_OPEN,
   isRequestEvent,
   isRunningInCloud,
   messageActor,
@@ -81,6 +82,7 @@ import {
   type ClassroomSceneKey,
 } from './course/open-scene';
 import { courseChromeFor } from './course/strings';
+import { ensureSlicerLiveViewer } from './viewers';
 
 export type ConnectionUiState =
   | 'idle'
@@ -148,7 +150,10 @@ export type AppState = {
   snapshots: ReportSnapshot[];
   /** Active Hub conference roster (LiveScene-aligned places view). */
   conference: CastConferenceView | null;
-  /** When true, apply inbound ImagingStudy-open from conference host. */
+  /**
+   * When true, apply inbound ImagingStudy-open from conference host and
+   * ensure an IRA (SlicerLive) tab is open/focused.
+   */
   conferenceFollowHost: boolean;
   /**
    * Explicit follow preference while attending (null = use role default).
@@ -2085,6 +2090,9 @@ function handleImagingStudyMessage(
   );
   notifyStudy(state);
   void refreshReportContextFromStatus(state);
+  if (state.conference && state.conferenceFollowHost) {
+    ensureSlicerLiveViewer(state, { reason: 'conference-follow' });
+  }
   return true;
 }
 
@@ -2257,6 +2265,34 @@ function buildPublishPayload(
   };
 }
 
+async function publishImagingStudyOpen(
+  state: AppState,
+  context: unknown[]
+): Promise<boolean> {
+  if (!state.client) {
+    console.warn(`${LOG_PREFIX} open study: subscribe first`);
+    return false;
+  }
+  const payload = buildPublishPayload(state, IMAGINGSTUDY_OPEN, context);
+  try {
+    const res = await state.client.publish(payload);
+    if (res && res.ok) {
+      state.lastImagingStudyOpenContext = cloneContextArray(context);
+      state.openStudy = studyInfoFromContext(context);
+      notifyStudy(state);
+      return true;
+    }
+    console.warn(
+      `${LOG_PREFIX} open study failed`,
+      res ? `HTTP ${res.status}` : 'No response'
+    );
+    return false;
+  } catch (err) {
+    console.error(`${LOG_PREFIX} open study exception`, err);
+    return false;
+  }
+}
+
 async function publishImagingStudyClose(state: AppState): Promise<boolean> {
   if (!state.client) {
     console.warn(`${LOG_PREFIX} close study: subscribe first`);
@@ -2300,7 +2336,7 @@ type HostStatusResponseItem = {
 
 /**
  * After Join and follow: ask the host worklist (on hostTopic) for open ImagingStudy
- * and adopt it as the local open context.
+ * and adopt it as the local open context (republish ImagingStudy-open on our topic).
  */
 export async function requestStatusFromHostWorklist(
   state: AppState,
@@ -2382,19 +2418,22 @@ export async function requestStatusFromHostWorklist(
       sameOpenImagingStudyContext(context, state.lastImagingStudyOpenContext)
     ) {
       console.info(
-        `${LOG_PREFIX} host STATUS: same study already open — skip refresh`
+        `${LOG_PREFIX} host STATUS: same study already open — skip republish`
       );
+      ensureSlicerLiveViewer(state, { reason: 'reopen-focus' });
       showHubInfoToast(SKIP_STUDY_RELOAD_TOAST);
       return;
     }
-    state.lastImagingStudyOpenContext = context;
-    state.openStudy = studyInfoFromContext(context);
-    notifyStudy(state);
-    void refreshReportContextFromStatus(state);
+    const ok = await publishImagingStudyOpen(state, context);
     console.info(
       `${LOG_PREFIX} host STATUS applied ImagingStudy items=`,
-      context.length
+      context.length,
+      ok ? 'published' : 'publish failed'
     );
+    if (ok) {
+      void refreshReportContextFromStatus(state);
+      ensureSlicerLiveViewer(state, { reason: 'conference-follow' });
+    }
   } catch (err) {
     console.error(`${LOG_PREFIX} host STATUS exception`, err);
   }

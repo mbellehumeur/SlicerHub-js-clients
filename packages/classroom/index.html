@@ -11,6 +11,35 @@
     <header class="rp-header">
       <div class="rp-header-start">
         <span class="rp-brand">Classroom</span>
+        <button
+          type="button"
+          id="openWorklistBtn"
+          class="rp-viewer-btn"
+          data-i18n-rp="worklist"
+          title="Subscribe to the hub first"
+          disabled
+        >
+          Worklist
+        </button>
+        <span class="rp-viewer-label" data-i18n-rp="viewers">Image Displays:</span>
+        <button
+          type="button"
+          id="openOhifBtn"
+          class="rp-viewer-btn"
+          title="Subscribe to the hub first"
+          disabled
+        >
+          OHIF
+        </button>
+        <button
+          type="button"
+          id="openIraBtn"
+          class="rp-viewer-btn"
+          title="Subscribe to the hub first"
+          disabled
+        >
+          SlicerLive
+        </button>
       </div>
       <div class="rp-header-title-wrap">
         <label class="rp-visually-hidden" for="courseSelect">Course</label>
@@ -29,6 +58,17 @@
           title="Subscribe to the hub first"
           disabled
         ></button>
+        <button
+          type="button"
+          id="endConferenceBtn"
+          class="rp-conference-leave-badge"
+          aria-label="Leave conference"
+          title="Leave conference"
+          hidden
+          disabled
+        >
+          Leave conference
+        </button>
         <div class="rp-lang-wrap">
           <button
             type="button"
@@ -46,17 +86,6 @@
           </button>
           <ul id="langPickerMenu" class="rp-lang-menu" role="listbox" hidden></ul>
         </div>
-        <button
-          type="button"
-          id="endConferenceBtn"
-          class="rp-conference-leave-badge"
-          aria-label="Leave conference"
-          title="Leave conference"
-          hidden
-          disabled
-        >
-          Leave conference
-        </button>
         <button
           type="button"
           id="castAboutBtn"

@@ -14,7 +14,7 @@ export const el: LocaleBundle = {
     close: 'Κλείσιμο',
     searchPortal: 'Πύλη αναζήτησης',
     searchPortalTitle: 'Άνοιγμα πύλης αναζήτησης IDC',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Εξερευνήστε το NCI Imaging Data Commons:',
     viewers: 'Προβολείς:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const el: LocaleBundle = {
     closeStudy: 'Κλείσιμο ανοιχτής μελέτης',
     closeContext: 'Κλείσιμο τρέχοντος πλαισίου',
     cannotOpen: 'Δεν είναι δυνατό το άνοιγμα',
+    saveWorklist: 'Αποθήκευση',
+    loadWorklist: 'Φόρτωση',
+    saveWorklistTitle: 'Αποθήκευση της λίστας εργασίας ως JSON',
+    loadWorklistTitle: 'Φόρτωση της λίστας εργασίας από JSON',
   },
   conference: CONFERENCE_BY_LOCALE.el,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Σχετικά με αυτή την εφαρμογή',
     aboutLinkLabel: 'Σχετικά',
     aboutLinkSuffix: '— άδειες, ευχαριστίες και εμπορικά σήματα.',
@@ -87,7 +91,7 @@ export const el: LocaleBundle = {
           χωρίς πρώτα να τα αποθηκεύουν σε PACS. Υποστηρίζει επίσης ερευνητικές μορφές όπως NIfTI, NRRD και Zarr.
         </p>
     `,
-    howto0Title: 'Πώς να συνδέσετε το SlicerWorklist με 3D Slicer.',
+    howto0Title: 'Πώς να συνδέσετε το Worklist με 3D Slicer.',
     howto0Body:
       `
       <ol class="wl-help-steps">
@@ -100,7 +104,7 @@ export const el: LocaleBundle = {
         </li>
         <li>Μετά τη σύνδεση, το κουμπί προβολέα <strong>SlicerDesktop</strong> ενεργοποιείται, ο επιλογέας αλλάζει σε «3D Slicer» και η λίστα δείχνει το περιεχόμενο της βάσης DICOM του Slicer. Ανοίξτε μια μελέτη — φορτώνεται στο desktop Slicer.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist με προβολείς (επιλεγμένο SlicerDesktop), απομακρυσμένη AI και λίστα μελετών" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist με προβολείς (επιλεγμένο SlicerDesktop), απομακρυσμένη AI και λίστα μελετών" width="870" height="498" />
         </li>
         <li>Για διάσκεψη στο πρόγραμμα περιήγησης / ζωντανή προβολή, χρησιμοποιήστε <strong>SlicerLive</strong> και <strong>Διάσκεψη</strong> όταν άλλοι ακολουθούν τις αλλαγές κόμβων και κάμερας/παρουσίασης.</li>
       </ol>

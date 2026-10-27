@@ -5,7 +5,10 @@
  * full presence-aware rules; Classroom launches IRA / OHIF / Slim when hub-connected.
  * SlicerDesktop / SlicerMirror / VolView stay non-openable here (presence or N/A).
  */
-import { HUB_WORKLIST_WINDOW_NAME } from '@slicer-hub/client';
+import {
+  HUB_WORKLIST_WINDOW_NAME,
+  showHubInfoToast,
+} from '@slicer-hub/client';
 import {
   conferenceStringsFor,
   resolveStoredLocale,
@@ -27,10 +30,10 @@ const TITLE_IRA = 'Open SlicerLive';
 const TITLE_IRA_ONLINE = 'SlicerLive is connected on this topic';
 const TITLE_IRA_OFFLINE = 'Open SlicerLive (no IRA responded on this topic)';
 const TITLE_OHIF = 'Open OHIF';
-const TITLE_WORKLIST = 'Open SlicerWorklist';
-const TITLE_WORKLIST_ONLINE = 'SlicerWorklist is connected on this topic';
+const TITLE_WORKLIST = 'Open Worklist';
+const TITLE_WORKLIST_ONLINE = 'Worklist is connected on this topic';
 const TITLE_WORKLIST_OFFLINE =
-  'Open SlicerWorklist (no worklist responded on this topic)';
+  'Open Worklist (no worklist responded on this topic)';
 
 const WORKLIST_WINDOW_NAME = HUB_WORKLIST_WINDOW_NAME;
 let worklistWindow: Window | null = null;
@@ -121,33 +124,106 @@ function focusExistingOhifWindow(state: AppState): boolean {
   return focusHeldWindow(opener);
 }
 
-export function openHubViewer(state: AppState, kind: ViewerKind): void {
+function hasOpenIraWindow(state: AppState): boolean {
+  if (iraWindow && !iraWindow.closed) return true;
+  return Boolean(openerHasName(iraWindowName(state)));
+}
+
+/**
+ * Auto-open IRA (SlicerLive) after conference follow / ImagingStudy-open when
+ * no SlicerLive tab is already available. If IRA is online or its tab is open,
+ * focus that tab. Returns true if IRA is available or a tab was opened/focused.
+ */
+export function ensureSlicerLiveViewer(
+  state: AppState,
+  opts?: { reason?: string }
+): boolean {
+  const reason = opts?.reason || 'open';
+  if (!state.client || state.connection !== 'connected') {
+    console.info(`${LOG_PREFIX} ensure IRA skip (${reason}): not connected`);
+    return false;
+  }
+  if (state.iraOnline || hasOpenIraWindow(state)) {
+    if (focusExistingIraWindow(state)) {
+      console.info(
+        `${LOG_PREFIX} ensure IRA (${reason}): focus existing SlicerLive tab`
+      );
+      return true;
+    }
+    console.info(
+      `${LOG_PREFIX} ensure IRA (${reason}): reclaim/open SlicerLive tab`
+    );
+    return openHubViewer(state, 'ira');
+  }
+  console.info(
+    `${LOG_PREFIX} ensure IRA launch (${reason}): opening SlicerLive tab`
+  );
+  return openHubViewer(state, 'ira');
+}
+
+export function openHubViewer(state: AppState, kind: ViewerKind): boolean {
   if (state.connection !== 'connected') {
     console.warn(`${LOG_PREFIX} open viewer skipped: not connected`);
-    return;
+    return false;
   }
   if (kind === 'ira') {
-    if (focusExistingIraWindow(state)) return;
+    if (focusExistingIraWindow(state)) return true;
     const url = new URL(resolveViewerUrls().ira);
     withSessionParams(url, state);
+    if (state.conference) {
+      if (state.conferenceFollowChoice === false) {
+        url.searchParams.set('followHost', '0');
+      } else if (state.conferenceFollowHost) {
+        url.searchParams.set('followHost', '1');
+      }
+    }
     // Named tab open focuses existing IRA (opened by worklist) or creates one.
     const win = window.open(url.toString(), iraWindowName(state));
-    if (win) iraWindow = win;
-    return;
+    if (win) {
+      iraWindow = win;
+      try {
+        win.focus();
+      } catch {
+        /* ignore */
+      }
+      return true;
+    }
+    console.warn(
+      `${LOG_PREFIX} IRA window.open blocked (popup blocker or no user gesture)`
+    );
+    showHubInfoToast(
+      'Browser blocked opening SlicerLive — click SlicerLive or allow popups'
+    );
+    return false;
   }
   if (kind === 'ohif') {
-    if (focusExistingOhifWindow(state)) return;
+    if (focusExistingOhifWindow(state)) return true;
     const url = new URL(resolveViewerUrls().ohif);
     withSessionParams(url, state);
     const win = window.open(url.toString(), ohifWindowName(state));
-    if (win) ohifWindow = win;
-    return;
+    if (win) {
+      ohifWindow = win;
+      try {
+        win.focus();
+      } catch {
+        /* ignore */
+      }
+      return true;
+    }
+    console.warn(
+      `${LOG_PREFIX} OHIF window.open blocked (popup blocker or no user gesture)`
+    );
+    showHubInfoToast(
+      'Browser blocked opening OHIF — click OHIF or allow popups'
+    );
+    return false;
   }
   const url = new URL(resolveViewerUrls()[kind]);
   withSessionParams(url, state);
   const size = { width: 800, height: 600 };
   const name = `hubViewer-${kind}`;
   window.open(url.toString(), name, popupFeatures(size.width, size.height));
+  return true;
 }
 
 /** Open or focus the worklist client with the current session topic/token. */

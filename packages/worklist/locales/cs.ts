@@ -14,7 +14,7 @@ export const cs: LocaleBundle = {
     close: 'Zavřít',
     searchPortal: 'Vyhledávací portál',
     searchPortalTitle: 'Otevřít vyhledávací portál IDC',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Prozkoumat NCI Imaging Data Commons:',
     viewers: 'Prohlížeče:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const cs: LocaleBundle = {
     closeStudy: 'Zavřít otevřenou studii',
     closeContext: 'Zavřít aktuální kontext',
     cannotOpen: 'Nelze otevřít',
+    saveWorklist: 'Uložit',
+    loadWorklist: 'Načíst',
+    saveWorklistTitle: 'Uložit můj worklist jako JSON',
+    loadWorklistTitle: 'Načíst můj worklist z JSON',
   },
   conference: CONFERENCE_BY_LOCALE.cs,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'O této aplikaci',
     aboutLinkLabel: 'O aplikaci',
     aboutLinkSuffix: '— licence, poděkování a ochranné známky.',
@@ -87,7 +91,7 @@ export const cs: LocaleBundle = {
           bez předchozího uložení do PACS. Podporuje také výzkumné formáty jako NIfTI, NRRD a Zarr.
         </p>
     `,
-    howto0Title: 'Jak připojit SlicerWorklist k 3D Slicer.',
+    howto0Title: 'Jak připojit Worklist k 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Nainstalujte rozšíření Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const cs: LocaleBundle = {
         </li>
         <li>Po připojení se aktivuje tlačítko prohlížeče <strong>SlicerDesktop</strong>, selektor se změní na «3D Slicer» a seznam zobrazí obsah DICOM databáze Slicer. Otevřete studii — načte se v desktopovém Sliceru.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist s prohlížeči (vybrán SlicerDesktop), vzdálenou AI a seznamem studií" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist s prohlížeči (vybrán SlicerDesktop), vzdálenou AI a seznamem studií" width="870" height="498" />
         </li>
         <li>Pro konferenci / živé zobrazení v prohlížeči použijte <strong>SlicerLive</strong> a <strong>Konferenci</strong>, když ostatní sledují změny uzlů a kamery/prezentace.</li>
       </ol>

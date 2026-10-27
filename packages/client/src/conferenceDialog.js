@@ -1,14 +1,11 @@
 import {
-  HUB_CONFERENCE_EXIT_ACK_MS,
   HUB_CONFERENCE_TITLE_PRESETS,
   buildCastConferenceView,
   conferenceHostTopic,
   createHubConference,
-  deleteHubConference,
   fetchHubConferences,
   fetchHubConferenceTopics,
   findActiveHubConference,
-  isHubConferenceHost,
   joinHubConference,
 } from './conference.js';
 import {
@@ -167,10 +164,14 @@ export function createHubConferenceDialog(options) {
           </div>
         </div>
         <div data-hub-conference-manage hidden>
-          <div class="${cls(prefix, 'label')}" data-hub-conference-manage-label></div>
           <div class="${cls(prefix, 'info')}" data-hub-conference-info></div>
-          <button type="button" class="${cls(prefix, 'primary')}" data-hub-conference-exit-btn></button>
         </div>
+        <button
+          type="button"
+          id="openConferenceTestWorklistBtn"
+          class="${cls(prefix, 'secondary')} ${cls(prefix, 'open-another-user')}"
+          data-hub-conference-open-another-user
+        ></button>
       </div>
     </div>
     <div
@@ -218,12 +219,6 @@ export function createHubConferenceDialog(options) {
             class="${cls(prefix, 'primary')}"
             data-hub-conference-change-user-done
           ></button>
-          <button
-            type="button"
-            id="openConferenceTestWorklistBtn"
-            class="${cls(prefix, 'secondary')} ${cls(prefix, 'open-another-user')}"
-            data-hub-conference-open-another-user
-          ></button>
         </div>
       </div>
     </div>
@@ -265,7 +260,6 @@ export function createHubConferenceDialog(options) {
   const infoEl = overlay.querySelector('[data-hub-conference-info]');
   const createBtn = overlay.querySelector('[data-hub-conference-create-btn]');
   const joinBtn = overlay.querySelector('[data-hub-conference-join-btn]');
-  const exitBtn = overlay.querySelector('[data-hub-conference-exit-btn]');
   const closeBtn = overlay.querySelector('[data-hub-conference-close]');
 
   /**
@@ -318,14 +312,8 @@ export function createHubConferenceDialog(options) {
     setText('[data-hub-conference-loading-users]', s.loadingUsers);
     setText('[data-hub-conference-join-section-title]', s.joinSection);
     setText('[data-hub-conference-active-label]', s.activeConferences);
-    setText('[data-hub-conference-manage-label]', s.manageSection);
     if (createBtn) createBtn.textContent = s.createConference;
     if (joinBtn) joinBtn.textContent = s.joinConference;
-    if (exitBtn) {
-      exitBtn.textContent = currentView?.isConferenceOwner
-        ? s.endConference
-        : s.leaveConference;
-    }
     overlay.querySelectorAll('[data-hub-conference-user-label]').forEach((node) => {
       if (node instanceof HTMLElement) node.textContent = s.userLabel;
     });
@@ -764,11 +752,6 @@ export function createHubConferenceDialog(options) {
         s.participants
       )}</div>${placesHtml}`;
     }
-    if (exitBtn) {
-      exitBtn.textContent = view?.isConferenceOwner
-        ? s.endConference
-        : s.leaveConference;
-    }
   }
 
   async function refresh() {
@@ -901,59 +884,6 @@ export function createHubConferenceDialog(options) {
     }
   }
 
-  async function handleExit() {
-    if (busy) {
-      return;
-    }
-    const session = sessionSnapshot();
-    const conferences = await fetchHubConferences(session.hubEndpoint);
-    const match = findActiveHubConference(
-      session.topic,
-      session.subscriberName,
-      conferences
-    );
-    if (!match) {
-      await refresh();
-      return;
-    }
-    const hostTopic = conferenceHostTopic(match);
-    const hostAction = isHubConferenceHost(session.topic, match);
-
-    busy = true;
-    if (exitBtn) {
-      exitBtn.disabled = true;
-      exitBtn.textContent = hostAction ? s.ending : s.leaving;
-    }
-    setStatus('', '');
-    try {
-      await deleteHubConference(
-        session.hubEndpoint,
-        hostTopic,
-        hostAction ? undefined : session.topic
-      );
-      emitView(null);
-      setStatus(
-        'success',
-        hostAction ? s.conferenceEnded : s.leftConference
-      );
-      await new Promise((resolve) => {
-        setTimeout(resolve, HUB_CONFERENCE_EXIT_ACK_MS);
-      });
-      close();
-    } catch (error) {
-      setStatus(
-        'error',
-        error instanceof Error ? error.message : s.failedUpdate
-      );
-    } finally {
-      busy = false;
-      if (exitBtn) {
-        exitBtn.disabled = false;
-        exitBtn.textContent = hostAction ? s.endConference : s.leaveConference;
-      }
-    }
-  }
-
   function clearAnchorPosition() {
     clearHubDialogNearAnchor(
       overlay,
@@ -1047,9 +977,6 @@ export function createHubConferenceDialog(options) {
   });
   joinBtn?.addEventListener('click', () => {
     handleJoin().catch(() => {});
-  });
-  exitBtn?.addEventListener('click', () => {
-    handleExit().catch(() => {});
   });
   closeBtn?.addEventListener('click', (event) => {
     event.stopPropagation();

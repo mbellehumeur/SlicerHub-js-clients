@@ -7,7 +7,7 @@ export const en = {
     close: 'Close',
     searchPortal: 'Search portal',
     searchPortalTitle: 'Open the IDC search portal',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Explore the NCI Imaging Data Commons:',
     viewers: 'Image Displays:',
     reportingClients: 'Report Creators:',
@@ -29,10 +29,14 @@ export const en = {
     closeStudy: 'Close the open study',
     closeContext: 'Close current context',
     cannotOpen: 'Cannot open',
+    saveWorklist: 'Save',
+    loadWorklist: 'Load',
+    saveWorklistTitle: 'Save My Worklist as JSON',
+    loadWorklistTitle: 'Load My Worklist from JSON',
   },
   conference: CONFERENCE_BY_LOCALE.en,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'About this application',
     aboutLinkLabel: 'About',
     aboutLinkSuffix: '— licenses, acknowledgements, and trademarks.',
@@ -83,7 +87,7 @@ export const en = {
           without storing them in PACS first. It also supports research file formats such as NIfTI, NRRD, and Zarr.
         </p>
     `,
-    howto0Title: 'How to connect SlicerWorklist to 3D Slicer.',
+    howto0Title: 'How to connect Worklist to 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Install the Slicer Hub Interface Extension</li>
@@ -95,7 +99,7 @@ export const en = {
         </li>
         <li>When connected, the worklist <strong>SlicerDesktop</strong> viewer button lights up, the worklist selector will change to "3D Slicer" and the worklist will display the content of the Slicer DICOM database. Open a study from the list — it loads in desktop Slicer.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist with viewers (SlicerDesktop selected), Evidence Creators, and study list" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist with viewers (SlicerDesktop selected), Evidence Creators, and study list" width="870" height="498" />
         </li>
         <li>For browser conferencing / live view, use <strong>SlicerLive</strong> and <strong>Conferencing</strong> when others follow your node changes and camera/presentation changes.</li>
       </ol>

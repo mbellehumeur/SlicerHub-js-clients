@@ -3,10 +3,9 @@ import { resolveStoredLocale } from './storage';
 
 /** Header chrome shared by IRA / reporting (not worklist-specific Help). */
 export type HeaderChrome = {
-  worklistLabel: string;
   reportingLabel: string;
-  slicerWorklist: string;
-  slicerWorklistTitle: string;
+  worklist: string;
+  worklistTitle: string;
   dicomSr: string;
   dicomSrTitle: string;
   remoteAi: string;
@@ -18,10 +17,9 @@ export type HeaderChrome = {
 };
 
 const en: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Open SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Open Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Open DICOM SR Report Creator',
   remoteAi: 'Inference',
@@ -33,10 +31,9 @@ const en: HeaderChrome = {
 };
 
 const de: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'SlicerWorklist öffnen',
+  worklist: 'Worklist',
+  worklistTitle: 'Worklist öffnen',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'DICOM-SR-Report-Creator öffnen',
   remoteAi: 'Remote-KI',
@@ -48,10 +45,9 @@ const de: HeaderChrome = {
 };
 
 const fr: HeaderChrome = {
-  worklistLabel: 'Liste de travail :',
   reportingLabel: 'Reporting :',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Ouvrir SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Ouvrir Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Ouvrir le Report Creator DICOM SR',
   remoteAi: 'IA distante',
@@ -63,10 +59,9 @@ const fr: HeaderChrome = {
 };
 
 const es: HeaderChrome = {
-  worklistLabel: 'Lista de trabajo:',
   reportingLabel: 'Informes:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Abrir SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Abrir Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Abrir el Report Creator DICOM SR',
   remoteAi: 'IA remota',
@@ -78,10 +73,9 @@ const es: HeaderChrome = {
 };
 
 const ca: HeaderChrome = {
-  worklistLabel: 'Llista de treball:',
   reportingLabel: 'Informes:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Obrir SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Obrir Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Obrir el Report Creator DICOM SR',
   remoteAi: 'IA remota',
@@ -93,10 +87,9 @@ const ca: HeaderChrome = {
 };
 
 const it: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Apri SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Apri Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Apri il Report Creator DICOM SR',
   remoteAi: 'IA remota',
@@ -108,10 +101,9 @@ const it: HeaderChrome = {
 };
 
 const pt: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Abrir SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Abrir Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Abrir o Report Creator DICOM SR',
   remoteAi: 'IA remota',
@@ -123,10 +115,9 @@ const pt: HeaderChrome = {
 };
 
 const ko: HeaderChrome = {
-  worklistLabel: '워크리스트:',
   reportingLabel: '리포팅:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'SlicerWorklist 열기',
+  worklist: 'Worklist',
+  worklistTitle: 'Worklist 열기',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'DICOM SR Report Creator 열기',
   remoteAi: '원격 AI',
@@ -138,10 +129,9 @@ const ko: HeaderChrome = {
 };
 
 const pl: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Otwórz SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Otwórz Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Otwórz Report Creator DICOM SR',
   remoteAi: 'Zdalne AI',
@@ -153,10 +143,9 @@ const pl: HeaderChrome = {
 };
 
 const uk: HeaderChrome = {
-  worklistLabel: 'Робочий список:',
   reportingLabel: 'Звітування:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Відкрити SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Відкрити Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Відкрити Report Creator DICOM SR',
   remoteAi: 'Віддалений ШІ',
@@ -168,10 +157,9 @@ const uk: HeaderChrome = {
 };
 
 const cs: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Otevřít SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Otevřít Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Otevřít Report Creator DICOM SR',
   remoteAi: 'Vzdálená AI',
@@ -183,10 +171,9 @@ const cs: HeaderChrome = {
 };
 
 const nl: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'SlicerWorklist openen',
+  worklist: 'Worklist',
+  worklistTitle: 'Worklist openen',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'DICOM SR Report Creator openen',
   remoteAi: 'Externe AI',
@@ -198,10 +185,9 @@ const nl: HeaderChrome = {
 };
 
 const el: HeaderChrome = {
-  worklistLabel: 'Λίστα εργασίας:',
   reportingLabel: 'Αναφορές:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Άνοιγμα SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Άνοιγμα Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Άνοιγμα Report Creator DICOM SR',
   remoteAi: 'Απομακρυσμένη ΤΝ',
@@ -213,10 +199,9 @@ const el: HeaderChrome = {
 };
 
 const lv: HeaderChrome = {
-  worklistLabel: 'Darba saraksts:',
   reportingLabel: 'Ziņošana:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Atvērt SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Atvērt Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Atvērt DICOM SR Report Creator',
   remoteAi: 'Attālais MI',
@@ -228,10 +213,9 @@ const lv: HeaderChrome = {
 };
 
 const hu: HeaderChrome = {
-  worklistLabel: 'Munkalista:',
   reportingLabel: 'Jelentés:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'SlicerWorklist megnyitása',
+  worklist: 'Worklist',
+  worklistTitle: 'Worklist megnyitása',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'DICOM SR Report Creator megnyitása',
   remoteAi: 'Távoli MI',
@@ -243,10 +227,9 @@ const hu: HeaderChrome = {
 };
 
 const lt: HeaderChrome = {
-  worklistLabel: 'Darbų sąrašas:',
   reportingLabel: 'Ataskaitos:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Atidaryti SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Atidaryti Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Atidaryti DICOM SR Report Creator',
   remoteAi: 'Nuotolinis DI',
@@ -258,10 +241,9 @@ const lt: HeaderChrome = {
 };
 
 const ro: HeaderChrome = {
-  worklistLabel: 'Listă de lucru:',
   reportingLabel: 'Raportare:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Deschide SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Deschide Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Deschide Report Creator DICOM SR',
   remoteAi: 'IA la distanță',
@@ -273,10 +255,9 @@ const ro: HeaderChrome = {
 };
 
 const noNb: HeaderChrome = {
-  worklistLabel: 'Worklist:',
   reportingLabel: 'Reporting:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'Åpne SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'Åpne Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'Åpne DICOM SR Report Creator',
   remoteAi: 'Ekstern AI',
@@ -288,10 +269,9 @@ const noNb: HeaderChrome = {
 };
 
 const ar: HeaderChrome = {
-  worklistLabel: 'قائمة العمل:',
   reportingLabel: 'التقارير:',
-  slicerWorklist: 'SlicerWorklist',
-  slicerWorklistTitle: 'فتح SlicerWorklist',
+  worklist: 'Worklist',
+  worklistTitle: 'فتح Worklist',
   dicomSr: 'DICOM SR',
   dicomSrTitle: 'فتح منشئ تقارير DICOM SR',
   remoteAi: 'ذكاء اصطناعي عن بُعد',

@@ -14,7 +14,7 @@ export const pl: LocaleBundle = {
     close: 'Zamknij',
     searchPortal: 'Portal wyszukiwania',
     searchPortalTitle: 'Otwórz portal wyszukiwania IDC',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Przeglądaj NCI Imaging Data Commons:',
     viewers: 'Przeglądarki:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const pl: LocaleBundle = {
     closeStudy: 'Zamknij otwarte badanie',
     closeContext: 'Zamknij bieżący kontekst',
     cannotOpen: 'Nie można otworzyć',
+    saveWorklist: 'Zapisz',
+    loadWorklist: 'Wczytaj',
+    saveWorklistTitle: 'Zapisz moją worklistę jako JSON',
+    loadWorklistTitle: 'Wczytaj moją worklistę z JSON',
   },
   conference: CONFERENCE_BY_LOCALE.pl,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'O tej aplikacji',
     aboutLinkLabel: 'O aplikacji',
     aboutLinkSuffix: '— licencje, podziękowania i znaki towarowe.',
@@ -87,7 +91,7 @@ export const pl: LocaleBundle = {
           bez wcześniejszego zapisu w PACS. Obsługuje też formaty badawcze takie jak NIfTI, NRRD i Zarr.
         </p>
     `,
-    howto0Title: 'Jak połączyć SlicerWorklist z 3D Slicer.',
+    howto0Title: 'Jak połączyć Worklist z 3D Slicer.',
     howto0Body: `
       <ol class="wl-help-steps">
         <li>Zainstaluj rozszerzenie Slicer Hub Interface</li>
@@ -99,7 +103,7 @@ export const pl: LocaleBundle = {
         </li>
         <li>Po połączeniu przycisk przeglądarki <strong>SlicerDesktop</strong> się aktywuje, selektor zmienia się na «3D Slicer», a lista pokazuje zawartość bazy DICOM Slicera. Otwórz badanie — wczyta się w desktopowym Slicerze.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist z przeglądarkami (wybrany SlicerDesktop), zdalnym AI i listą badań" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist z przeglądarkami (wybrany SlicerDesktop), zdalnym AI i listą badań" width="870" height="498" />
         </li>
         <li>Do konferencji / widoku na żywo w przeglądarce użyj <strong>SlicerLive</strong> i <strong>Konferencji</strong>, gdy inni śledzą zmiany węzłów oraz kamery/prezentacji.</li>
       </ol>

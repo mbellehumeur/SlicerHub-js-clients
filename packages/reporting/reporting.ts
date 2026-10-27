@@ -52,8 +52,10 @@ import {
   type AppState,
 } from './hub';
 import {
+  getStoredTableColumnOrder,
   getStoredTheme,
   REPORTING_ACTOR,
+  setStoredTableColumnOrder,
   setStoredTheme,
   THEME_OHIF,
   THEME_SLICERLIVE,
@@ -174,6 +176,15 @@ function wireReportDisplay(state: AppState, reportDisplay: HTMLElement): void {
     }
     if (t?.closest('#rpVolVisBtn')) {
       toggleVolumeVisibility(state);
+      return;
+    }
+    if (t?.closest('[data-column-order-switch]')) {
+      const next =
+        getStoredTableColumnOrder() === 'controls-first'
+          ? 'identity-first'
+          : 'controls-first';
+      setStoredTableColumnOrder(next);
+      remountDisplay(state, reportDisplay);
       return;
     }
     const cropSw = t?.closest('#rpVolCropSwitch') as HTMLButtonElement | null;

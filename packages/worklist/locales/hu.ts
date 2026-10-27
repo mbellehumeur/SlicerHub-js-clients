@@ -14,7 +14,7 @@ export const hu: LocaleBundle = {
     close: 'Bezárás',
     searchPortal: 'Keresőportál',
     searchPortalTitle: 'IDC keresőportál megnyitása',
-    worklist: 'Worklist',
+    worklist: 'Worklist:',
     exploreIdc: 'Fedezze fel az NCI Imaging Data Commons-ot:',
     viewers: 'Megjelenítők:',
     reportingClients: 'Report Creators:',
@@ -33,10 +33,14 @@ export const hu: LocaleBundle = {
     closeStudy: 'Nyitott vizsgálat bezárása',
     closeContext: 'Jelenlegi kontextus bezárása',
     cannotOpen: 'Nem nyitható meg',
+    saveWorklist: 'Mentés',
+    loadWorklist: 'Betöltés',
+    saveWorklistTitle: 'Saját worklist mentése JSON-ként',
+    loadWorklistTitle: 'Saját worklist betöltése JSON-ból',
   },
   conference: CONFERENCE_BY_LOCALE.hu,
   help: {
-    modalTitle: 'SlicerWorklist',
+    modalTitle: 'Worklist',
     aboutSummary: 'Az alkalmazásról',
     aboutLinkLabel: 'Névjegy',
     aboutLinkSuffix: '— licencek, köszönetnyilvánítások és védjegyek.',
@@ -87,7 +91,7 @@ export const hu: LocaleBundle = {
           anélkül, hogy előbb PACS-be tárolnák őket. Támogat kutatási formátumokat is, például NIfTI, NRRD és Zarr.
         </p>
     `,
-    howto0Title: 'A SlicerWorklist csatlakoztatása 3D Slicerhez.',
+    howto0Title: 'A Worklist csatlakoztatása 3D Slicerhez.',
     howto0Body:
       `
       <ol class="wl-help-steps">
@@ -100,7 +104,7 @@ export const hu: LocaleBundle = {
         </li>
         <li>Csatlakozás után a worklist <strong>SlicerDesktop</strong> megjelenítő gombja kivilágosodik, a választó «3D Slicer»-re vált, és a lista a Slicer DICOM adatbázis tartalmát mutatja. Nyisson meg egy vizsgálatot — az asztali Slicerben töltődik be.</li>
         <li class="wl-help-figure">
-          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="SlicerWorklist megjelenítőkkel (SlicerDesktop kiválasztva), távoli AI-val és vizsgálatlistával" width="870" height="498" />
+          <img class="wl-help-img" src="./help-images/worklist-viewers-slicer-qt.png" alt="Worklist megjelenítőkkel (SlicerDesktop kiválasztva), távoli AI-val és vizsgálatlistával" width="870" height="498" />
         </li>
         <li>Böngészős konferenciához / élő nézethez használja a <strong>SlicerLive</strong>-ot és a <strong>Konferencia</strong>t, amikor mások követik a csomópont- és kamera/prezentáció-változásokat.</li>
       </ol>
