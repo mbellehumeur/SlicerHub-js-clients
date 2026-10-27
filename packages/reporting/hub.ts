@@ -27,12 +27,10 @@ import HubClient, {
   selectFirstMatchingHubKey,
   batchContextFiles,
   showHubInfoToast,
-  type CastConferenceView,
-} from '@slicer-hub/client';
-import {
   SKIP_STUDY_RELOAD_TOAST,
   sameOpenImagingStudyContext,
-} from '@slicer-hub/context-identity';
+  type CastConferenceView,
+} from '@slicer-hub/client';
 import {
   clearStoredUserName,
   fetchHubStartedAt,

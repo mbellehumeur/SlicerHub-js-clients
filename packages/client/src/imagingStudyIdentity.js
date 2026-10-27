@@ -6,15 +6,15 @@ import {
   extractDicomSeriesUid,
   extractDicomStudyUid,
   extractVolviewSampleId,
-} from '@slicer-hub/client';
+} from './imagingStudyContext.js';
 
 export const SKIP_STUDY_RELOAD_TOAST =
   'Study already open - skipped reload';
 
 export function sameOpenImagingStudyContext(
-  a: unknown[] | null | undefined,
-  b: unknown[] | null | undefined
-): boolean {
+  a,
+  b
+) {
   if (!a?.length || !b?.length) return false;
   const sa = extractVolviewSampleId(a);
   const sb = extractVolviewSampleId(b);

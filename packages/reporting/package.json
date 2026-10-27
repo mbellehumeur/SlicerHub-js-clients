@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "@slicer-hub/client": "*",
-    "@slicer-hub/i18n": "*",
-    "@slicer-hub/context-identity": "*"
+    "@slicer-hub/i18n": "*"
   },
   "devDependencies": {
     "esbuild": "^0.21.5"

@@ -12,7 +12,6 @@ JavaScript monorepo for **Slicer Hub** browser apps and the shared hub client li
 |------|----------|
 | `packages/client` | `@slicer-hub/client` |
 | `packages/i18n` | `@slicer-hub/i18n` |
-| `packages/context-identity` | `@slicer-hub/context-identity` |
 | `packages/worklist` | `@slicer-hub/worklist` |
 | `packages/reporting` | `@slicer-hub/reporting` |
 | `packages/classroom` | `@slicer-hub/classroom` |
@@ -24,8 +23,8 @@ JavaScript monorepo for **Slicer Hub** browser apps and the shared hub client li
 
 The Worklist application allows educators to create cohorts of IDC studies and save/load them as teaching files to use with conferencing. 
 
-It also replicates some of the IHE transactions that a commercial worklist application would use and replies with the current context when qwueried woth status-request.  
-It does not demonstrate  prioritization of an entry based on an AI result.
+It also replicates some of the IHE transactions that a commercial worklist application would use and replies with the current context when queried with status-request.
+It does not demonstrate prioritization of an entry based on an AI result.
 
 This application uses the [Imaging Data Commons](https://imaging.datacommons.cancer.gov/) (IDC) together with [WebSub integration](https://github.com/mbellehumeur/SlicerHub) and open-source viewers to provide a collaborative conferencing environment for education. Lessons are organized as **courses** that educators can extend by adding folders under the courses folder.
 

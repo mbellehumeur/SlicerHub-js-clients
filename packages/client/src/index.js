@@ -267,6 +267,10 @@ import {
   extractStudyContextItem,
   extractVolviewSampleId,
 } from './imagingStudyContext';
+import {
+  SKIP_STUDY_RELOAD_TOAST,
+  sameOpenImagingStudyContext,
+} from './imagingStudyIdentity.js';
 
 // API and usage: Documentation/api/IO_Core_HubClient.md (npm run docs:generate-api);
 // live example: /examples/HubClient.html
@@ -377,6 +381,8 @@ export {
   getActorKeyword,
   getHubEventLower,
   getInboundTargetActorKeyword,
+  SKIP_STUDY_RELOAD_TOAST,
+  sameOpenImagingStudyContext,
   HEARTBEAT,
   httpUrlFromHubEndpoint,
   IDC_CLAUDE_SEND,
@@ -1606,6 +1612,8 @@ export default {
   getActorKeyword,
   getHubEventLower,
   getInboundTargetActorKeyword,
+  SKIP_STUDY_RELOAD_TOAST,
+  sameOpenImagingStudyContext,
   HEARTBEAT,
   httpUrlFromHubEndpoint,
   IDC_CLAUDE_SEND,

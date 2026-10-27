@@ -381,6 +381,18 @@ export function extractOhifMode(context: unknown): string;
 
 export function extractVolviewSampleId(context: unknown): string;
 
+/** Toast when host STATUS would republish an already-open ImagingStudy. */
+export const SKIP_STUDY_RELOAD_TOAST: string;
+
+/**
+ * Compare ImagingStudy-open contexts for "same study already open" skips
+ * (conference take-over STATUS sync, etc.).
+ */
+export function sameOpenImagingStudyContext(
+  a: unknown[] | null | undefined,
+  b: unknown[] | null | undefined
+): boolean;
+
 export function buildFilesImagingStudyOpenContext(params: {
   id: string;
   files: CastImagingStudyFileEntry[];
@@ -1435,6 +1447,8 @@ export declare const HubClient: {
   extractStudyContextItem: typeof extractStudyContextItem;
   extractStudyUIDFromResource: typeof extractStudyUIDFromResource;
   extractVolviewSampleId: typeof extractVolviewSampleId;
+  SKIP_STUDY_RELOAD_TOAST: typeof SKIP_STUDY_RELOAD_TOAST;
+  sameOpenImagingStudyContext: typeof sameOpenImagingStudyContext;
   fetchHubConferences: typeof fetchHubConferences;
   fetchHubConferenceTopics: typeof fetchHubConferenceTopics;
   filePayloadToArrayBuffer: typeof filePayloadToArrayBuffer;

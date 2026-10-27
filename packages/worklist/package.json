@@ -12,8 +12,7 @@
   "dependencies": {
     "@slicer-hub/client": "*",
     "i18next": "^26.4.2",
-    "@slicer-hub/i18n": "*",
-    "@slicer-hub/context-identity": "*"
+    "@slicer-hub/i18n": "*"
   },
   "devDependencies": {
     "concurrently": "^9.2.4",
