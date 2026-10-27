@@ -21,12 +21,13 @@ JavaScript monorepo for **Slicer Hub** browser apps and the shared hub client li
 
 [`packages/worklist`](packages/worklist) (`@slicer-hub/worklist`) is the browser worklist client for Slicer Hub.
 
-The Worklist application allows educators to create cohorts of IDC studies and save/load them as teaching files to use with conferencing. 
+The worklist application allows educators to create cohorts of IDC studies and save/load them as teaching files to use with conferencing. 
 
-It also replicates some of the IHE transactions that a commercial worklist application would use and replies with the current context when queried with status-request.
-It does not demonstrate prioritization of an entry based on an AI result.
+It does not aim to aggregate orders from different organizations but it replicates some of the IHE transactions that a commercial worklist application would use and replies with the current context when queried with status-request events.  It does not demonstrate prioritization of an entry based on an AI result.
 
-This application uses the [Imaging Data Commons](https://imaging.datacommons.cancer.gov/) (IDC) together with [WebSub integration](https://github.com/mbellehumeur/SlicerHub) and open-source viewers to provide a collaborative conferencing environment for education. Lessons are organized as **courses** that educators can extend by adding folders under the courses folder.
+This application uses the [Imaging Data Commons](https://imaging.datacommons.cancer.gov/) (IDC) together with [WebSub integration](https://github.com/mbellehumeur/SlicerHub) and open-source viewers to provide a collaborative conferencing environment for education.
+
+The classrom application allows to create web page activities based on IDC studies.  They are organized as **courses** that educators can extend by adding folders under the courses folder.
 
 The IDC is part of the NCI Cancer Research Data Commons. It hosts large, publicly available collections of cancer imaging data in the cloud so researchers, clinicians, and educators can explore real clinical-grade studies without setting up their own archive.
 
@@ -63,3 +64,28 @@ npm run serve:worklist:watch
 ## License
 
 See [LICENSE](LICENSE).
+
+## Acknowledgements
+
+**3D Slicer** — open-source platform for medical image computing from the [3D Slicer community](https://www.slicer.org/). These clients connect to [Slicer Hub](https://github.com/mbellehumeur/SlicerHub), which runs as a Slicer extension.
+
+**Imaging Data Commons (IDC)** — public cancer imaging collections from the [National Cancer Institute](https://imaging.datacommons.cancer.gov/), used for worklist cohorts, classroom activities, and conferencing demos. The hub example links to or loads studies from their original sources; it does not redistribute them.
+
+**OHIF** — open-source zero-footprint viewer from the [Open Health Imaging Foundation](https://ohif.org/).
+
+**Slim** — interoperable slide microscopy viewer from the [Imaging Data Commons](https://github.com/ImagingDataCommons/slim) (National Cancer Institute).
+
+**Open Anatomy Project** — open anatomy atlases and software from [Brigham and Women’s Hospital](https://www.openanatomy.org/).
+
+**BoneHub Educational Atlas** — Visible Human skeleton models from the [University of Twente](https://bonehub.github.io/Educational-Atlas/) ([CC BY 4.0 meshes](https://huggingface.co/datasets/BoneHub/visible-human-3d-models)).
+
+**SlicerLive** — live 3D Slicer scenes in the browser ([pieper/SlicerLive](https://github.com/pieper/SlicerLive), [gallery](https://pieper.github.io/live)).
+
+**SlicerHeart** — cardiac analysis extension for 3D Slicer ([SlicerHeart](https://github.com/SlicerHeart/SlicerHeart)). If you use it in research, cite Lasso A, et al., *Frontiers in Cardiovascular Medicine* ([2022](https://doi.org/10.3389/fcvm.2022.886549)).
+
+## Citation
+
+If you use Imaging Data Commons data or tooling in research, please cite:
+
+Fedorov A, et al. National Cancer Institute Imaging Data Commons: Toward Transparency, Reproducibility, and Scalability in Imaging Artificial Intelligence. *Radiographics*. 2023. [doi:10.1148/rg.230180](https://doi.org/10.1148/rg.230180).
+
