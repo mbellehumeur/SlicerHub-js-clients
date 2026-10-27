@@ -49,46 +49,70 @@ export const es: LocaleBundle = {
       'Haz clic en uno de los botones {{open}} a la derecha para abrir un CR y usar el icono de varita mágica {{magicWand}} para ejecutar FleXray.',
     introHtml: `
         <p>
-          El propósito original de esta aplicación es ser un actor «worklist client» en un sistema de código abierto
-          <a href="https://profiles.ihe.net/RAD/IRA/" target="_blank" rel="noopener">IHE Integrated Reporting Application</a>
-          y
-          <a href="https://wiki.ihe.net/index.php/AI_Results" target="_blank" rel="noopener">IHE AI Results</a>
-          que reside en una extensión de 3D Slicer llamada
-          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>.
-          Slicer Hub proporciona la infraestructura de mensajería y pretende promover, formar, desarrollar y
-          demostrar la interoperabilidad en aplicaciones de imagen médica.
+          This application uses the
+          <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a>
+          (IDC) together with
+          <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">WebSub integration</a>
+          and open-source viewers to provide a collaborative conferencing
+          environment for education. Lessons are organized as
+          <strong>courses</strong> that educators can extend by adding folders
+          under the courses folder.
         </p>
-        <p>La aplicación es por tanto un componente (<strong>WORKLIST_CLIENT actor</strong>) de un sistema que incluye:</p>
-        <ul class="wl-help-steps">
-          <li>un hub WebSub (<strong>HUB actor</strong>) para la comunicación entre aplicaciones y usuarios</li>
-          <li>visores de imagen médica de código abierto (<strong>IMAGE_DISPLAY actors</strong>)</li>
-          <li>modelos de inferencia de imagen médica de código abierto (<strong>EVIDENCE_CREATOR actors</strong>)</li>
-          <li>un ejemplo de reporting DICOM SR (<strong>REPORT_CREATOR actor</strong>)</li>
-          <li>el <a href="https://imaging.datacommons.cancer.gov/" target="_blank" rel="noopener">Imaging Data Commons</a> y la BD DICOM de <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a> como archivos de solo lectura (<strong>IMAGE_ARCHIVE actor</strong>)</li>
-          <li>un proveedor de autenticación / identidad con integración a los endpoints OIDC del hub o autenticación anónima/mock integrada en el hub</li>
-        </ul>
         <p>
-          La extensión también incluye funciones educativas independientes del flujo IHE
-          Integrated Reporting:
+          The IDC is part of the NCI Cancer Research Data Commons. It hosts large,
+          publicly available collections of cancer imaging data in the cloud so
+          researchers, clinicians, and educators can explore real clinical-grade
+          studies without setting up their own archive.
         </p>
-        <ul class="wl-help-steps">
-          <li>crear, guardar y subir ficheros docentes y cohortes para la preparación de clases</li>
-          <li>conferencia para visualización y enseñanza colaborativa</li>
-          <li>un pincel efímero para anotaciones temporales en conferencia</li>
-          <li>exportación STL para impresión 3D</li>
-        </ul>
         <p>
-          También se ofrecen funcionalidades de investigación y de 3D Slicer, independientes de IHE:
+          IDC invests in education and open tooling so students and teachers can
+          learn medical imaging with authentic data, reproducible workflows, and
+          freely available viewers—not only research pipelines.
+        </p>
+        <p>
+          Viewing is powered by open-source platforms that share IDC’s commitment
+          to accessible medical imaging:
         </p>
         <ul class="wl-help-steps">
-          <li>transferencia de archivos entre aplicaciones</li>
-          <li>escenas y comunicaciones de realidad médica</li>
-          <li>cliente Slicer Qt Image Display</li>
-          <li>acceso a la BD DICOM de Slicer</li>
+          <li>
+            <a href="https://ohif.org/" target="_blank" rel="noopener">OHIF</a>
+            — a web-based medical image viewer built on open standards (including
+            DICOMweb). It is widely used in research and education, and is designed
+            so modes and extensions can grow with teaching and clinical workflows.
+          </li>
+          <li>
+            <a href="https://github.com/ImagingDataCommons/slim" target="_blank" rel="noopener">Slim</a>
+            — an interoperable slide microscopy viewer from the Imaging Data
+            Commons (National Cancer Institute), for teaching and research with
+            whole-slide imaging.
+          </li>
+          <li>
+            <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a>
+            — a desktop platform for visualization, analysis, and research.
+            <a href="https://github.com/mbellehumeur/SlicerHub" target="_blank" rel="noopener">Slicer Hub</a>
+            runs as a Slicer extension so Classroom, conferencing, and image
+            display can share one open messaging stack with the same data and tools.
+          </li>
         </ul>
         <p>
-          La transferencia de archivos permite a los servidores de inferencia devolver sus resultados directamente a los visores
-          sin almacenarlos primero en un PACS. También admite formatos de investigación como NIfTI, NRRD y Zarr.
+          For free, open anatomy education, see the
+          <a href="https://www.openanatomy.org/" target="_blank" rel="noopener">Open Anatomy Project</a>
+          at Brigham and Women’s Hospital. It distributes high-quality anatomy
+          atlases and open-source software worldwide—democratizing medical
+          knowledge for students, clinicians, researchers, and the public,
+          wherever they live and in many languages. Atlases are viewed in the
+          web-based Open Anatomy Browser; the group also created
+          <a href="https://www.slicer.org/" target="_blank" rel="noopener">3D Slicer</a>,
+          which was used to build the atlases.
+        </p>
+        <p>
+          The University of Twente
+          <a href="https://bonehub.github.io/Educational-Atlas/" target="_blank" rel="noopener">BoneHub Educational Atlas</a>
+          offers interactive full-skeleton 3D models of the Visible Human Male
+          and Female for teaching, visualization, and 3D printing. Free STL
+          meshes and IGES/STEP CAD files (CC BY 4.0) are available from the
+          <a href="https://huggingface.co/datasets/BoneHub/visible-human-3d-models" target="_blank" rel="noopener">visible-human-3d-models</a>
+          dataset on Hugging Face.
         </p>
     `,
     howto0Title: 'Cómo conectar Worklist a 3D Slicer.',
