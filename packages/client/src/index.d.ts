@@ -284,6 +284,12 @@ export function collatedResponsesFromRequestResult(
 /** True when the page is served from a public/cloud host (not local dev). */
 export function isRunningInCloud(location?: Location): boolean;
 
+/**
+ * Resolve when the document is past speculative prerender and visible.
+ * Await before hub auto-connect so prefetch does not subscribe.
+ */
+export function whenDocumentActivated(): Promise<void>;
+
 /** True when a Slicer hub endpoint URL points at a cloud/public host. */
 export function isHubEndpointInCloud(hubEndpoint: string): boolean;
 

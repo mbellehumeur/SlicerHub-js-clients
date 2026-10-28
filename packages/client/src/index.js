@@ -9,6 +9,7 @@ import {
   isRunningInCloud,
   selectFirstMatchingHubKey,
 } from './deployment';
+import { whenDocumentActivated } from './documentActivation.js';
 import {
   ANNOTATION_DELETE,
   ANNOTATION_UPDATE,
@@ -421,6 +422,7 @@ export {
   torchXrayVisionAvailableFromStatusResponses,
   mhubAvailableFromStatusResponses,
   normalizeProductToken,
+  whenDocumentActivated,
   HUB_INFERENCE_SERVERS,
   LOCAL_AI_SERVERS,
   buildInferenceRunContextExtras,
@@ -1652,6 +1654,7 @@ export default {
   torchXrayVisionAvailableFromStatusResponses,
   mhubAvailableFromStatusResponses,
   normalizeProductToken,
+  whenDocumentActivated,
   HUB_INFERENCE_SERVERS,
   LOCAL_AI_SERVERS,
   buildInferenceRunContextExtras,

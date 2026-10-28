@@ -30,6 +30,7 @@ import HubClient, {
   showHubInfoToast,
   SKIP_STUDY_RELOAD_TOAST,
   sameOpenImagingStudyContext,
+  whenDocumentActivated,
   type CastConferenceView,
 } from '@slicer-hub/client';
 import {
@@ -1402,7 +1403,7 @@ export function setCourse(state: AppState, courseId: string): void {
   notifyStudy(state);
 }
 
-/** Open MRHead LiveScene or KiTS IDC study in IRA (course study buttons). */
+/** Open a course sample study (LiveScene or IDC) in IRA. */
 export async function openCourseScene(
   state: AppState,
   key: ClassroomSceneKey
@@ -2488,6 +2489,8 @@ export async function rebindSessionUserName(
 }
 
 export async function autoConnect(state: AppState): Promise<void> {
+  await whenDocumentActivated();
+
   const params = new URLSearchParams(window.location.search);
   const urlToken = params.get('id-token')?.trim() || '';
   if (params.get('topic')?.trim()) {

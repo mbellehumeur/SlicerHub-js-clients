@@ -9,17 +9,16 @@ const title: Localized = {
 
 const scans: CourseScanButton[] = [
   {
-    sceneKey: 'mrhead',
-    label: { en: 'Head (8 MB)', fr: 'Tête (8 Mo)' },
-  },
-  {
     sceneKey: 'kits-00038',
     label: { en: 'Thorax - small (19 MB)', fr: 'Thorax — petit (19 Mo)' },
     title: 'KiTS · c4kc kits · KiTS-00038',
   },
   {
     sceneKey: 'totalsegmentator-ct',
-    label: { en: 'Thorax - large (60 MB)', fr: 'Thorax — grand (60 Mo)' },
+    label: {
+      en: 'Thorax with segmentations - large (60 MB)',
+      fr: 'Thorax avec segmentations — grand (60 Mo)',
+    },
     title: 'TotalSegmentator-CT',
   },
   {

@@ -578,7 +578,6 @@ function boot(): void {
     if (openScene?.dataset.openScene) {
       const key = openScene.dataset.openScene;
       if (
-        key === 'mrhead' ||
         key === 'kits-00038' ||
         key === 'totalsegmentator-ct' ||
         key === 'ctaabdomen-panoramix'

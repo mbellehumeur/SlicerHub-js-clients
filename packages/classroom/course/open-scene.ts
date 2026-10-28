@@ -13,7 +13,6 @@ import { LOG_PREFIX, REPORTING_ACTOR } from '../config';
 import { openHubViewer } from '../viewers';
 
 export type ClassroomSceneKey =
-  | 'mrhead'
   | 'kits-00038'
   | 'totalsegmentator-ct'
   | 'ctaabdomen-panoramix';
@@ -42,17 +41,9 @@ const PATIENT_REFERENCE =
   'Patient/503824b8-fe8c-4227-b061-7181ba6c3926';
 
 export const CLASSROOM_SCENES: Record<
-  'mrhead' | 'totalsegmentator-ct' | 'ctaabdomen-panoramix',
+  'totalsegmentator-ct' | 'ctaabdomen-panoramix',
   SceneMeta
 > = {
-  mrhead: {
-    id: 'scene-mrhead',
-    name: 'MRHead',
-    modality: 'MR',
-    sourceUrl: 'https://pieper.github.io/live/legacy/scenes/MRHead.json',
-    blobBase:
-      'https://js2.jetstream-cloud.org:8001/swift/v1/slicerlive/MRHead/blobs/',
-  },
   'totalsegmentator-ct': {
     id: 'scene-totalsegmentator-ct',
     name: 'TotalSegmentator-CT',
@@ -281,7 +272,6 @@ export async function openClassroomSceneInIra(
   }
   try {
     if (
-      key === 'mrhead' ||
       key === 'totalsegmentator-ct' ||
       key === 'ctaabdomen-panoramix'
     ) {

@@ -38,6 +38,7 @@ import HubClient, {
   showHubInfoToast,
   SKIP_STUDY_RELOAD_TOAST,
   sameOpenImagingStudyContext,
+  whenDocumentActivated,
   type CastConferenceView,
 } from '@slicer-hub/client';
 import {
@@ -2664,6 +2665,8 @@ export async function rebindSessionUserName(
 }
 
 export async function autoConnect(state: AppState): Promise<void> {
+  await whenDocumentActivated();
+
   await syncStoredUserNameWithHub(state);
   setConnection(state, 'connecting', 'Authenticating');
 

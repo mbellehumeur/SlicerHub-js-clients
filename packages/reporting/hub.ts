@@ -29,6 +29,7 @@ import HubClient, {
   showHubInfoToast,
   SKIP_STUDY_RELOAD_TOAST,
   sameOpenImagingStudyContext,
+  whenDocumentActivated,
   type CastConferenceView,
 } from '@slicer-hub/client';
 import {
@@ -2386,6 +2387,8 @@ export async function rebindSessionUserName(
 }
 
 export async function autoConnect(state: AppState): Promise<void> {
+  await whenDocumentActivated();
+
   const params = new URLSearchParams(window.location.search);
   const urlToken = params.get('id-token')?.trim() || '';
   if (params.get('topic')?.trim()) {

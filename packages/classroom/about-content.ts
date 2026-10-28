@@ -24,18 +24,14 @@ const en: ClassroomAbout = {
           (IDC) together with
           <a href="${HUB_URL}" target="_blank" rel="noopener">WebSub integration</a>
           and open-source viewers to provide a collaborative conferencing
-          environment for education. Lessons are organized as
-          <strong>courses</strong> that educators can extend by adding folders
+          environment for education. Educators can extend activities by adding folders
           under the courses folder.
         </p>
         <p>
           The IDC is part of the NCI Cancer Research Data Commons. It hosts large,
           publicly available collections of cancer imaging data in the cloud so
           researchers, clinicians, and educators can explore real clinical-grade
-          studies without setting up their own archive.
-        </p>
-        <p>
-          IDC invests in education and open tooling so students and teachers can
+          studies without setting up their own archive. IDC invests in education and open tooling so students and teachers can
           learn medical imaging with authentic data, reproducible workflows, and
           freely available viewers—not only research pipelines.
         </p>
@@ -65,7 +61,7 @@ const en: ClassroomAbout = {
           </li>
         </ul>
         <p>
-          For free, open anatomy education, see the
+          For open anatomy education, see the
           <a href="${OPEN_ANATOMY_URL}" target="_blank" rel="noopener">Open Anatomy Project</a>
           at Brigham and Women’s Hospital. It distributes high-quality anatomy
           atlases and open-source software worldwide—democratizing medical
