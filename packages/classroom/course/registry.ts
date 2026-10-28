@@ -1,16 +1,22 @@
 import { anatomicalPlanesCourse } from './anatomical-planes';
+import { catHeadAnatomyCourse } from './cat-head-anatomy';
 import { cbctCourse } from './cbct';
 import { cellStructuresCourse } from './cell-structures';
+import { dogThoraxAbdomenCourse } from './dog-thorax-abdomen';
+import { openAnatomyBrainCourse } from './open-anatomy-brain';
 import type { CourseDefinition, CourseId, CourseTerm } from './types';
 
 export type { CourseDefinition, CourseId, CourseTerm } from './types';
-export { pickLocale } from './types';
+export { coursePanelVisibility, pickLocale } from './types';
 
 export const DEFAULT_COURSE_ID: CourseId = 'anatomical-planes';
 
 /** Ordered list for the course dropdown. */
 export const COURSES: CourseDefinition[] = [
   anatomicalPlanesCourse,
+  catHeadAnatomyCourse,
+  dogThoraxAbdomenCourse,
+  openAnatomyBrainCourse,
   cellStructuresCourse,
   cbctCourse,
 ];

@@ -1,8 +1,27 @@
 /** Shared course shapes for Classroom multi-course support. */
 
-export type CourseId = 'anatomical-planes' | 'cell-structures' | 'cbct';
+export type CourseId =
+  | 'anatomical-planes'
+  | 'cell-structures'
+  | 'cbct'
+  | 'cat-head-anatomy'
+  | 'dog-thorax-abdomen'
+  | 'open-anatomy-brain';
 
 export type Localized = { en: string; fr: string };
+
+/** External teaching viewer embed (e.g. FU Berlin MView TeachingPortal). */
+export type CourseEmbed = {
+  id: string;
+  /** Card heading when multiple embeds; optional for single-embed courses. */
+  title?: Localized;
+  iframeSrc?: string;
+  iframeTitle?: string;
+  openHref: string;
+  openLabel?: Localized;
+  /** Parent toolbar for MView TeachingPortal postMessage controls. */
+  toolbar?: 'mview';
+};
 
 export type DemoKind = 'axis' | 'relative';
 
@@ -34,6 +53,9 @@ export type CourseContent = {
   course: string;
   glossary: string;
   intro: string;
+  /** Optional link appended to the intro paragraph. */
+  introLinkHref?: string;
+  introLinkLabel?: string;
   activityLabel: string;
   activityText: string;
   instructionsLabel: string;
@@ -56,6 +78,18 @@ export type CourseContent = {
   viewerFigureHeight?: number;
   /** Enlarge leading a/b/c in term labels. */
   letterLabels?: boolean;
+  /** Acknowledgments footer (e.g. MView credit). */
+  ackTitle?: string;
+  ackBody?: string;
+  ackLinks?: ReadonlyArray<{ label: string; href: string }>;
+  /** Open-in-new-tab control label for embeds. */
+  openInNewTabLabel?: string;
+  /** MView embed: toggle anatomical labels. */
+  toggleLabelsLabel?: string;
+  /** MView embed: start quiz mode. */
+  startQuizLabel?: string;
+  /** MView embed: leave quiz mode. */
+  stopQuizLabel?: string;
   bonus?: {
     title: string;
     pitch: string;
@@ -74,8 +108,31 @@ export type CourseDefinition = {
   title: Localized;
   terms: CourseTerm[];
   scans: CourseScanButton[];
+  /** Optional external iframe embeds (MView Teaching, etc.). */
+  embeds?: ReadonlyArray<CourseEmbed>;
+  /**
+   * Show snapshots / volume-seg scene panel (`#reportDisplay`).
+   * Default true when omitted.
+   */
+  showScenePanel?: boolean;
+  /**
+   * Show classroom conference chat panel.
+   * Default true when omitted.
+   */
+  showChatPanel?: boolean;
   contentFor: (locale?: string) => CourseContent;
 };
+
+/** Resolved panel visibility (omitted flags default to shown). */
+export function coursePanelVisibility(course: CourseDefinition): {
+  showScenePanel: boolean;
+  showChatPanel: boolean;
+} {
+  return {
+    showScenePanel: course.showScenePanel !== false,
+    showChatPanel: course.showChatPanel !== false,
+  };
+}
 
 export function pickLocale(loc: Localized, locale: string): string {
   return String(locale || '')

@@ -52,9 +52,153 @@ function stubGlossaryHtml(
     </div>`;
 }
 
+function acknowledgmentHtml(
+  content: ReturnType<CourseDefinition['contentFor']>
+): string {
+  if (!content.ackTitle && !content.ackBody && !content.ackLinks?.length) {
+    return '';
+  }
+  const links = (content.ackLinks || [])
+    .map(
+      (link) => `<a
+          href="${escapeHtml(link.href)}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >${escapeHtml(link.label)}</a>`
+    )
+    .join('<span class="rp-course-ack-sep" aria-hidden="true"> · </span>');
+  return `
+    <section class="rp-course-ack" aria-label="${escapeHtml(content.ackTitle || 'Acknowledgments')}">
+      ${
+        content.ackTitle
+          ? `<h3 class="rp-course-ack-title">${escapeHtml(content.ackTitle)}</h3>`
+          : ''
+      }
+      ${
+        content.ackBody
+          ? `<p class="rp-course-ack-body">${escapeHtml(content.ackBody)}</p>`
+          : ''
+      }
+      ${links ? `<p class="rp-course-ack-links">${links}</p>` : ''}
+    </section>`;
+}
+
+function embedsHtml(
+  course: CourseDefinition,
+  content: ReturnType<CourseDefinition['contentFor']>,
+  locale: string
+): string {
+  const embeds = course.embeds || [];
+  if (!embeds.length) return '';
+
+  const openLabel = content.openInNewTabLabel || 'Open in new tab';
+  const toggleLabelsLabel = content.toggleLabelsLabel || 'Labels on/off';
+  const startQuizLabel = content.startQuizLabel || 'Start quiz';
+  const stopQuizLabel = content.stopQuizLabel || 'Stop quiz';
+  const cards = embeds
+    .map((embed) => {
+      const heading = embed.title
+        ? `<h3 class="rp-mview-card-title">${escapeHtml(pickLocale(embed.title, locale))}</h3>`
+        : '';
+      const src = String(embed.iframeSrc || '').trim();
+      const iframeTitle =
+        String(embed.iframeTitle || '').trim() ||
+        (embed.title ? pickLocale(embed.title, locale) : 'MView Teaching');
+      const toolbar =
+        src && embed.toolbar === 'mview'
+          ? `<div class="rp-mview-toolbar" role="toolbar" aria-label="MView Teaching">
+            <button
+              type="button"
+              class="rp-viewer-btn"
+              data-mview-action="toggleLabels"
+            >${escapeHtml(toggleLabelsLabel)}</button>
+            <button
+              type="button"
+              class="rp-viewer-btn"
+              data-mview-action="startQuiz"
+            >${escapeHtml(startQuizLabel)}</button>
+            <button
+              type="button"
+              class="rp-viewer-btn"
+              data-mview-action="stopQuiz"
+            >${escapeHtml(stopQuizLabel)}</button>
+          </div>`
+          : '';
+      const iframe = src
+        ? `<iframe
+            class="rp-mview-frame"
+            src="${escapeHtml(src)}"
+            title="${escapeHtml(iframeTitle)}"
+            loading="lazy"
+            allow="fullscreen; clipboard-write"
+          ></iframe>`
+        : content.comingSoon
+          ? `<p class="rp-muted">${escapeHtml(content.comingSoon)}</p>`
+          : '';
+      const openHref = String(embed.openHref || '').trim();
+      const openLink = openHref
+        ? `<p class="rp-mview-open"><a
+              href="${escapeHtml(openHref)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >${escapeHtml(
+              embed.openLabel
+                ? pickLocale(embed.openLabel, locale)
+                : openLabel
+            )}</a></p>`
+        : '';
+      return `<div class="rp-mview-card" data-embed-id="${escapeHtml(embed.id)}">
+        ${heading}
+        ${toolbar}
+        ${iframe}
+        ${openLink}
+      </div>`;
+    })
+    .join('');
+
+  const instructions =
+    content.instructionSteps.length > 0
+      ? `<div class="rp-instructions-block">
+            <span class="rp-instructions-label">${escapeHtml(content.instructionsLabel)}</span>
+            <ol class="rp-instructions-list">
+              ${content.instructionSteps
+                .map((step) => `<li>${instructionStepHtml(step)}</li>`)
+                .join('')}
+            </ol>
+          </div>`
+      : '';
+
+  const introLink =
+    content.introLinkHref && content.introLinkLabel
+      ? ` <a
+          href="${escapeHtml(content.introLinkHref)}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >${escapeHtml(content.introLinkLabel)}</a>`
+      : '';
+  const intro = content.intro
+    ? `<p class="rp-planes-intro">${escapeHtml(content.intro)}${introLink}</p>`
+    : '';
+
+  return `
+    <div class="rp-section rp-mview-section">
+      ${intro}
+      <div class="rp-activity-row">
+        <span class="rp-activity-label">${escapeHtml(content.activityLabel)}</span>
+        <span class="rp-activity-text">${escapeHtml(content.activityText)}</span>
+      </div>
+      ${instructions}
+      <div class="rp-mview-embeds">${cards}</div>
+      ${acknowledgmentHtml(content)}
+    </div>`;
+}
+
 function glossaryHtml(state: AppState, locale: string): string {
   const course = getCourse(state.courseId);
   const content = course.contentFor(locale);
+  if (course.embeds?.length) {
+    return embedsHtml(course, content, locale);
+  }
   if (!course.terms.length) {
     return stubGlossaryHtml(content);
   }

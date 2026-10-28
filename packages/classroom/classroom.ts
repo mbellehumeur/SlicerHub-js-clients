@@ -53,8 +53,10 @@ import {
   type AppState,
 } from './hub';
 import { renderCoursePanel } from './course/course-ui';
+import { postMviewCommand } from './course/mview-embed-controls';
 import {
   COURSES,
+  coursePanelVisibility,
   getCourse,
   pickLocale,
 } from './course/registry';
@@ -366,13 +368,37 @@ function boot(): void {
     }
   };
 
+  const syncCourseLayoutPanels = (s: AppState): void => {
+    const { showScenePanel, showChatPanel } = coursePanelVisibility(
+      getCourse(s.courseId)
+    );
+    const scenePanel = document.querySelector(
+      '.rp-main-classroom > .rp-scene-panel'
+    ) as HTMLElement | null;
+    const chatPanel = document.querySelector(
+      '.rp-main-classroom > .rp-chat-panel'
+    ) as HTMLElement | null;
+    if (scenePanel) scenePanel.hidden = !showScenePanel;
+    if (chatPanel) chatPanel.hidden = !showChatPanel;
+    document.documentElement.classList.toggle(
+      'rp-course-hide-scene',
+      !showScenePanel
+    );
+    document.documentElement.classList.toggle(
+      'rp-course-hide-chat',
+      !showChatPanel
+    );
+  };
+
   const remountCourse = (s: AppState): void => {
+    syncCourseLayoutPanels(s);
     renderCoursePanel(glossaryPanel, s);
   };
 
   courseSelect?.addEventListener('change', () => {
     setCourse(state, courseSelect.value);
     syncHeaderTitle();
+    remountCourse(state);
   });
 
   const syncConferenceLogUi = (s: AppState): void => {
@@ -574,6 +600,19 @@ function boot(): void {
 
   const onCourseClick = (ev: MouseEvent): void => {
     const t = ev.target as HTMLElement | null;
+    const mviewAction = t?.closest(
+      '[data-mview-action]'
+    ) as HTMLElement | null;
+    if (mviewAction?.dataset.mviewAction) {
+      const card = mviewAction.closest(
+        '.rp-mview-card'
+      ) as HTMLElement | null;
+      const iframe = card?.querySelector(
+        'iframe.rp-mview-frame'
+      ) as HTMLIFrameElement | null;
+      postMviewCommand(iframe, mviewAction.dataset.mviewAction);
+      return;
+    }
     const openScene = t?.closest('[data-open-scene]') as HTMLElement | null;
     if (openScene?.dataset.openScene) {
       const key = openScene.dataset.openScene;

@@ -2182,6 +2182,93 @@ button {
   gap: 8px;
 }
 
+.rp-mview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rp-mview-embeds {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rp-mview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rp-mview-card-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--rp-fg);
+}
+
+.rp-mview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.rp-mview-frame {
+  display: block;
+  width: 100%;
+  min-height: 480px;
+  height: min(70vh, 640px);
+  border: 1px solid var(--rp-border, #4a628a);
+  border-radius: 6px;
+  background: #0b1220;
+}
+
+.rp-mview-open {
+  margin: 0;
+}
+
+.rp-mview-open a {
+  color: var(--rp-accent, #6eb5ff);
+}
+
+.rp-course-ack {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rp-border, #4a628a);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rp-course-ack-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--rp-fg);
+}
+
+.rp-course-ack-body {
+  margin: 0;
+  color: var(--rp-muted, #9aa8bc);
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+
+.rp-course-ack-links {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.rp-course-ack-links a {
+  color: var(--rp-accent, #6eb5ff);
+}
+
+.rp-course-ack-sep {
+  color: var(--rp-muted, #9aa8bc);
+}
+
 .rp-instructions-block {
   display: flex;
   flex-direction: column;
@@ -2420,6 +2507,11 @@ button {
 
 .rp-main-classroom > .rp-scene-panel .rp-collapse {
   margin: 0;
+}
+
+.rp-main-classroom > .rp-scene-panel[hidden],
+.rp-main-classroom > .rp-chat-panel[hidden] {
+  display: none !important;
 }
 
 .rp-conference-log {

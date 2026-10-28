@@ -1,12 +1,12 @@
-/** CBCT course stub chrome (EN/FR). */
+/** Dental course stub chrome (EN/FR). */
 
 import type { CourseContent } from '../types';
 
 const en: CourseContent = {
-  headerTitle: 'CBCT',
-  course: 'CBCT',
-  glossary: 'CBCT',
-  intro: 'CBCT — coming soon.',
+  headerTitle: 'Dental',
+  course: 'Dental',
+  glossary: 'Dental',
+  intro: 'Dental — coming soon.',
   activityLabel: 'Activity:',
   activityText: 'Content for this course is not available yet.',
   instructionsLabel: 'Instructions:',
@@ -19,10 +19,10 @@ const en: CourseContent = {
 };
 
 const fr: CourseContent = {
-  headerTitle: 'CBCT',
-  course: 'CBCT',
-  glossary: 'CBCT',
-  intro: 'CBCT — bientôt disponible.',
+  headerTitle: 'Dentaire',
+  course: 'Dentaire',
+  glossary: 'Dentaire',
+  intro: 'Dentaire — bientôt disponible.',
   activityLabel: 'Activité :',
   activityText: 'Le contenu de ce cours n’est pas encore disponible.',
   instructionsLabel: 'Instructions :',

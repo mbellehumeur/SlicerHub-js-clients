@@ -2,8 +2,8 @@ import type { CourseDefinition, Localized } from '../types';
 import { cbctContentFor } from './strings';
 
 const title: Localized = {
-  en: 'CBCT',
-  fr: 'CBCT',
+  en: 'Dental',
+  fr: 'Dentaire',
 };
 
 export const cbctCourse: CourseDefinition = {
