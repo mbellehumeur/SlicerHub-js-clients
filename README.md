@@ -17,7 +17,7 @@ JavaScript monorepo for **Slicer Hub** browser apps and the shared hub client li
 | `packages/classroom` | `@slicer-hub/classroom` |
 | `packages/ohif-extension` | `@slicer-hub/ohif-extension` |
 
-## Worklist
+## Worklist and Classroom
 
 [`packages/worklist`](packages/worklist) (`@slicer-hub/worklist`) is the browser worklist client for Slicer Hub.
 

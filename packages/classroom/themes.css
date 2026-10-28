@@ -1440,6 +1440,14 @@ button {
   margin-left: auto;
 }
 
+.rp-column-order-label {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .rp-section-title {
   margin: 0;
   flex: 0 0 auto;
