@@ -14,6 +14,9 @@ const OPEN_ANATOMY_URL = 'https://www.openanatomy.org/';
 const EDUCATIONAL_ATLAS_URL = 'https://bonehub.github.io/Educational-Atlas/';
 const BONEHUB_DATASET_URL =
   'https://huggingface.co/datasets/BoneHub/visible-human-3d-models';
+const MVIEW_FU_URL = 'https://it.vetmed.fu-berlin.de/#teaching';
+const MVIEW_FACHSOFTWARE_URL =
+  'https://www.vetmed.fu-berlin.de/service/fachbereichsverwaltung/it/Fachsoftware/index.html';
 
 const en: ClassroomAbout = {
   title: 'About Classroom',
@@ -58,6 +61,16 @@ const en: ClassroomAbout = {
             <a href="${HUB_URL}" target="_blank" rel="noopener">Slicer Hub</a>
             runs as a Slicer extension so Classroom, conferencing, and image
             display can share one open messaging stack with the same data and tools.
+          </li>
+          <li>
+            <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">MView Teaching</a>
+            (Freie Universität Berlin, Fachbereich Veterinärmedizin · IT) —
+            embeddable teaching demos with 3D volumes, anatomical labels, and
+            quiz mode on CT and radiograph examples. Public demos and imaging
+            services are described on
+            <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">IT Vetmed FU-Berlin</a>;
+            see also
+            <a href="${MVIEW_FACHSOFTWARE_URL}" target="_blank" rel="noopener">Fachsoftware · MView</a>.
           </li>
         </ul>
         <p>
@@ -134,6 +147,16 @@ const fr: ClassroomAbout = {
             s’exécute comme extension Slicer afin que Classroom, la conférence et
             l’affichage d’images partagent une même pile de messagerie ouverte,
             avec les mêmes données et outils.
+          </li>
+          <li>
+            <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">MView Teaching</a>
+            (Freie Universität Berlin, Fachbereich Veterinärmedizin · IT) —
+            démos pédagogiques intégrables avec volumes 3D, labels anatomiques et
+            mode quiz sur des exemples CT et radiographiques. Les démos publiques
+            et services d’imagerie sont décrits sur
+            <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">IT Vetmed FU-Berlin</a>&nbsp;;
+            voir aussi
+            <a href="${MVIEW_FACHSOFTWARE_URL}" target="_blank" rel="noopener">Fachsoftware · MView</a>.
           </li>
         </ul>
         <p>

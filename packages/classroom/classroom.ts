@@ -53,7 +53,7 @@ import {
   type AppState,
 } from './hub';
 import { renderCoursePanel } from './course/course-ui';
-import { postMviewCommand } from './course/mview-embed-controls';
+import { sendMviewCommand } from './course/mview-embed-controls';
 import {
   COURSES,
   coursePanelVisibility,
@@ -610,7 +610,7 @@ function boot(): void {
       const iframe = card?.querySelector(
         'iframe.rp-mview-frame'
       ) as HTMLIFrameElement | null;
-      postMviewCommand(iframe, mviewAction.dataset.mviewAction);
+      sendMviewCommand(iframe, mviewAction.dataset.mviewAction);
       return;
     }
     const openScene = t?.closest('[data-open-scene]') as HTMLElement | null;

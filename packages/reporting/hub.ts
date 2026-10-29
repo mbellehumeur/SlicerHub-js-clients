@@ -2235,8 +2235,9 @@ type HostStatusResponseItem = {
 };
 
 /**
- * After Join and follow: ask the host worklist (on hostTopic) for open ImagingStudy
+ * After Join and follow: ask anyone on hostTopic for open ImagingStudy
  * and adopt it as the local open context.
+ * Prefers a worklist ImagingStudy when several peers respond.
  */
 export async function requestStatusFromHostWorklist(
   state: AppState,
@@ -2261,12 +2262,12 @@ export async function requestStatusFromHostWorklist(
   }
 
   try {
-    console.info(`${LOG_PREFIX} STATUS request → ${WORKLIST_ACTOR} topic=`, topic);
+    console.info(`${LOG_PREFIX} STATUS request → * topic=`, topic);
     const result = await state.client.request({
       'subscriber.name': subscriber,
       'subscriber.product.name': PRODUCT_NAME,
       'subscriber.actor': REPORTING_ACTOR,
-      'target.actor': WORKLIST_ACTOR,
+      'target.actor': '*',
       event: {
         'hub.event': requestEventFor('STATUS'),
         'hub.topic': topic,
@@ -2298,6 +2299,7 @@ export async function requestStatusFromHostWorklist(
       const actor = String(item?.actor ?? '')
         .trim()
         .toUpperCase();
+      // Prefer worklist when present; otherwise first ImagingStudy (classroom/reporting/…).
       if (actor === WORKLIST_ACTOR || chosen === undefined) {
         chosen = itemData;
         if (actor === WORKLIST_ACTOR) break;
