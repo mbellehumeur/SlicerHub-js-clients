@@ -1,6 +1,7 @@
 /**
- * Copy products/*.info.json from SlicerHub (or legacy cast extension) into src/inferenceInfo/.
- * Non-fatal if products dir is missing and src/inferenceInfo already has files.
+ * Copy products/<name>/<name>.info.json from SlicerHub (or legacy cast extension)
+ * into src/inferenceInfo/. Non-fatal if products dir is missing and
+ * src/inferenceInfo already has files.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,10 +23,10 @@ const outDir = path.join(clientRoot, 'src', 'inferenceInfo');
 /** @type {Array<{ name: string, srcRel: string }>} */
 const FILES = [
   { name: 'mhub.info.json', srcRel: path.join('mhub', 'mhub.info.json') },
-  { name: 'lung_screening.info.json', srcRel: 'lung_screening.info.json' },
-  { name: 'total_segmentator.info.json', srcRel: 'total_segmentator.info.json' },
-  { name: 'neuro_seg.info.json', srcRel: 'neuro_seg.info.json' },
-  { name: 'dental_segmentator.info.json', srcRel: 'dental_segmentator.info.json' },
+  { name: 'lung_screening.info.json', srcRel: path.join('lung_screening', 'lung_screening.info.json') },
+  { name: 'total_segmentator.info.json', srcRel: path.join('total_segmentator', 'total_segmentator.info.json') },
+  { name: 'neuro_seg.info.json', srcRel: path.join('neuro_seg', 'neuro_seg.info.json') },
+  { name: 'dental_segmentator.info.json', srcRel: path.join('dental_segmentator', 'dental_segmentator.info.json') },
   { name: 'torchxrayvision.info.json', srcRel: path.join('torchxrayvision', 'torchxrayvision.info.json') },
   { name: 'flexray.info.json', srcRel: path.join('flexray', 'flexray.info.json') },
 ];

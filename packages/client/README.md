@@ -70,14 +70,14 @@ for the class hierarchy (`getClassName()` returns `HubClient`).
 ```bash
 npm install
 
-# Sync Remote AI info JSON from SlicerHub products/*.info.json, then build
+# Sync Remote AI info JSON from SlicerHub products/<name>/*.info.json, then build
 npm run build
 ```
 
 Output: `dist/hub-client.js` (ESM), `dist/hub-client.cjs` (CJS), `dist/index.d.ts`.
 
 Inference server catalog copy lives next to each service-provider script as
-`HubInterface/service_providers/products/*.info.json`. `npm run build` (or
+`HubInterface/service_providers/products/<name>/<name>.info.json`. `npm run build` (or
 `npm run sync:inference-info`) copies those into `src/inferenceInfo/` for the published package.
 
 ## Protocol parity

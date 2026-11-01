@@ -23,6 +23,8 @@ import HubClient, {
   resolveHubPublishEnvelopeFields,
   resolveTargetActorForWire,
   resolveTargetProductNameForWire,
+  sameOpenImagingStudyContext,
+  SKIP_STUDY_RELOAD_TOAST,
   totalSegmentatorAvailableFromStatusResponses,
   type CastPublishEnvelopeFields,
 } from '@slicer-hub/client';
@@ -862,6 +864,26 @@ export default class HubService extends PubSubService {
     const event = resolved?.event;
     if (!event) {
       return null;
+    }
+    const incoming = normalizeImagingStudyContext(event.context);
+    if (
+      sameOpenImagingStudyContext(incoming, this._lastImagingStudyOpenContext)
+    ) {
+      console.info(
+        `${LOG_PREFIX} imagingstudy-open skipped: same study already open`
+      );
+      this._rememberImagingStudyOpenContext(incoming);
+      const uiNotificationService =
+        this._servicesManager?.services?.uiNotificationService;
+      uiNotificationService?.show?.({
+        title: 'Imaging study',
+        message: SKIP_STUDY_RELOAD_TOAST,
+        type: 'info',
+        id: 'hub-imagingstudy-open-skip',
+        allowDuplicates: false,
+        duration: 2500,
+      });
+      return { event, message: resolved };
     }
     await this._imagingStudyHandler.handleOpen(event, resolved);
     this._rememberImagingStudyOpenContext(event.context);

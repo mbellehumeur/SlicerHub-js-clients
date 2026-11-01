@@ -5,7 +5,7 @@ export const HUB_CONFERENCE_POLL_MS = 30_000;
 export const HUB_CONFERENCE_EXIT_ACK_MS = 1200;
 
 export const HUB_CONFERENCE_TITLE_PRESETS = [
-  'ST-444 · Anatomie humaine',
+  'Anatomy class',
   'Tumor Board',
   'Case discussion',
   'Pedicle screw',
