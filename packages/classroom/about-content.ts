@@ -1,4 +1,6 @@
-/** Classroom About modal copy (EN/FR). Independent of Worklist help:introHtml. */
+/** Classroom About modal copy (EN/FR/DE). Independent of Worklist help:introHtml. */
+
+import { resolveCourseLocale } from './course/types';
 
 export type ClassroomAbout = {
   title: string;
@@ -100,26 +102,23 @@ const fr: ClassroomAbout = {
   title: 'À propos de Classroom',
   bodyHtml: `
         <p>
-          L’
+          Cette application s’appuie sur l’
           <a href="${IDC_URL}" target="_blank" rel="noopener">Imaging Data Commons</a>
-          (IDC) fait partie du Cancer Research Data Commons du NCI. Il héberge dans
+          (IDC), l’
+          <a href="${HUB_URL}" target="_blank" rel="noopener">intégration WebSub</a>
+          et des visionneuses open source pour offrir un environnement de
+          conférence collaborative dédié à l’enseignement. Les enseignants peuvent
+          étendre les activités en ajoutant des dossiers sous le dossier des cours.
+        </p>
+        <p>
+          L’IDC fait partie du Cancer Research Data Commons du NCI. Il héberge dans
           le cloud de vastes collections d’imagerie oncologique en accès libre, afin
           que chercheurs, cliniciens et enseignants puissent explorer de vraies
-          études de qualité clinique sans déployer leur propre archive.
-        </p>
-        <p>
-          L’IDC s’investit dans l’éducation et les outils ouverts pour que
-          étudiants et enseignants puissent apprendre l’imagerie médicale avec des
-          données authentiques, des flux reproductibles et des visionneuses libres
-          — pas seulement des pipelines de recherche.
-        </p>
-        <p>
-          Cette application <strong>Classroom</strong> est un client pédagogique
-          hébergé par le Hub. Elle s’appuie sur l’IDC (et d’autres archives
-          ouvertes) avec des affichages d’images en direct pour glossaires,
-          examens d’exemple et conférences collaboratives. Les leçons sont
-          organisées en <strong>cours</strong> que les enseignants peuvent
-          étendre dans le paquet Classroom.
+          études de qualité clinique sans déployer leur propre archive. L’IDC
+          s’investit dans l’éducation et les outils ouverts pour que étudiants et
+          enseignants puissent apprendre l’imagerie médicale avec des données
+          authentiques, des flux reproductibles et des visionneuses libres — pas
+          seulement des pipelines de recherche.
         </p>
         <p>
           L’affichage s’appuie sur des plateformes open source qui partagent
@@ -151,7 +150,7 @@ const fr: ClassroomAbout = {
           <li>
             <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">MView Teaching</a>
             (Freie Universität Berlin, Fachbereich Veterinärmedizin · IT) —
-            démos pédagogiques intégrables avec volumes 3D, labels anatomiques et
+            démos pédagogiques intégrables avec volumes 3D, annotations anatomiques et
             mode quiz sur des exemples CT et radiographiques. Les démos publiques
             et services d’imagerie sont décrits sur
             <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">IT Vetmed FU-Berlin</a>&nbsp;;
@@ -185,12 +184,91 @@ const fr: ClassroomAbout = {
       `,
 };
 
-/** Resolve About copy for the active app locale (FR when French; else English). */
+const de: ClassroomAbout = {
+  title: 'Über Classroom',
+  bodyHtml: `
+        <p>
+          Diese Anwendung nutzt die
+          <a href="${IDC_URL}" target="_blank" rel="noopener">Imaging Data Commons</a>
+          (IDC) zusammen mit der
+          <a href="${HUB_URL}" target="_blank" rel="noopener">WebSub-Integration</a>
+          und Open-Source-Viewern, um eine kollaborative Konferenzumgebung für die
+          Lehre bereitzustellen. Lehrende können Aktivitäten erweitern, indem sie
+          Ordner unter dem Kursordner hinzufügen.
+        </p>
+        <p>
+          Die IDC ist Teil der NCI Cancer Research Data Commons. Sie hostet große,
+          öffentlich verfügbare Sammlungen von Krebsbilddaten in der Cloud, sodass
+          Forschende, Kliniker und Lehrende echte klinische Studien erkunden können,
+          ohne ein eigenes Archiv aufzubauen. Die IDC investiert in Bildung und offene
+          Werkzeuge, damit Studierende und Lehrende medizinische Bildgebung mit
+          authentischen Daten, reproduzierbaren Workflows und frei verfügbaren
+          Viewern lernen können — nicht nur Forschungspipelines.
+        </p>
+        <p>
+          Die Darstellung basiert auf Open-Source-Plattformen, die das Engagement
+          der IDC für zugängliche medizinische Bildgebung teilen:
+        </p>
+        <ul class="wl-help-steps">
+          <li>
+            <a href="${OHIF_URL}" target="_blank" rel="noopener">OHIF</a>
+            — ein webbasierter medizinischer Bildviewer auf offenen Standards
+            (einschließlich DICOMweb). Weit verbreitet in Forschung und Lehre und
+            so gestaltet, dass Modi und Erweiterungen mit pädagogischen und
+            klinischen Workflows wachsen können.
+          </li>
+          <li>
+            <a href="${SLIM_URL}" target="_blank" rel="noopener">Slim</a>
+            — ein interoperabler Viewer für Schnittmikroskopie aus den Imaging Data
+            Commons (National Cancer Institute) für Lehre und Forschung mit
+            Whole-Slide-Imaging.
+          </li>
+          <li>
+            <a href="${SLICER_URL}" target="_blank" rel="noopener">3D Slicer</a>
+            — eine Desktop-Plattform für Visualisierung, Analyse und Forschung.
+            <a href="${HUB_URL}" target="_blank" rel="noopener">Slicer Hub</a>
+            läuft als Slicer-Erweiterung, sodass Classroom, Konferenz und
+            Bildanzeige denselben offenen Messaging-Stack mit denselben Daten und
+            Werkzeugen nutzen.
+          </li>
+          <li>
+            <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">MView Teaching</a>
+            (Freie Universität Berlin, Fachbereich Veterinärmedizin · IT) —
+            einbettbare Lehrdemos mit 3D-Volumina, anatomischen Beschriftungen und
+            Quizmodus an CT- und Röntgenbeispielen. Öffentliche Demos und
+            Bildgebungsdienste sind beschrieben unter
+            <a href="${MVIEW_FU_URL}" target="_blank" rel="noopener">IT Vetmed FU-Berlin</a>;
+            siehe auch
+            <a href="${MVIEW_FACHSOFTWARE_URL}" target="_blank" rel="noopener">Fachsoftware · MView</a>.
+          </li>
+        </ul>
+        <p>
+          Für offene Anatomielehre siehe das
+          <a href="${OPEN_ANATOMY_URL}" target="_blank" rel="noopener">Open Anatomy Project</a>
+          am Brigham and Women’s Hospital. Es vertreibt weltweit hochwertige
+          Anatomieatlanten und Open-Source-Software — und demokratisiert medizinisches
+          Wissen für Studierende, Kliniker, Forschende und die Öffentlichkeit,
+          überall und in vielen Sprachen. Atlanten werden im webbasierten Open Anatomy
+          Browser betrachtet; die Gruppe hat auch
+          <a href="${SLICER_URL}" target="_blank" rel="noopener">3D Slicer</a>
+          geschaffen, mit dem die Atlanten erstellt wurden.
+        </p>
+        <p>
+          Der
+          <a href="${EDUCATIONAL_ATLAS_URL}" target="_blank" rel="noopener">BoneHub Educational Atlas</a>
+          der Universität Twente bietet interaktive 3D-Gesamtskelettmodelle des
+          Visible Human Male und Female für Lehre, Visualisierung und 3D-Druck.
+          Freie STL-Meshes und IGES/STEP-CAD-Dateien (CC BY 4.0) sind im Datensatz
+          <a href="${BONEHUB_DATASET_URL}" target="_blank" rel="noopener">visible-human-3d-models</a>
+          auf Hugging Face verfügbar.
+        </p>
+      `,
+};
+
+/** Resolve About copy for the active app locale (FR / DE when matched; else English). */
 export function classroomAboutFor(locale?: string): ClassroomAbout {
-  const code = String(locale || '')
-    .toLowerCase()
-    .startsWith('fr')
-    ? 'fr'
-    : 'en';
-  return code === 'fr' ? fr : en;
+  const code = resolveCourseLocale(locale);
+  if (code === 'fr') return fr;
+  if (code === 'de') return de;
+  return en;
 }

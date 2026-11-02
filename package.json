@@ -14,7 +14,9 @@
     "serve:worklist": "npm run build -w @slicer-hub/worklist && npm run serve -w @slicer-hub/worklist",
     "serve:reporting": "npm run build -w @slicer-hub/reporting && npm run serve -w @slicer-hub/reporting",
     "serve:classroom": "npm run build -w @slicer-hub/classroom && npm run serve -w @slicer-hub/classroom",
-    "serve:worklist:watch": "npm run serve:watch -w @slicer-hub/worklist"
+    "serve:worklist:watch": "npm run serve:watch -w @slicer-hub/worklist",
+    "test": "node --test Testing/client/test_event_names.js Testing/client/test_imaging_study_identity.js",
+    "test:live": "node Testing/run_live_smokes.js"
   },
   "engines": {
     "node": ">=18"

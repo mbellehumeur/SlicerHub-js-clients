@@ -4,6 +4,7 @@ import { cbctContentFor } from './strings';
 const title: Localized = {
   en: 'Dental',
   fr: 'Dentaire',
+  de: 'Zahnmedizin',
 };
 
 export const cbctCourse: CourseDefinition = {

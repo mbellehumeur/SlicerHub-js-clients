@@ -5,6 +5,7 @@ import { openAnatomyBrainContentFor } from './strings';
 const title: Localized = {
   en: 'Human brain anatomy',
   fr: 'Anatomie du cerveau humain',
+  de: 'Anatomie des menschlichen Gehirns',
 };
 
 export const openAnatomyBrainCourse: CourseDefinition = {

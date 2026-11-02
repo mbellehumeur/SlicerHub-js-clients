@@ -3,14 +3,10 @@ import { describe, it } from 'node:test';
 import {
   HUB_IDENTIFIER_DICOM_UID,
   HUB_IDENTIFIER_VOLVIEW_SAMPLE_ID,
-} from './imagingStudyContext.js';
-import { sameOpenImagingStudyContext } from './imagingStudyIdentity.js';
+} from '../../packages/client/src/imagingStudyContext.js';
+import { sameOpenImagingStudyContext } from '../../packages/client/src/imagingStudyIdentity.js';
 
-function studyContext({
-  studyUid,
-  seriesUid,
-  sampleId,
-} = {}) {
+function studyContext({ studyUid, seriesUid, sampleId } = {}) {
   const identifier = [];
   if (studyUid) {
     identifier.push({ system: HUB_IDENTIFIER_DICOM_UID, value: studyUid });
@@ -38,8 +34,14 @@ function studyContext({
 
 describe('sameOpenImagingStudyContext', () => {
   it('returns false for empty contexts', () => {
-    assert.equal(sameOpenImagingStudyContext([], studyContext({ studyUid: '1.2' })), false);
-    assert.equal(sameOpenImagingStudyContext(null, studyContext({ studyUid: '1.2' })), false);
+    assert.equal(
+      sameOpenImagingStudyContext([], studyContext({ studyUid: '1.2' })),
+      false
+    );
+    assert.equal(
+      sameOpenImagingStudyContext(null, studyContext({ studyUid: '1.2' })),
+      false
+    );
   });
 
   it('matches equal sample ids without needing study UID', () => {

@@ -8,7 +8,17 @@ export type CourseId =
   | 'dog-thorax-abdomen'
   | 'open-anatomy-brain';
 
-export type Localized = { en: string; fr: string };
+export type CourseLocale = 'en' | 'fr' | 'de';
+
+export type Localized = { en: string; fr: string; de: string };
+
+/** Map app/browser locale to Classroom course locale (en / fr / de). */
+export function resolveCourseLocale(locale?: string): CourseLocale {
+  const code = String(locale || '').toLowerCase();
+  if (code.startsWith('fr')) return 'fr';
+  if (code.startsWith('de')) return 'de';
+  return 'en';
+}
 
 /** External teaching viewer embed (e.g. FU Berlin MView TeachingPortal). */
 export type CourseEmbed = {
@@ -84,6 +94,8 @@ export type CourseContent = {
   ackLinks?: ReadonlyArray<{ label: string; href: string }>;
   /** Open-in-new-tab control label for embeds. */
   openInNewTabLabel?: string;
+  /** Shown over the iframe while the embed loads (e.g. MView). */
+  embedLoadingLabel?: string;
   /** MView embed: toggle anatomical labels. */
   toggleLabelsLabel?: string;
   /** MView embed: start quiz mode. */
@@ -135,9 +147,5 @@ export function coursePanelVisibility(course: CourseDefinition): {
 }
 
 export function pickLocale(loc: Localized, locale: string): string {
-  return String(locale || '')
-    .toLowerCase()
-    .startsWith('fr')
-    ? loc.fr
-    : loc.en;
+  return loc[resolveCourseLocale(locale)];
 }

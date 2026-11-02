@@ -7,7 +7,11 @@ import { openAnatomyBrainCourse } from './open-anatomy-brain';
 import type { CourseDefinition, CourseId, CourseTerm } from './types';
 
 export type { CourseDefinition, CourseId, CourseTerm } from './types';
-export { coursePanelVisibility, pickLocale } from './types';
+export {
+  coursePanelVisibility,
+  pickLocale,
+  resolveCourseLocale,
+} from './types';
 
 export const DEFAULT_COURSE_ID: CourseId = 'anatomical-planes';
 

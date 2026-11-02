@@ -5,6 +5,7 @@ import { dogThoraxContentFor } from './strings';
 const title: Localized = {
   en: 'Dog Thorax/Abdomen anatomy',
   fr: 'Anatomie thorax/abdomen du chien',
+  de: 'Anatomie Thorax/Abdomen des Hundes',
 };
 
 export const dogThoraxAbdomenCourse: CourseDefinition = {

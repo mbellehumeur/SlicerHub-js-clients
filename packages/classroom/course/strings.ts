@@ -1,4 +1,6 @@
-/** Shared Classroom chrome: brand, volumes panel, conference chat (EN/FR). */
+/** Shared Classroom chrome: brand, volumes panel, conference chat (EN/FR/DE). */
+
+import { resolveCourseLocale } from './types';
 
 export type SharedChrome = {
   brand: string;
@@ -31,7 +33,7 @@ const en: SharedChrome = {
 };
 
 const fr: SharedChrome = {
-  brand: 'Salle de classe',
+  brand: 'Classroom',
   volumesAndSegs: 'Volumes et Segmentations',
   conferenceLog: 'Clavardage',
   chatPlaceholder: 'Message à la conférence…',
@@ -45,14 +47,31 @@ const fr: SharedChrome = {
   courseSelectAria: 'Choisir un cours',
 };
 
+const de: SharedChrome = {
+  brand: 'Classroom',
+  volumesAndSegs: 'Volumina & Segmentierungen',
+  conferenceLog: 'Classroom-Chat',
+  chatPlaceholder: 'Nachricht an die Konferenz…',
+  chatSend: 'Senden',
+  chatNeedConference: 'Treten Sie einer Konferenz bei, um zu chatten',
+  joined: 'ist beigetreten',
+  left: 'hat verlassen',
+  conferenceStarted: 'Konferenz gestartet',
+  conferenceEnded: 'Konferenz beendet',
+  tookOver: 'hat die Szene übernommen',
+  courseSelectAria: 'Kurs auswählen',
+};
+
 /** @deprecated Prefer sharedChromeFor + course.contentFor; kept for call sites. */
 export type CourseChrome = SharedChrome & {
   headerTitle: string;
 };
 
 export function sharedChromeFor(locale?: string): SharedChrome {
-  const code = String(locale || '').toLowerCase();
-  return code.startsWith('fr') ? fr : en;
+  const code = resolveCourseLocale(locale);
+  if (code === 'fr') return fr;
+  if (code === 'de') return de;
+  return en;
 }
 
 /**

@@ -5,12 +5,17 @@ import { DIRECTIONAL_TERMS } from './terms';
 const title: Localized = {
   en: 'Anatomical Planes',
   fr: 'Plans anatomiques',
+  de: 'Anatomische Ebenen',
 };
 
 const scans: CourseScanButton[] = [
   {
     sceneKey: 'kits-00038',
-    label: { en: 'Thorax - small (19 MB)', fr: 'Thorax — petit (19 Mo)' },
+    label: {
+      en: 'Thorax - small (19 MB)',
+      fr: 'Thorax — petit (19 Mo)',
+      de: 'Thorax — klein (19 MB)',
+    },
     title: 'KiTS · c4kc kits · KiTS-00038',
   },
   {
@@ -18,6 +23,7 @@ const scans: CourseScanButton[] = [
     label: {
       en: 'Thorax with segmentations - large (60 MB)',
       fr: 'Thorax avec segmentations — grand (60 Mo)',
+      de: 'Thorax mit Segmentierungen — groß (60 MB)',
     },
     title: 'TotalSegmentator-CT',
   },
@@ -26,6 +32,7 @@ const scans: CourseScanButton[] = [
     label: {
       en: 'Abdomen, Pelvis - large (80 MB)',
       fr: 'Abdomen, pelvis — grand (80 Mo)',
+      de: 'Abdomen, Becken — groß (80 MB)',
     },
     title: 'CTAAbdomenPanoramix',
   },

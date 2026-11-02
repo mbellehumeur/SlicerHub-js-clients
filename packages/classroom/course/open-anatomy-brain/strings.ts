@@ -1,6 +1,7 @@
-/** Open Anatomy brain course chrome (EN/FR). */
+/** Open Anatomy brain course chrome (EN/FR/DE). */
 
 import type { CourseContent } from '../types';
+import { resolveCourseLocale } from '../types';
 import { openAnatomyAckFor } from '../open-anatomy-ack';
 
 const enBase = {
@@ -32,7 +33,7 @@ const frBase = {
   instructionsLabel: 'Instructions :',
   instructionSteps: [
     'Utilisez l’Open Anatomy Browser intégré pour inspecter les structures.',
-    'Utilisez l’arbre des structures et les coupes dans le visualiseur.',
+    'Utilisez l’arbre des structures et les coupes dans la visionneuse.',
     'Ouvrez dans un nouvel onglet pour un espace plus grand si besoin.',
   ],
   colTerm: 'Terme',
@@ -41,10 +42,30 @@ const frBase = {
   relativeDemoNote: '',
 } as const;
 
+const deBase = {
+  headerTitle: 'Anatomie des menschlichen Gehirns',
+  course: 'Anatomie des menschlichen Gehirns',
+  glossary: 'Anatomie des menschlichen Gehirns',
+  activityLabel: 'Aktivität:',
+  activityText:
+    'Erkunden Sie den SPL/NAC-Hirnatlas mit 3D- und multiplanaren Ansichten',
+  instructionsLabel: 'Anleitung:',
+  instructionSteps: [
+    'Nutzen Sie den eingebetteten Open Anatomy Browser, um Strukturen zu prüfen.',
+    'Verwenden Sie den Strukturbaum und die Schnittansichten im Viewer.',
+    'Öffnen Sie bei Bedarf einen neuen Tab für mehr Arbeitsfläche.',
+  ],
+  colTerm: 'Begriff',
+  colDefinition: 'Definition',
+  colExamples: 'Beispiel(e)',
+  relativeDemoNote: '',
+} as const;
+
 export function openAnatomyBrainContentFor(locale?: string): CourseContent {
   const ack = openAnatomyAckFor(locale);
-  const code = String(locale || '').toLowerCase();
-  const base = code.startsWith('fr') ? frBase : enBase;
+  const code = resolveCourseLocale(locale);
+  const base =
+    code === 'fr' ? frBase : code === 'de' ? deBase : enBase;
   return {
     ...base,
     intro: ack.intro,

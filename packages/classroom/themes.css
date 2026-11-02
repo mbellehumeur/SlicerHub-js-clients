@@ -2215,6 +2215,25 @@ button {
   gap: 8px;
 }
 
+.rp-mview-frame-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  height: min(70vh, 640px);
+  border: 1px solid var(--rp-border, #4a628a);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0b1220;
+}
+
+.rp-mview-frame-wrap .rp-mview-frame {
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
 .rp-mview-frame {
   display: block;
   width: 100%;
@@ -2223,6 +2242,32 @@ button {
   border: 1px solid var(--rp-border, #4a628a);
   border-radius: 6px;
   background: #0b1220;
+}
+
+.rp-mview-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #0b1220;
+  color: var(--rp-fg, #e8eef8);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.rp-mview-loading-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.rp-mview-frame-wrap.is-loaded .rp-mview-loading {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .rp-mview-open {

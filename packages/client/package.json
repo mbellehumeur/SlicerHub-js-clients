@@ -29,7 +29,7 @@
     "sync:inference-info": "node tools/sync_inference_info.js",
     "build": "node tools/sync_inference_info.js && vite build && node tools/copy_types.js",
     "prepublishOnly": "npm run build",
-    "test": "node --test src/imagingStudyIdentity.test.js"
+    "test": "node --test ../../Testing/client/test_event_names.js ../../Testing/client/test_imaging_study_identity.js"
   },
   "devDependencies": {
     "vite": "^6.3.5",

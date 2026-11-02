@@ -59,6 +59,15 @@ npm run serve:classroom   # http://127.0.0.1:8160
 npm run serve:worklist:watch
 ```
 
+## Testing
+
+Offline unit tests and live hub smokes for `@slicer-hub/client` live under [`Testing/`](Testing/README.md):
+
+```bash
+npm test              # offline (no hub)
+npm run test:live     # requires hub on :2018
+```
+
 ## License
 
 See [LICENSE](LICENSE).

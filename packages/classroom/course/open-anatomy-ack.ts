@@ -1,4 +1,6 @@
-/** Shared Open Anatomy acknowledgment copy + links (EN/FR). */
+/** Shared Open Anatomy acknowledgment copy + links (EN/FR/DE). */
+
+import { resolveCourseLocale } from './types';
 
 export type OpenAnatomyAckContent = {
   intro: string;
@@ -47,7 +49,21 @@ const fr: OpenAnatomyAckContent = {
   openInNewTabLabel: 'Ouvrir dans un nouvel onglet',
 };
 
+const de: OpenAnatomyAckContent = {
+  intro:
+    'Diese Lehranwendung bettet den Open Anatomy Browser des Open Anatomy Project am Brigham and Women’s Hospital (Surgical Planning Laboratory) ein. Freie, offene Anatomieatlanten für Studierende, Kliniker und die Öffentlichkeit. Weitere Informationen:',
+  introLinkHref: INTRO_LINK_HREF,
+  introLinkLabel: 'Open Anatomy Project',
+  ackTitle: 'Danksagungen',
+  ackBody:
+    'Der interaktive Atlas ist der Open Anatomy Browser (OABrowser) mit dem SPL/NAC-Hirnatlas. Eingebettet mit freundlicher Genehmigung des Open Anatomy Project.',
+  ackLinks: ACK_LINKS,
+  openInNewTabLabel: 'In neuem Tab öffnen',
+};
+
 export function openAnatomyAckFor(locale?: string): OpenAnatomyAckContent {
-  const code = String(locale || '').toLowerCase();
-  return code.startsWith('fr') ? fr : en;
+  const code = resolveCourseLocale(locale);
+  if (code === 'fr') return fr;
+  if (code === 'de') return de;
+  return en;
 }

@@ -4,7 +4,8 @@ import { catHeadContentFor } from './strings';
 
 const title: Localized = {
   en: 'Cat head anatomy',
-  fr: 'Anatomie tête de chat',
+  fr: 'Anatomie de la tête du chat',
+  de: 'Anatomie des Katzenkopfs',
 };
 
 export const catHeadAnatomyCourse: CourseDefinition = {

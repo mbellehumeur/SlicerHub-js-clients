@@ -4,6 +4,7 @@ import { cellStructuresContentFor } from './strings';
 const title: Localized = {
   en: 'Cell Structures',
   fr: 'Structures cellulaires',
+  de: 'Zellstrukturen',
 };
 
 export const cellStructuresCourse: CourseDefinition = {

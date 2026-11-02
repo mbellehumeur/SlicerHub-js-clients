@@ -1,6 +1,7 @@
-/** Cell structures course stub chrome (EN/FR). */
+/** Cell structures course stub chrome (EN/FR/DE). */
 
 import type { CourseContent } from '../types';
+import { resolveCourseLocale } from '../types';
 
 const en: CourseContent = {
   headerTitle: 'Cell Structures',
@@ -34,7 +35,25 @@ const fr: CourseContent = {
   comingSoon: 'Bientôt disponible',
 };
 
+const de: CourseContent = {
+  headerTitle: 'Zellstrukturen',
+  course: 'Zellstrukturen',
+  glossary: 'Zellstrukturen',
+  intro: 'Zellstrukturen — demnächst verfügbar.',
+  activityLabel: 'Aktivität:',
+  activityText: 'Der Inhalt dieses Kurses ist noch nicht verfügbar.',
+  instructionsLabel: 'Anleitung:',
+  instructionSteps: [],
+  colTerm: 'Begriff',
+  colDefinition: 'Definition',
+  colExamples: 'Beispiel(e)',
+  relativeDemoNote: '',
+  comingSoon: 'Demnächst verfügbar',
+};
+
 export function cellStructuresContentFor(locale?: string): CourseContent {
-  const code = String(locale || '').toLowerCase();
-  return code.startsWith('fr') ? fr : en;
+  const code = resolveCourseLocale(locale);
+  if (code === 'fr') return fr;
+  if (code === 'de') return de;
+  return en;
 }

@@ -1,6 +1,7 @@
-/** Cat head anatomy course chrome (EN/FR). */
+/** Cat head anatomy course chrome (EN/FR/DE). */
 
 import type { CourseContent } from '../types';
+import { resolveCourseLocale } from '../types';
 import { mviewAckFor } from '../mview-ack';
 
 const enBase = {
@@ -22,16 +23,16 @@ const enBase = {
 } as const;
 
 const frBase = {
-  headerTitle: 'Anatomie tête de chat',
-  course: 'Anatomie tête de chat',
-  glossary: 'Anatomie tête de chat',
+  headerTitle: 'Anatomie de la tête du chat',
+  course: 'Anatomie de la tête du chat',
+  glossary: 'Anatomie de la tête du chat',
   activityLabel: 'Activité :',
   activityText:
-    'Explorez un volume CT de tête de chat avec labels anatomiques',
+    'Explorez un volume CT de tête de chat avec annotations anatomiques',
   instructionsLabel: 'Instructions :',
   instructionSteps: [
-    'Utilisez le visualiseur intégré pour inspecter l’anatomie et les annotations.',
-    'Désactivez les labels quand vous êtes prêt, puis démarrez le quiz au-dessus du visualiseur.',
+    'Utilisez la visionneuse intégrée pour inspecter l’anatomie et les annotations.',
+    'Désactivez les annotations quand vous êtes prêt, puis démarrez le quiz au-dessus de la visionneuse.',
     'Ouvrez dans un nouvel onglet pour un espace plus grand si besoin.',
   ],
   colTerm: 'Terme',
@@ -40,10 +41,30 @@ const frBase = {
   relativeDemoNote: '',
 } as const;
 
+const deBase = {
+  headerTitle: 'Anatomie des Katzenkopfs',
+  course: 'Anatomie des Katzenkopfs',
+  glossary: 'Anatomie des Katzenkopfs',
+  activityLabel: 'Aktivität:',
+  activityText:
+    'Erkunden Sie ein CT-Volumen eines Katzenkopfs mit anatomischen Beschriftungen',
+  instructionsLabel: 'Anleitung:',
+  instructionSteps: [
+    'Nutzen Sie den eingebetteten Viewer, um Anatomie und Annotationen zu prüfen.',
+    'Schalten Sie die Beschriftungen aus, wenn Sie bereit sind, und starten Sie das Quiz oberhalb des Viewers.',
+    'Öffnen Sie bei Bedarf einen neuen Tab für mehr Arbeitsfläche.',
+  ],
+  colTerm: 'Begriff',
+  colDefinition: 'Definition',
+  colExamples: 'Beispiel(e)',
+  relativeDemoNote: '',
+} as const;
+
 export function catHeadContentFor(locale?: string): CourseContent {
   const ack = mviewAckFor(locale);
-  const code = String(locale || '').toLowerCase();
-  const base = code.startsWith('fr') ? frBase : enBase;
+  const code = resolveCourseLocale(locale);
+  const base =
+    code === 'fr' ? frBase : code === 'de' ? deBase : enBase;
   return {
     ...base,
     intro: ack.intro,
@@ -53,6 +74,7 @@ export function catHeadContentFor(locale?: string): CourseContent {
     ackBody: ack.ackBody,
     ackLinks: ack.ackLinks,
     openInNewTabLabel: ack.openInNewTabLabel,
+    embedLoadingLabel: ack.embedLoadingLabel,
     toggleLabelsLabel: ack.toggleLabelsLabel,
     startQuizLabel: ack.startQuizLabel,
     stopQuizLabel: ack.stopQuizLabel,

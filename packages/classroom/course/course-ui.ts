@@ -95,6 +95,7 @@ function embedsHtml(
   const toggleLabelsLabel = content.toggleLabelsLabel || 'Labels on/off';
   const startQuizLabel = content.startQuizLabel || 'Start quiz';
   const stopQuizLabel = content.stopQuizLabel || 'Stop quiz';
+  const loadingLabel = String(content.embedLoadingLabel || '').trim();
   const cards = embeds
     .map((embed) => {
       const heading = embed.title
@@ -124,14 +125,23 @@ function embedsHtml(
             >${escapeHtml(stopQuizLabel)}</button>
           </div>`
           : '';
-      const iframe = src
+      const iframeEl = src
         ? `<iframe
             class="rp-mview-frame"
             src="${escapeHtml(src)}"
             title="${escapeHtml(iframeTitle)}"
-            loading="lazy"
             allow="fullscreen; clipboard-write"
           ></iframe>`
+        : '';
+      const iframe = src
+        ? loadingLabel
+          ? `<div class="rp-mview-frame-wrap" data-embed-loading>
+              <div class="rp-mview-loading" role="status" aria-live="polite">
+                <span class="rp-mview-loading-text">${escapeHtml(loadingLabel)}</span>
+              </div>
+              ${iframeEl}
+            </div>`
+          : iframeEl
         : content.comingSoon
           ? `<p class="rp-muted">${escapeHtml(content.comingSoon)}</p>`
           : '';
@@ -327,10 +337,33 @@ function glossaryHtml(state: AppState, locale: string): string {
     </div>`;
 }
 
+/** Hide please-wait overlays once each embed iframe finishes loading. */
+function wireEmbedLoading(root: HTMLElement): void {
+  root.querySelectorAll<HTMLElement>('[data-embed-loading]').forEach((wrap) => {
+    const iframe = wrap.querySelector('iframe.rp-mview-frame');
+    if (!(iframe instanceof HTMLIFrameElement)) {
+      wrap.classList.add('is-loaded');
+      return;
+    }
+    const markLoaded = () => {
+      wrap.classList.add('is-loaded');
+    };
+    iframe.addEventListener('load', markLoaded, { once: true });
+    // Already complete (cached / fast navigate).
+    try {
+      if (iframe.contentDocument?.readyState === 'complete') markLoaded();
+    } catch {
+      /* cross-origin — wait for load event */
+    }
+  });
+}
+
 export function renderCoursePanel(
   glossaryContainer: HTMLElement | null,
   state: AppState
 ): void {
   const locale = resolveStoredLocale();
-  if (glossaryContainer) glossaryContainer.innerHTML = glossaryHtml(state, locale);
+  if (!glossaryContainer) return;
+  glossaryContainer.innerHTML = glossaryHtml(state, locale);
+  wireEmbedLoading(glossaryContainer);
 }
