@@ -447,10 +447,21 @@ export default class HubService extends PubSubService {
   }
 
   public async getToken(): Promise<boolean> {
-    const { code } = await this.authenticate();
-    if (!code) {
+    const result = await this.authenticate();
+    if (result?.redirecting) {
+      console.info(`${LOG_PREFIX} hub auth: oidc redirect to IdP`);
       return false;
     }
+    if (result?.tokensReady) {
+      console.info(`${LOG_PREFIX} hub auth: oidc (tokens from redirect)`);
+      return this._client.getToken('');
+    }
+    const code = result?.code || '';
+    if (!code) {
+      console.info(`${LOG_PREFIX} hub auth: failed (no code / not oidc session)`);
+      return false;
+    }
+    console.info(`${LOG_PREFIX} hub auth: mock authorize/token`);
     return this._client.getToken(code);
   }
 
@@ -1236,6 +1247,9 @@ export default class HubService extends PubSubService {
   private async _start(): Promise<void> {
     const urlToken = this._urlHubAccessToken.trim();
     if (urlToken && typeof this._client.setToken === 'function') {
+      console.info(
+        `${LOG_PREFIX} hub auth: deep-link id-token (skip OIDC login)`
+      );
       this._client.setToken(urlToken);
     } else {
       const tokenOk = await this.getToken();

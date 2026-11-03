@@ -29,12 +29,22 @@ export interface HubRuntimeState {
   resubscribeRequested: boolean;
   websocket: WebSocket | null;
   lastPublishedMessageID: string;
+  /** ``mock`` | ``oidc`` from GET /api/hub/auth/config (when known). */
+  authMode?: string;
+  /** True after tokens were applied from an OIDC redirect fragment. */
+  oidcSession?: boolean;
 }
 
 export interface AuthorizeResult {
   user_name: string;
   code: string;
   expires_in?: number;
+  /** Auth mode used for this call (``mock`` or ``oidc``). */
+  mode?: 'mock' | 'oidc';
+  /** OIDC: tokens already stored from redirect hash; skip code exchange. */
+  tokensReady?: boolean;
+  /** OIDC: browser navigation to /oauth/login is in progress. */
+  redirecting?: boolean;
 }
 
 export interface HubClientConfig {
@@ -158,12 +168,14 @@ export interface HubClientInstance {
     status: number | string;
   }>;
   /**
-   * Start the OAuth authorize flow against the hub.
+   * Start authorize against the hub. Mock: POST /oauth/authorize.
+   * OIDC: consume hash tokens after redirect, or navigate to /oauth/login.
    * @throws When no authorize endpoint is configured or the hub rejects.
    */
   authenticate(): Promise<AuthorizeResult>;
   /**
    * Exchange an authorization code for an access token.
+   * After OIDC redirect, returns true when tokens are already stored.
    * @returns ``true`` when a token was stored; ``false`` on failure (does not throw).
    */
   getToken(code: string): Promise<boolean>;
@@ -725,6 +737,8 @@ export interface CastConferenceDialogSession {
   subscriberName?: string;
   userName?: string;
   connected?: boolean;
+  /** Hub session JWT (OIDC / mock); sent as Authorization Bearer on conference APIs. */
+  accessToken?: string;
 }
 
 export interface CastConferenceDialogController {
@@ -1029,7 +1043,8 @@ export function resolveHubConferenceView(
   hubEndpoint: string,
   topic: string,
   subscriberName: string,
-  userName?: string
+  userName?: string,
+  accessToken?: string
 ): Promise<CastConferenceView | null>;
 
 export type ImagingStudyOpenPlan =
@@ -1228,40 +1243,51 @@ export function summarizeOutboundCastPublish(message: CastMessage): {
 };
 export function sanitizeCastMessageForDisplay(message: unknown): unknown;
 export function countEventContextObjects(event: CastEvent | undefined): number;
+export function conferenceAuthHeaders(
+  accessToken?: string,
+  jsonBody?: boolean
+): Record<string, string>;
 export function fetchHubConferences(
-  hubEndpoint: string
+  hubEndpoint: string,
+  accessToken?: string
 ): Promise<CastConferenceRecord[]>;
 export function fetchHubConferenceTopics(
-  hubEndpoint: string
+  hubEndpoint: string,
+  accessToken?: string
 ): Promise<{ topic: string; timezone?: string }[]>;
 export function createHubConference(
   hubEndpoint: string,
   hostTopic: string,
   title: string,
   topics: string[],
-  hostUserName?: string
+  hostUserName?: string,
+  accessToken?: string
 ): Promise<void>;
 export function joinHubConference(
   hubEndpoint: string,
   hostTopic: string,
   joinTopic: string,
-  joinUserName?: string
+  joinUserName?: string,
+  accessToken?: string
 ): Promise<void>;
 export function deleteHubConference(
   hubEndpoint: string,
   hostTopic: string,
-  leaveTopic?: string
+  leaveTopic?: string,
+  accessToken?: string
 ): Promise<void>;
 export function transferHubConferenceLead(
   hubEndpoint: string,
   hostTopic: string,
   sceneLeaderTopic: string,
-  leaderUserName?: string
+  leaderUserName?: string,
+  accessToken?: string
 ): Promise<unknown>;
 export function resolveHubConferenceState(
   hubEndpoint: string,
   topic: string,
-  subscriberName: string
+  subscriberName: string,
+  accessToken?: string
 ): Promise<{ active: boolean; title: string; participants: string[] }>;
 export function conferenceHostTopic(
   conference: CastConferenceRecord
@@ -1317,8 +1343,8 @@ export function isHubConferenceParticipant(
  * });
  *
  * client.onMessage((message) => console.log(message));
- * const { code } = await client.authenticate();
- * if (await client.getToken(code)) {
+ * const { code, tokensReady, redirecting } = await client.authenticate();
+ * if (!redirecting && (tokensReady || (await client.getToken(code)))) {
  *   await client.subscribe();
  *   await client.request({
  *     'subscriber.name': client.getSessionConfig().subscriberName,
@@ -1410,6 +1436,7 @@ export declare const HubClient: {
   parseConferenceInviteFromMessage: typeof parseConferenceInviteFromMessage;
   shouldShowConferenceInvite: typeof shouldShowConferenceInvite;
   showHubInfoToast: typeof showHubInfoToast;
+  conferenceAuthHeaders: typeof conferenceAuthHeaders;
   conferenceHostTopic: typeof conferenceHostTopic;
   conferenceSceneLeaderTopic: typeof conferenceSceneLeaderTopic;
   countEventContextObjects: typeof countEventContextObjects;

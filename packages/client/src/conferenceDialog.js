@@ -425,7 +425,10 @@ export function createHubConferenceDialog(options) {
       if (name === selfTopic || name === selfName) return false;
     }
     if (!session.hubEndpoint) return false;
-    const topics = await fetchHubConferenceTopics(session.hubEndpoint);
+    const topics = await fetchHubConferenceTopics(
+      session.hubEndpoint,
+      session.accessToken
+    );
     return topics.some((entry) => String(entry?.topic || '').trim() === name);
   }
 
@@ -548,6 +551,7 @@ export function createHubConferenceDialog(options) {
       subscriberName: String(session.subscriberName ?? '').trim(),
       userName: String(session.userName ?? '').trim(),
       connected: Boolean(session.connected),
+      accessToken: String(session.accessToken ?? '').trim(),
     };
   }
 
@@ -764,8 +768,8 @@ export function createHubConferenceDialog(options) {
       return null;
     }
     const [topics, conferences] = await Promise.all([
-      fetchHubConferenceTopics(session.hubEndpoint),
-      fetchHubConferences(session.hubEndpoint),
+      fetchHubConferenceTopics(session.hubEndpoint, session.accessToken),
+      fetchHubConferences(session.hubEndpoint, session.accessToken),
     ]);
     const match = findActiveHubConference(
       session.topic,
@@ -819,7 +823,8 @@ export function createHubConferenceDialog(options) {
         session.topic,
         title,
         topics,
-        session.userName
+        session.userName,
+        session.accessToken
       );
       await refresh();
       close();
@@ -865,7 +870,8 @@ export function createHubConferenceDialog(options) {
         session.hubEndpoint,
         hostTopic,
         session.topic,
-        session.userName
+        session.userName,
+        session.accessToken
       );
       onFollowChange?.(true);
       await refresh();

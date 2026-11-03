@@ -445,6 +445,8 @@ function boot(): void {
         subscriberName: state.subscriberName,
         userName: state.userName,
         connected: state.connection === 'connected',
+        accessToken:
+          state.client?.getConnectionState?.()?.token?.trim() || '',
       }),
       onConferenceChange: (view) => {
         setConferenceView(state, view);
@@ -474,6 +476,8 @@ function boot(): void {
         subscriberName: state.subscriberName,
         userName: state.userName,
         connected: state.connection === 'connected',
+        accessToken:
+          state.client?.getConnectionState?.()?.token?.trim() || '',
       }),
       shouldShow: () =>
         shouldShowConferenceInvite({
@@ -581,7 +585,8 @@ function boot(): void {
     void deleteHubConference(
       hubEndpoint(state),
       view.hostTopic,
-      hostAction ? undefined : state.topic
+      hostAction ? undefined : state.topic,
+      state.client?.getConnectionState?.()?.token?.trim() || ''
     )
       .then(() => {
         setConferenceView(state, null);

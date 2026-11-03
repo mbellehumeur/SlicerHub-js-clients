@@ -55,6 +55,10 @@ export function createHubRuntimeState() {
     subscribed: false,
     resubscribeRequested: false,
     websocket: null,
+    /** ``mock`` | ``oidc`` from GET /api/hub/auth/config (when known). */
+    authMode: '',
+    /** True after tokens were applied from an OIDC redirect fragment. */
+    oidcSession: false,
   };
 }
 

@@ -68,6 +68,7 @@ import {
   HUB_CONFERENCE_POLL_MS,
   HUB_CONFERENCE_TITLE_PRESETS,
   buildCastConferenceView,
+  conferenceAuthHeaders,
   conferenceHostTopic,
   conferenceSceneLeaderTopic,
   createHubConference,
@@ -345,6 +346,7 @@ export {
   castRadioStatusMarkup,
   castRadioStatusVisual,
   collatedResponsesFromRequestResult,
+  conferenceAuthHeaders,
   conferenceHostTopic,
   conferenceSceneLeaderTopic,
   countEventContextObjects,
@@ -550,6 +552,90 @@ function hubClient(publicAPI, model) {
     }
   }
 
+  function resolveHubOrigin() {
+    try {
+      const hubUrl = new URL(model.hub.hub_endpoint);
+      return hubUrl.origin;
+    } catch (err) {
+      try {
+        return new URL(model.hub.token_endpoint).origin;
+      } catch (err2) {
+        return '';
+      }
+    }
+  }
+
+  async function fetchHubAuthConfig() {
+    const origin = resolveHubOrigin();
+    if (!origin) {
+      return { mode: 'mock' };
+    }
+    try {
+      const response = await fetch(`${origin}/api/hub/auth/config`, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        return { mode: 'mock' };
+      }
+      const data = await response.json();
+      if (!data || typeof data !== 'object') {
+        return { mode: 'mock' };
+      }
+      return data;
+    } catch (err) {
+      console.debug('HubClient: auth/config unavailable; assuming mock mode');
+      return { mode: 'mock' };
+    }
+  }
+
+  function parseOidcHashTokens() {
+    if (typeof window === 'undefined' || !window.location) {
+      return null;
+    }
+    const hash = String(window.location.hash || '').replace(/^#/, '');
+    if (!hash) {
+      return null;
+    }
+    const params = new URLSearchParams(hash);
+    if (params.get('hub_auth') !== 'oidc') {
+      return null;
+    }
+    const accessToken = params.get('access_token') || '';
+    if (!accessToken) {
+      return null;
+    }
+    return {
+      access_token: accessToken,
+      id_token: params.get('id_token') || '',
+      topic: params.get('topic') || '',
+      user_name: params.get('user_name') || '',
+      expires_in: params.get('expires_in') || '',
+    };
+  }
+
+  function clearOidcHashFromUrl() {
+    if (typeof window === 'undefined' || !window.history || !window.location) {
+      return;
+    }
+    const url = `${window.location.pathname}${window.location.search}`;
+    window.history.replaceState(null, '', url);
+  }
+
+  function applyOidcSessionTokens(tokens) {
+    model.hub.token = tokens.access_token;
+    if (tokens.id_token) {
+      model.hub.lastIdToken = tokens.id_token;
+    }
+    model.hub.oidcSession = true;
+    if (tokens.user_name) {
+      model.session.userName = tokens.user_name;
+    }
+    if (tokens.topic && !model.config.preserveSessionTopicFromToken) {
+      publicAPI.setTopic(tokens.topic);
+    }
+  }
+
   function websocketClose() {
     console.debug('HubClient: websocket is closed.');
     model.hub.resubscribeRequested = true;
@@ -705,11 +791,66 @@ function hubClient(publicAPI, model) {
   /**
    * Start the OAuth authorize flow against the hub.
    *
+   * Mock mode: POST /oauth/authorize (unchanged).
+   * OIDC mode: consume tokens from URL hash after Google redirect, or
+   * navigate to GET /oauth/login?return_to=...
+   *
    * @returns {Promise<AuthorizeResult>}
    * @throws {Error} When no authorize endpoint is configured, the request
    *   fails, or the hub returns a non-200 status.
    */
   publicAPI.authenticate = async () => {
+    // Returning from OIDC callback: tokens are in the URL fragment.
+    const fromHash = parseOidcHashTokens();
+    if (fromHash) {
+      applyOidcSessionTokens(fromHash);
+      clearOidcHashFromUrl();
+      console.debug('HubClient: Applied OIDC session tokens from redirect');
+      return {
+        user_name: fromHash.user_name || model.session.userName || '',
+        code: '',
+        expires_in: fromHash.expires_in
+          ? Number(fromHash.expires_in) || undefined
+          : undefined,
+        mode: 'oidc',
+        tokensReady: true,
+      };
+    }
+
+    if (model.hub.oidcSession && model.hub.token) {
+      return {
+        user_name: model.session.userName || '',
+        code: '',
+        mode: 'oidc',
+        tokensReady: true,
+      };
+    }
+
+    const authConfig = await fetchHubAuthConfig();
+    model.hub.authMode = authConfig.mode || 'mock';
+
+    if (authConfig.mode === 'oidc') {
+      if (typeof window === 'undefined' || !window.location) {
+        throw new Error(
+          'HubClient.authenticate: OIDC mode requires a browser environment'
+        );
+      }
+      const loginBase =
+        (typeof authConfig.login_url === 'string' && authConfig.login_url.trim()) ||
+        `${resolveHubOrigin()}/oauth/login`;
+      const returnTo = `${window.location.origin}${window.location.pathname}${window.location.search}`;
+      const loginUrl = `${loginBase}?return_to=${encodeURIComponent(returnTo)}`;
+      console.debug('HubClient: Redirecting to OIDC login', loginUrl);
+      window.location.assign(loginUrl);
+      // Navigation in progress; caller should not continue until page reloads.
+      return {
+        user_name: '',
+        code: '',
+        mode: 'oidc',
+        redirecting: true,
+      };
+    }
+
     const authorizeEndpoint = resolveAuthorizationEndpoint();
     if (!authorizeEndpoint) {
       throw new Error(
@@ -772,6 +913,7 @@ function hubClient(publicAPI, model) {
       code: data.code || '',
       expires_in:
         typeof data.expires_in === 'number' ? data.expires_in : undefined,
+      mode: 'mock',
     };
   };
 
@@ -780,11 +922,31 @@ function hubClient(publicAPI, model) {
   /**
    * Exchange an authorization code for an access token.
    *
+   * After OIDC redirect, tokens are already stored — pass any code (or empty)
+   * and this returns ``true`` when ``model.hub.token`` is set.
+   *
    * @param {string} code Authorization code from ``authenticate()``.
    * @returns {Promise<boolean>} ``true`` when a token was stored; ``false`` on
    *   validation/HTTP failure (does not throw).
    */
   publicAPI.getToken = async (code) => {
+    if (model.hub.oidcSession && model.hub.token) {
+      if (model.config.autoStart) {
+        publicAPI.subscribe();
+      }
+      return true;
+    }
+    // OIDC callback may have landed between authenticate() and getToken().
+    const fromHash = parseOidcHashTokens();
+    if (fromHash) {
+      applyOidcSessionTokens(fromHash);
+      clearOidcHashFromUrl();
+      if (model.config.autoStart) {
+        publicAPI.subscribe();
+      }
+      return !!model.hub.token;
+    }
+
     if (typeof code !== 'string' || !code) {
       console.error(
         'HubClient.getToken: code is required (call authenticate() first).'
@@ -1119,15 +1281,22 @@ function hubClient(publicAPI, model) {
     publicAPI.setUserName(next);
     publicAPI.setTopic('');
 
-    const { code, user_name: authorizedName } = await publicAPI.authenticate();
-    if (!code) {
+    const authResult = await publicAPI.authenticate();
+    const { code, user_name: authorizedName, tokensReady, redirecting } =
+      authResult || {};
+    if (redirecting) {
+      throw new Error(
+        'HubClient.rebindUserName: OIDC redirect in progress; complete login in the browser'
+      );
+    }
+    if (!tokensReady && !code) {
       throw new Error('HubClient.rebindUserName: authenticate failed');
     }
     const prevAutoStart = model.config.autoStart;
     model.config.autoStart = false;
     let ok = false;
     try {
-      ok = await publicAPI.getToken(code);
+      ok = await publicAPI.getToken(code || '');
     } finally {
       model.config.autoStart = prevAutoStart;
     }
@@ -1577,6 +1746,7 @@ export default {
   castRadioStatusMarkup,
   castRadioStatusVisual,
   collatedResponsesFromRequestResult,
+  conferenceAuthHeaders,
   conferenceHostTopic,
   conferenceSceneLeaderTopic,
   countEventContextObjects,

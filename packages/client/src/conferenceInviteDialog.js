@@ -368,7 +368,8 @@ export function createHubConferenceInviteController(options) {
       session.hubEndpoint || '',
       session.topic || '',
       session.subscriberName || '',
-      session.userName || ''
+      session.userName || '',
+      session.accessToken || ''
     );
     onConferenceChange?.(view);
     return view;
@@ -385,7 +386,8 @@ export function createHubConferenceInviteController(options) {
       await deleteHubConference(
         session.hubEndpoint || '',
         hostTopic,
-        session.topic || ''
+        session.topic || '',
+        session.accessToken || ''
       );
       onFollowChange?.(false);
       onConferenceChange?.(null);

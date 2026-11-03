@@ -255,6 +255,8 @@ async function boot(): Promise<void> {
         subscriberName: state.subscriberName,
         userName: state.userName,
         connected: state.connection === 'connected',
+        accessToken:
+          state.client?.getConnectionState?.()?.token?.trim() || '',
       }),
       onConferenceChange: (view) => {
         setConferenceView(state, view);
@@ -283,6 +285,8 @@ async function boot(): Promise<void> {
         subscriberName: state.subscriberName,
         userName: state.userName,
         connected: state.connection === 'connected',
+        accessToken:
+          state.client?.getConnectionState?.()?.token?.trim() || '',
       }),
       shouldShow: () =>
         shouldShowConferenceInvite({
@@ -362,7 +366,8 @@ async function boot(): Promise<void> {
     void deleteHubConference(
       hubEndpoint(state),
       view.hostTopic,
-      hostAction ? undefined : state.topic
+      hostAction ? undefined : state.topic,
+      state.client?.getConnectionState?.()?.token?.trim() || ''
     )
       .then(() => {
         setConferenceView(state, null);
@@ -402,7 +407,8 @@ async function boot(): Promise<void> {
             hubEndpoint(state),
             view.hostTopic,
             state.topic,
-            state.userName || undefined
+            state.userName || undefined,
+            state.client?.getConnectionState?.()?.token?.trim() || ''
           );
         } catch (err) {
           console.error('[@slicer-hub/worklist] take over failed', err);

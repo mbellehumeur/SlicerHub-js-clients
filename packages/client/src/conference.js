@@ -19,6 +19,23 @@ function conferenceApiUrl(hubEndpoint, path) {
   return new URL(path, url.origin).href;
 }
 
+/**
+ * @param {string} [accessToken]
+ * @param {boolean} [jsonBody]
+ */
+export function conferenceAuthHeaders(accessToken, jsonBody = false) {
+  /** @type {Record<string, string>} */
+  const headers = {};
+  if (jsonBody) {
+    headers['Content-Type'] = 'application/json';
+  }
+  const token = String(accessToken ?? '').trim();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 export function normalizeConferenceParticipants(raw) {
   if (!Array.isArray(raw)) {
     return [];
@@ -100,13 +117,15 @@ export function findActiveHubConference(topic, subscriberName, conferences) {
   );
 }
 
-export async function fetchHubConferenceTopics(hubEndpoint) {
+export async function fetchHubConferenceTopics(hubEndpoint, accessToken) {
   const apiUrl = conferenceApiUrl(hubEndpoint, '/api/hub/conference-topics');
   if (!apiUrl) {
     return [];
   }
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl, {
+      headers: conferenceAuthHeaders(accessToken),
+    });
     if (!response.ok) {
       return [];
     }
@@ -136,14 +155,16 @@ export async function fetchHubConferenceTopics(hubEndpoint) {
   }
 }
 
-export async function fetchHubConferences(hubEndpoint) {
+export async function fetchHubConferences(hubEndpoint, accessToken) {
   const url = httpUrlFromHubEndpoint(hubEndpoint);
   if (!url) {
     return [];
   }
   const apiUrl = new URL('/api/hub/conference', url.origin).href;
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl, {
+      headers: conferenceAuthHeaders(accessToken),
+    });
     if (!response.ok) {
       return [];
     }
@@ -159,7 +180,8 @@ export async function createHubConference(
   hostTopic,
   title,
   topics,
-  hostUserName
+  hostUserName,
+  accessToken
 ) {
   const apiUrl = conferenceApiUrl(hubEndpoint, '/api/hub/conference');
   if (!apiUrl) {
@@ -176,7 +198,7 @@ export async function createHubConference(
   }
   const response = await fetch(apiUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: conferenceAuthHeaders(accessToken, true),
     body: JSON.stringify(body),
   });
   if (!response.ok) {
@@ -191,12 +213,14 @@ export async function createHubConference(
  * @param {string} hostTopic
  * @param {string} joinTopic
  * @param {string} [joinUserName]
+ * @param {string} [accessToken]
  */
 export async function joinHubConference(
   hubEndpoint,
   hostTopic,
   joinTopic,
-  joinUserName
+  joinUserName,
+  accessToken
 ) {
   const apiUrl = conferenceApiUrl(hubEndpoint, '/api/hub/conference/join');
   if (!apiUrl) {
@@ -212,7 +236,7 @@ export async function joinHubConference(
   }
   const response = await fetch(apiUrl, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: conferenceAuthHeaders(accessToken, true),
     body: JSON.stringify(body),
   });
   if (!response.ok) {
@@ -221,7 +245,12 @@ export async function joinHubConference(
   }
 }
 
-export async function deleteHubConference(hubEndpoint, hostTopic, leaveTopic) {
+export async function deleteHubConference(
+  hubEndpoint,
+  hostTopic,
+  leaveTopic,
+  accessToken
+) {
   const apiUrl = conferenceApiUrl(hubEndpoint, '/api/hub/conference');
   if (!apiUrl) {
     throw new Error('Invalid hub endpoint');
@@ -233,7 +262,7 @@ export async function deleteHubConference(hubEndpoint, hostTopic, leaveTopic) {
   }
   const response = await fetch(apiUrl, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
+    headers: conferenceAuthHeaders(accessToken, true),
     body: JSON.stringify(body),
   });
   if (!response.ok) {
@@ -248,12 +277,14 @@ export async function deleteHubConference(hubEndpoint, hostTopic, leaveTopic) {
  * @param {string} hostTopic
  * @param {string} sceneLeaderTopic
  * @param {string} [leaderUserName]
+ * @param {string} [accessToken]
  */
 export async function transferHubConferenceLead(
   hubEndpoint,
   hostTopic,
   sceneLeaderTopic,
-  leaderUserName
+  leaderUserName,
+  accessToken
 ) {
   const apiUrl = conferenceApiUrl(hubEndpoint, '/api/hub/conference/lead');
   if (!apiUrl) {
@@ -269,7 +300,7 @@ export async function transferHubConferenceLead(
   }
   const response = await fetch(apiUrl, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: conferenceAuthHeaders(accessToken, true),
     body: JSON.stringify(body),
   });
   if (!response.ok) {
@@ -286,9 +317,10 @@ export async function transferHubConferenceLead(
 export async function resolveHubConferenceState(
   hubEndpoint,
   topic,
-  subscriberName
+  subscriberName,
+  accessToken
 ) {
-  const conferences = await fetchHubConferences(hubEndpoint);
+  const conferences = await fetchHubConferences(hubEndpoint, accessToken);
   const match = findActiveHubConference(topic, subscriberName, conferences);
   return {
     active: Boolean(match),
@@ -389,9 +421,10 @@ export async function resolveHubConferenceView(
   hubEndpoint,
   topic,
   subscriberName,
-  userName
+  userName,
+  accessToken
 ) {
-  const conferences = await fetchHubConferences(hubEndpoint);
+  const conferences = await fetchHubConferences(hubEndpoint, accessToken);
   const match = findActiveHubConference(topic, subscriberName, conferences);
   return buildCastConferenceView({ topic, subscriberName, userName }, match);
 }

@@ -40,8 +40,9 @@ const client = HubClient.newInstance({
 
 client.onMessage((message) => console.log(message));
 
-const { code } = await client.authenticate();
-if (await client.getToken(code)) {
+const { code, tokensReady, redirecting } = await client.authenticate();
+// OIDC: first call may navigate to Google; after return, hash tokens are applied.
+if (!redirecting && (tokensReady || (await client.getToken(code)))) {
   await client.subscribe();
   await client.request({
     'subscriber.name': client.getSessionConfig().subscriberName,
@@ -54,6 +55,17 @@ if (await client.getToken(code)) {
   });
 }
 ```
+
+## Auth modes (mock vs OIDC)
+
+`authenticate()` calls `GET /api/hub/auth/config` on the hub:
+
+| Hub `HUB_AUTH_MODE` | Client behavior |
+|---------------------|-----------------|
+| `mock` (default) | `POST /oauth/authorize` → `getToken(code)` (unchanged) |
+| `oidc` | Full-page redirect to `GET /oauth/login?return_to=…`; after Google → hub callback, tokens arrive in the URL hash (`access_token`, `topic`, `user_name`, …). Call `authenticate()` again on load (or let `getToken` consume the hash). |
+
+Hub OIDC setup (Auth0 / Entra / Google, env vars, browser flow): see [SlicerHub `hub/docs/oidc.md`](https://github.com/mbellehumeur/SlicerHub/blob/main/HubInterface/hub/docs/oidc.md). The Python `hub_client` still uses mock authorize only.
 
 ## API surface
 

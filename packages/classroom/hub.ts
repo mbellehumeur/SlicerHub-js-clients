@@ -2530,6 +2530,12 @@ export async function autoConnect(state: AppState): Promise<void> {
       const result = await client.authenticate();
       const userName = result?.user_name || preferredName || '';
       const code = result?.code || '';
+      const tokensReady = Boolean(result?.tokensReady);
+      const redirecting = Boolean(result?.redirecting);
+      if (redirecting) {
+        setConnection(state, 'connecting', 'Redirecting to login');
+        return;
+      }
       if (userName) {
         const startedAt =
           state.hubStartedAt || (await fetchHubStartedAt(hubEndpoint(state)));
@@ -2542,7 +2548,7 @@ export async function autoConnect(state: AppState): Promise<void> {
         state.userName = userName;
       }
       state.lastAuthCode = code;
-      if (!code) {
+      if (!tokensReady && !code) {
         setConnection(state, 'disconnected', 'Authenticate failed');
         return;
       }
@@ -2551,7 +2557,7 @@ export async function autoConnect(state: AppState): Promise<void> {
       setConnection(state, 'connecting', 'Getting token');
       const authCode = state.lastAuthCode;
       state.lastAuthCode = '';
-      const ok = await client.getToken(authCode);
+      const ok = await client.getToken(authCode || '');
       if (!ok) {
         setConnection(state, 'disconnected', 'Token failed');
         return;
