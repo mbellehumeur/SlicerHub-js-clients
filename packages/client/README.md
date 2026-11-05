@@ -1,17 +1,18 @@
 # @slicer-hub/client
 
-Standalone JavaScript Hub (FHIRcast) hub client extracted from the vtk-js HubClient
-**library modules** (not the vtk.js example app). There is **no** `@kitware/vtk.js`
-runtime dependency — only browser/Node APIs (`fetch`, `WebSocket`).
+Standalone JavaScript Hub (FHIRcast) wire client. Aligned with the Python
+`hub_client` (`SlicerHub/HubInterface/python_client`): auth, subscribe,
+WebSocket, publish, request/response, and binary payloads.
 
-Use this package from apps such as [hub-worklist-example](../hub-worklist-example).
+Browser conference dialogs / presence live in **`@slicer-hub/conference-ui`**,
+not in this package.
 
 ## Install
 
 ```bash
 npm install @slicer-hub/client
-# local monorepo / sibling repo:
-npm install file:../hub-js-client
+# local monorepo:
+npm install file:../packages/client
 ```
 
 ## Quick start
@@ -22,60 +23,64 @@ import HubClient, {
   requestEventFor,
 } from '@slicer-hub/client';
 
-const client = HubClient.newInstance({
-  hub: {
+const client = new HubClient(
+  {
     hub_endpoint: 'http://127.0.0.1:2018/api/hub',
     authorization_endpoint: 'http://127.0.0.1:2018/oauth/authorize',
     token_endpoint: 'http://127.0.0.1:2018/oauth/token',
     client_id: 'client_id',
     client_secret: 'client_secret',
   },
-  session: {
+  {
     subscriberName: generateSubscriberName('Worklist'),
+    productName: 'WORKLIST',
     topic: 'USER-1',
     events: ['*'],
   },
-  autoReconnect: true,
-});
+  { autoReconnect: true }
+);
 
 client.onMessage((message) => console.log(message));
 
-const { code, tokensReady, redirecting } = await client.authenticate();
-// OIDC: first call may navigate to Google; after return, hash tokens are applied.
-if (!redirecting && (tokensReady || (await client.getToken(code)))) {
-  await client.subscribe();
-  await client.request({
-    'subscriber.name': client.getSessionConfig().subscriberName,
-    event: {
-      'hub.topic': 'USER-1',
-      'hub.event': requestEventFor('STATUS'),
-      context: { dataType: 'STATUS' },
-    },
-    'target.actor': 'WORKLIST_CLIENT',
-  });
-}
+// authenticate + token + subscribe (OIDC may redirect in the browser)
+await client.connect();
+
+await client.request({
+  'subscriber.name': client.getSessionConfig().subscriberName,
+  event: {
+    'hub.topic': 'USER-1',
+    'hub.event': requestEventFor('status'),
+    context: { dataType: 'status' },
+  },
+  'target.actor': 'WORKLIST_CLIENT',
+});
+
+await client.close({ hubUnsubscribe: true });
 ```
+
+Legacy `HubClient.newInstance({ hub, session, autoReconnect })` still works as a
+shim during migration.
 
 ## Auth modes (mock vs OIDC)
 
-`authenticate()` calls `GET /api/hub/auth/config` on the hub:
+`authenticate()` / `connect()` call `GET /api/hub/auth/config` on the hub:
 
 | Hub `HUB_AUTH_MODE` | Client behavior |
 |---------------------|-----------------|
-| `mock` (default) | `POST /oauth/authorize` → `getToken(code)` (unchanged) |
-| `oidc` | Full-page redirect to `GET /oauth/login?return_to=…`; after Google → hub callback, tokens arrive in the URL hash (`access_token`, `topic`, `user_name`, …). Call `authenticate()` again on load (or let `getToken` consume the hash). |
+| `mock` (default) | `POST /oauth/authorize` → `getToken(code)` |
+| `oidc` | Full-page redirect to `GET /oauth/login?return_to=…`; after IdP → hub callback, tokens arrive in the URL hash. Call `authenticate()` / `connect()` again on load. |
 
-Hub OIDC setup (Auth0 / Entra / Google, env vars, browser flow): see [SlicerHub `hub/docs/oidc.md`](https://github.com/mbellehumeur/SlicerHub/blob/main/HubInterface/hub/docs/oidc.md). The Python `hub_client` still uses mock authorize only.
+Hub OIDC setup: [SlicerHub `hub/docs/oidc.md`](https://github.com/mbellehumeur/SlicerHub/blob/main/HubInterface/hub/docs/oidc.md).
 
 ## API surface
 
-- `HubClient.newInstance(config)` — hub OAuth, subscribe, WebSocket, publish, request/response
+- `new HubClient(hub, session, options?)` — OAuth, subscribe, WebSocket, publish, request/response
+- `connect()` / `close({ hubUnsubscribe })`
+- `sendHubRequestResponse(id, dataType, data, topic?)` (alias: `sendCastRequestResponse`)
 - Event-name helpers: `requestEventFor`, `responseEventFor`, `isRequestEvent`, …
 - Binary batch publish + `fetchPayload` / `fetchAllPayloads`
-- Imaging-study open helpers, conference helpers, status protocol, message logging utilities
-
-Named exports mirror the vtk-js HubClient module; `HubClient` is used for the class hierarchy
-for the class hierarchy (`getClassName()` returns `HubClient`).
+- Imaging-study / status / inference helpers (domain, not UI)
+- Conference **REST/state** helpers (`createHubConference`, …) — DOM UI is `@slicer-hub/conference-ui`
 
 ## Development
 

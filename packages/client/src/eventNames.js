@@ -22,6 +22,8 @@ export const NIFTI_SEND = 'nifti-send';
 export const PNG_SEND = 'png-send';
 export const IDC_CLAUDE_SEND = 'idc-claude-send';
 export const CONFERENCE_CHAT = 'conference-chat';
+export const CONFERENCE_START = 'conference-start';
+export const CONFERENCE_END = 'conference-end';
 export const DICOMSR_UPDATE = 'dicomsr-update';
 export const SUBSCRIPTION_REMOVED = 'subscription-removed';
 export const HEARTBEAT = 'heartbeat';
@@ -116,6 +118,8 @@ export default {
   PNG_SEND,
   IDC_CLAUDE_SEND,
   CONFERENCE_CHAT,
+  CONFERENCE_START,
+  CONFERENCE_END,
   DICOMSR_UPDATE,
   SUBSCRIPTION_REMOVED,
   HEARTBEAT,

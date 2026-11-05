@@ -32,7 +32,7 @@ export type HubClientLike = {
   onConnectionStateChange: (
     callback: (state: string, detail?: unknown) => void
   ) => void;
-  delete: () => void;
+  close: (options?: { hubUnsubscribe?: boolean }) => Promise<void>;
   getHubConfig: () => import('@slicer-hub/client').HubConfig;
   setTopic: (topic: string) => void;
   setToken?: (token: string) => void;
@@ -48,7 +48,7 @@ export type HubClientLike = {
   hasPendingPayload?: (message: CastMessage) => boolean;
   getConnectionState: () => import('@slicer-hub/client').HubRuntimeState;
   getSessionConfig: () => import('@slicer-hub/client').SessionConfig;
-  sendCastRequestResponse: (
+  sendHubRequestResponse: (
     id: string,
     dataType: string,
     data: unknown,

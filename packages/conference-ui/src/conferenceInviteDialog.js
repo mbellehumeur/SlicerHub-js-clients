@@ -1,7 +1,7 @@
 import {
   deleteHubConference,
   resolveHubConferenceView,
-} from './conference.js';
+} from '@slicer-hub/client';
 import {
   interpolateCastConferenceString,
   mergeCastConferenceStrings,

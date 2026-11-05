@@ -27,12 +27,12 @@ import HubClient, {
   resolveHubAdminUrl,
   selectFirstMatchingHubKey,
   batchContextFiles,
-  showHubInfoToast,
   SKIP_STUDY_RELOAD_TOAST,
   sameOpenImagingStudyContext,
   whenDocumentActivated,
   type CastConferenceView,
 } from '@slicer-hub/client';
+import { showHubInfoToast } from '@slicer-hub/conference-ui';
 import {
   clearStoredUserName,
   fetchHubStartedAt,
@@ -101,7 +101,7 @@ export type StudyInfo = {
 };
 
 export type AppState = {
-  client: ReturnType<typeof HubClient.newInstance> | null;
+  client: HubClient | null;
   hubKey: HubKey;
   topic: string;
   subscriberName: string;
@@ -2027,7 +2027,7 @@ function handleIncomingStatusRequest(
         items: [{ key: 'availability', value: 'online' }],
       };
 
-  state.client?.sendCastRequestResponse(
+  state.client?.sendHubRequestResponse(
     correlationId,
     'STATUS',
     responseData,
@@ -2195,10 +2195,10 @@ function ensureClient(
   opts?: { preserveSessionTopicFromToken?: boolean }
 ) {
   if (!state.client || recreate) {
-    state.client?.delete();
+    state.client?.close();
     const hub = hubDef(state);
-    state.client = HubClient.newInstance({
-      hub: {
+    state.client = new HubClient(
+      {
         name: 'demo',
         version: '1.0',
         hub_endpoint: hub.hubEndpoint,
@@ -2207,7 +2207,7 @@ function ensureClient(
         client_id: hub.client_id,
         client_secret: hub.client_secret,
       },
-      session: {
+      {
         subscriberName: state.subscriberName,
         productName: PRODUCT_NAME,
         productVersion: '1.0',
@@ -2218,10 +2218,12 @@ function ensureClient(
         defaultTargetActor: '*',
         userName: getStoredUserName() || undefined,
       },
-      callbackUrl: `${window.location.origin}/castCallback`,
-      preserveSessionTopicFromToken: Boolean(opts?.preserveSessionTopicFromToken),
-      autoReconnect: true,
-    });
+      {
+        callbackUrl: `${window.location.origin}/castCallback`,
+        preserveSessionTopicFromToken: Boolean(opts?.preserveSessionTopicFromToken),
+        autoReconnect: true,
+      }
+    );
 
     state.client.onMessage((message: Record<string, unknown>) => {
       if (handleConferenceHubEvent(state, message)) return;

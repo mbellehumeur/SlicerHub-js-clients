@@ -26,9 +26,9 @@ function getHubEventName(message) {
 async function connectClient(label, events, { useAuthenticateOnly = false } = {}) {
   const hub = buildLocalHubConfig();
   const subscriberName = generateSubscriberName(`${SMOKE_PRODUCT}-${label}`);
-  const client = HubClient.newInstance({
+  const client = new HubClient(
     hub,
-    session: {
+    {
       topic: SMOKE_TOPIC,
       subscriberName,
       productName: SMOKE_PRODUCT,
@@ -38,9 +38,11 @@ async function connectClient(label, events, { useAuthenticateOnly = false } = {}
       userName: SMOKE_USER,
       lease: 999,
     },
-    autoReconnect: false,
-    autoStart: false,
-  });
+    {
+      autoReconnect: false,
+      autoStart: false,
+    }
+  );
 
   const { code } = await client.authenticate();
   if (!code || !String(code).trim()) {

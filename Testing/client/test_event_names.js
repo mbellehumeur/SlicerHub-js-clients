@@ -6,6 +6,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
+  CONFERENCE_END,
+  CONFERENCE_START,
   IMAGINGSTUDY_OPEN,
   STATUS_UPDATE,
   ensureHubSubscribeEvents,
@@ -25,6 +27,11 @@ describe('eventNames helpers', () => {
     assert.equal(requestEventFor('status'), 'status-request');
     assert.equal(isRequestEvent('status-request'), true);
     assert.equal(isRequestEvent('status-update'), false);
+  });
+
+  it('exports conference start/end wire constants (Python parity)', () => {
+    assert.equal(CONFERENCE_START, 'conference-start');
+    assert.equal(CONFERENCE_END, 'conference-end');
   });
 
   it('reads hub.event from message.event', () => {

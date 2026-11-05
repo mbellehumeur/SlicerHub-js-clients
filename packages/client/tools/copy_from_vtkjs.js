@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 /**
  * Copy HubClient library modules from vtk-js (exclude example/ and vtk.js deps).
+ *
+ * @deprecated HubClient is maintained directly in this package. This historical
+ * sync tool still expects the removed objectFactory.js compatibility layer and
+ * must not be used without updating it for the current class-based client.
  */
 import fs from 'node:fs';
 import path from 'node:path';

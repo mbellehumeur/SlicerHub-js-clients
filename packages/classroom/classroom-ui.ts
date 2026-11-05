@@ -2,7 +2,7 @@ import {
   castRadioStatusVisual,
   applyCastConferenceHeaderActions,
   renderCastConferencePresence,
-} from '@slicer-hub/client';
+} from '@slicer-hub/conference-ui';
 import {
   conferenceStringsFor,
   ensureSegmentLabelsTranslated,

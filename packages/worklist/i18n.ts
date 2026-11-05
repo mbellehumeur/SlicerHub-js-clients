@@ -1,5 +1,5 @@
 import i18n from 'i18next';
-import type { CastConferenceStrings } from '@slicer-hub/client';
+import type { CastConferenceStrings } from '@slicer-hub/conference-ui';
 import {
   APP_LOCALES,
   type AppLocale,

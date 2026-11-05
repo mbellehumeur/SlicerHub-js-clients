@@ -5,7 +5,7 @@
 import {
   clearHubDialogNearAnchor,
   placeHubDialogNearAnchor,
-} from '@slicer-hub/client';
+} from '@slicer-hub/conference-ui';
 import registry from './omi-fhir-registry.json';
 
 const MODAL_ANCHORED = 'wl-modal-backdrop-anchored';

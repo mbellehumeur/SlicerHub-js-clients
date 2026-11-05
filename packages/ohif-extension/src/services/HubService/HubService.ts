@@ -1,6 +1,5 @@
 import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import HubClient, {
-  type HubClientConfig,
   type CastMessage,
   type HubConfig,
   type HubInferenceServerDef,
@@ -246,9 +245,9 @@ export default class HubService extends PubSubService {
       { subscriberName }
     );
 
-    const clientConfig: HubClientConfig = {
-      hub: selectedHub,
-      session: {
+    this._client = new HubClient(
+      selectedHub,
+      {
         actors: ensureIdActor(hubExtensionConfig.actors),
         topic: initialTopic,
         events: ensureHubSubscribeEvents(selectedHub.events ?? ['*']),
@@ -258,12 +257,12 @@ export default class HubService extends PubSubService {
         subscriberName,
         defaultTargetActor: DEFAULT_TARGET_ACTOR_KEYWORD,
       },
-      callbackUrl,
-      autoReconnect: hubExtensionConfig.autoReconnect ?? true,
-      preserveSessionTopicFromToken,
-    };
-
-    this._client = HubClient.newInstance(clientConfig) as HubClientLike;
+      {
+        callbackUrl,
+        autoReconnect: hubExtensionConfig.autoReconnect ?? true,
+        preserveSessionTopicFromToken,
+      }
+    ) as HubClientLike;
 
     setOhifHubRuntime({
       extensionManager: extensionManager as OhifHubExtensionManagerLike,
@@ -326,7 +325,7 @@ export default class HubService extends PubSubService {
       this._unwireSegmentLabelI18n();
       this._unwireSegmentLabelI18n = null;
     }
-    this._client.delete();
+    void this._client.close();
   }
 
   public getHub(): HubConfig {
@@ -929,7 +928,7 @@ export default class HubService extends PubSubService {
   }
 
   private _handleGetRequest(message: CastMessage, event: CastMessage['event']): void {
-    if (!this._client.sendCastRequestResponse || !event) {
+    if (!this._client.sendHubRequestResponse || !event) {
       return;
     }
 
@@ -948,7 +947,7 @@ export default class HubService extends PubSubService {
         this._servicesManager,
         this._lastImagingStudyOpenContext
       );
-      this._client.sendCastRequestResponse(
+      this._client.sendHubRequestResponse(
         correlationId,
         'STATUS',
         statusPayload,
@@ -982,7 +981,7 @@ export default class HubService extends PubSubService {
       return;
     }
 
-    this._client.sendCastRequestResponse(
+    this._client.sendHubRequestResponse(
       correlationId,
       typeof context.dataType === 'string' ? context.dataType : dataType,
       {

@@ -1,16 +1,18 @@
 import {
+  HUB_WORKLIST_WINDOW_NAME,
+  deleteHubConference,
+  transferHubConferenceLead,
+} from '@slicer-hub/client';
+import {
   clearHubDialogNearAnchor,
   createHubConferenceDialog,
   createHubConferenceInviteController,
   confirmHubConferenceTakeover,
   HUB_CONFERENCE_ICON_SVG,
-  HUB_WORKLIST_WINDOW_NAME,
-  deleteHubConference,
   placeHubDialogNearAnchor,
   shouldShowConferenceInvite,
   showHubInfoToast,
-  transferHubConferenceLead,
-} from '@slicer-hub/client';
+} from '@slicer-hub/conference-ui';
 import { refreshHelpIfOpen, showHelp } from './help';
 import {
   applyChromeLabels,
