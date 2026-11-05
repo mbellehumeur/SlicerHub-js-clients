@@ -5,10 +5,8 @@
  * full presence-aware rules; Classroom launches IRA / OHIF / Slim when hub-connected.
  * SlicerDesktop / SlicerMirror / VolView stay non-openable here (presence or N/A).
  */
-import {
-  HUB_WORKLIST_WINDOW_NAME,
-  showHubInfoToast,
-} from '@slicer-hub/client';
+import { HUB_WORKLIST_WINDOW_NAME } from '@slicer-hub/client';
+import { showHubInfoToast } from '@slicer-hub/conference-ui';
 import {
   conferenceStringsFor,
   resolveStoredLocale,

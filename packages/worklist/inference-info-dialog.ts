@@ -3,10 +3,12 @@
  * MHub adds context-aware model listing (MHubSkill find / modality filters).
  */
 import {
-  clearHubDialogNearAnchor,
-  placeHubDialogNearAnchor,
   renderInferenceServerInfoCardHtml,
 } from '@slicer-hub/client';
+import {
+  clearHubDialogNearAnchor,
+  placeHubDialogNearAnchor,
+} from '@slicer-hub/conference-ui';
 import type { AppState } from './hub';
 import { WORKLIST_ORG_TXRV, WORKLIST_ORG_FLEXRAY } from './config';
 import {

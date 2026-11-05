@@ -1,6 +1,5 @@
 import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import HubClient, {
-  type HubClientConfig,
   type CastMessage,
   type HubConfig,
   type HubInferenceServerDef,
@@ -18,16 +17,23 @@ import HubClient, {
   probeCastInferenceServers,
   requestEventFor,
   requestHubDicom,
-  resolveHubConferenceState,
+  deleteHubConference,
+  resolveHubConferenceView,
   resolveHubFileMessage,
+  transferHubConferenceLead,
   resolveHubPublishEnvelopeFields,
   resolveTargetActorForWire,
   resolveTargetProductNameForWire,
   sameOpenImagingStudyContext,
+  SCENE_UPDATE,
   SKIP_STUDY_RELOAD_TOAST,
   totalSegmentatorAvailableFromStatusResponses,
+  type CastConferenceView,
   type CastPublishEnvelopeFields,
 } from '@slicer-hub/client';
+
+/** Hub wire event when scene leadership transfers. */
+const CONFERENCE_LEAD = 'conference-lead';
 import {
   buildStatusResponsePayload,
   isLungScreeningProduct,
@@ -124,6 +130,27 @@ function ensureIdActor(actors?: string[]): string[] {
   return list.includes(ID_ACTOR_KEYWORD) ? list : [...list, ID_ACTOR_KEYWORD];
 }
 
+/** Ensure OHIF receives scene-update + conference-lead when listing events explicitly. */
+function ensureOhifHubSubscribeExtras(events: string[]): string[] {
+  if (!events?.length) {
+    return [SCENE_UPDATE, CONFERENCE_LEAD];
+  }
+  if (events.some(entry => String(entry).trim() === '*')) {
+    return events;
+  }
+  const normalized = new Set(
+    events.map(entry => String(entry).trim().toLowerCase()).filter(Boolean)
+  );
+  const extras: string[] = [];
+  if (!normalized.has(SCENE_UPDATE)) {
+    extras.push(SCENE_UPDATE);
+  }
+  if (!normalized.has(CONFERENCE_LEAD)) {
+    extras.push(CONFERENCE_LEAD);
+  }
+  return extras.length ? [...events, ...extras] : [...events];
+}
+
 function getInboundTargetActorKeyword(message: {
   'target.actor'?: unknown;
 }): string {
@@ -208,6 +235,9 @@ export default class HubService extends PubSubService {
   private _conferenceActive = false;
   private _conferenceTitle = '';
   private _conferenceParticipants: string[] = [];
+  private _conferenceView: CastConferenceView | null = null;
+  private _conferenceFollowHost = false;
+  private _conferenceFollowChoice: boolean | null = null;
   private _lastBroadcastHubHeaderStatus: HubHeaderStatusState | null = null;
   private _statusRequestedForSession = false;
   private _unwireSegmentLabelI18n: (() => void) | null = null;
@@ -246,24 +276,26 @@ export default class HubService extends PubSubService {
       { subscriberName }
     );
 
-    const clientConfig: HubClientConfig = {
-      hub: selectedHub,
-      session: {
+    this._client = new HubClient(
+      selectedHub,
+      {
         actors: ensureIdActor(hubExtensionConfig.actors),
         topic: initialTopic,
-        events: ensureHubSubscribeEvents(selectedHub.events ?? ['*']),
+        events: ensureOhifHubSubscribeExtras(
+          ensureHubSubscribeEvents(selectedHub.events ?? ['*'])
+        ),
         lease: selectedHub.lease ?? 999,
         productName,
         productVersion,
         subscriberName,
         defaultTargetActor: DEFAULT_TARGET_ACTOR_KEYWORD,
       },
-      callbackUrl,
-      autoReconnect: hubExtensionConfig.autoReconnect ?? true,
-      preserveSessionTopicFromToken,
-    };
-
-    this._client = HubClient.newInstance(clientConfig) as HubClientLike;
+      {
+        callbackUrl,
+        autoReconnect: hubExtensionConfig.autoReconnect ?? true,
+        preserveSessionTopicFromToken,
+      }
+    ) as HubClientLike;
 
     setOhifHubRuntime({
       extensionManager: extensionManager as OhifHubExtensionManagerLike,
@@ -305,7 +337,7 @@ export default class HubService extends PubSubService {
             });
           });
         }
-        void this._syncConferenceActive();
+        void this.syncConferenceView();
       } else if (wsState === 'disconnected' || wsState === 'error') {
         this._statusRequestedForSession = false;
         this._totalSegmentatorAvailable = false;
@@ -314,7 +346,7 @@ export default class HubService extends PubSubService {
         this._lungScreeningJobStatus = '';
         this._neuroSegAvailable = false;
         this._neuroSegJobStatus = '';
-        this._setConferenceActive(false);
+        this._applyConferenceView(null);
       }
     });
 
@@ -326,7 +358,7 @@ export default class HubService extends PubSubService {
       this._unwireSegmentLabelI18n();
       this._unwireSegmentLabelI18n = null;
     }
-    this._client.delete();
+    void this._client.close();
   }
 
   public getHub(): HubConfig {
@@ -360,7 +392,10 @@ export default class HubService extends PubSubService {
       this._neuroSegJobStatus,
       this._conferenceActive,
       this._conferenceTitle,
-      this._conferenceParticipants
+      this._conferenceParticipants,
+      this._conferenceFollowHost,
+      this._conferenceView?.selfRole ?? '',
+      Boolean(this._conferenceView?.isConferenceOwner)
     );
   }
 
@@ -424,6 +459,107 @@ export default class HubService extends PubSubService {
     participants?: string[]
   ): void {
     this._setConferenceActive(active, title, participants);
+    if (active) {
+      void this.syncConferenceView();
+    } else {
+      this._applyConferenceView(null);
+    }
+  }
+
+  public getConferenceView(): CastConferenceView | null {
+    return this._conferenceView;
+  }
+
+  public getConferenceFollowHost(): boolean {
+    return this._conferenceFollowHost;
+  }
+
+  public setConferenceFollowHost(followHost: boolean): void {
+    this._conferenceFollowChoice = Boolean(followHost);
+    if (this._conferenceView?.selfRole === 'leading') {
+      this._conferenceFollowHost = false;
+      this._broadcastHubStatus();
+      return;
+    }
+    this._conferenceFollowHost = this._conferenceFollowChoice;
+    this._broadcastHubStatus();
+  }
+
+  public async syncConferenceView(): Promise<CastConferenceView | null> {
+    const hubEndpoint = this._client.getHubConfig().hub_endpoint ?? '';
+    const session = this._client.getSessionConfig();
+    if (!hubEndpoint || this._wsState !== 'connected') {
+      this._applyConferenceView(null);
+      return null;
+    }
+    try {
+      const accessToken = String(
+        this._client.getConnectionState()?.token || ''
+      ).trim();
+      const view = await resolveHubConferenceView(
+        hubEndpoint,
+        session.topic?.trim() ?? '',
+        this._subscriberName.trim() || session.subscriberName?.trim() || '',
+        String(session.userName || '').trim(),
+        accessToken
+      );
+      this._applyConferenceView(view);
+      return view;
+    } catch (error) {
+      console.warn(`${LOG_PREFIX} syncConferenceView failed`, error);
+      return this._conferenceView;
+    }
+  }
+
+  public async endOrLeaveConference(): Promise<'ended' | 'left'> {
+    const view = this._conferenceView;
+    if (!view?.hostTopic) {
+      throw new Error('No active conference');
+    }
+    const hubEndpoint = this._client.getHubConfig().hub_endpoint ?? '';
+    const accessToken = String(
+      this._client.getConnectionState()?.token || ''
+    ).trim();
+    const sessionTopic = this._client.getSessionConfig().topic?.trim() ?? '';
+    if (view.isConferenceOwner) {
+      await deleteHubConference(
+        hubEndpoint,
+        view.hostTopic,
+        undefined,
+        accessToken
+      );
+      await this.syncConferenceView();
+      return 'ended';
+    }
+    await deleteHubConference(
+      hubEndpoint,
+      view.hostTopic,
+      sessionTopic,
+      accessToken
+    );
+    await this.syncConferenceView();
+    return 'left';
+  }
+
+  public async takeOverConferenceLead(): Promise<void> {
+    const view = this._conferenceView;
+    if (!view?.hostTopic) {
+      throw new Error('No active conference');
+    }
+    const hubEndpoint = this._client.getHubConfig().hub_endpoint ?? '';
+    const session = this._client.getSessionConfig();
+    const sessionTopic = session.topic?.trim() ?? '';
+    const accessToken = String(
+      this._client.getConnectionState()?.token || ''
+    ).trim();
+    await transferHubConferenceLead(
+      hubEndpoint,
+      view.hostTopic,
+      sessionTopic,
+      String(session.userName || '').trim(),
+      accessToken
+    );
+    await this.syncConferenceView();
   }
 
   public setSubscriberName(subscriberName: string): void {
@@ -810,18 +946,12 @@ export default class HubService extends PubSubService {
         }
         return;
       }
+      if (hubEvent === SCENE_UPDATE) {
+        console.log(`${LOG_PREFIX} ${SCENE_UPDATE}`, message);
+        return;
+      }
       if (hubEvent === 'conference-start') {
-        const context = event.context;
-        const title =
-          context && typeof context === 'object' && !Array.isArray(context)
-            ? String((context as { title?: unknown }).title ?? '').trim()
-            : '';
-        const participants = normalizeConferenceParticipants(
-          context && typeof context === 'object' && !Array.isArray(context)
-            ? (context as { participants?: unknown }).participants
-            : undefined
-        );
-        this._setConferenceActive(true, title, participants);
+        void this.syncConferenceView();
         return;
       }
       if (hubEvent === 'conference-end') {
@@ -833,8 +963,12 @@ export default class HubService extends PubSubService {
         const sessionTopic =
           this._client.getSessionConfig().topic?.trim() ?? '';
         if (!leaveTopic || !sessionTopic || leaveTopic === sessionTopic) {
-          this._setConferenceActive(false);
+          void this.syncConferenceView();
         }
+        return;
+      }
+      if (hubEvent === CONFERENCE_LEAD) {
+        void this.syncConferenceView();
         return;
       }
       if (hubEvent === 'annotation-update' || hubEvent === 'annotation-delete') {
@@ -855,6 +989,18 @@ export default class HubService extends PubSubService {
 
   private async _handleImagingStudyOpen(message: CastMessage): Promise<void> {
     if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Non-leading attendees who opted out of follow ignore host opens.
+    if (
+      this._conferenceView &&
+      !this._conferenceFollowHost &&
+      this._conferenceView.selfRole !== 'leading'
+    ) {
+      console.info(
+        `${LOG_PREFIX} conference skip: ignoring imagingstudy-open while not following`
+      );
       return;
     }
 
@@ -929,7 +1075,7 @@ export default class HubService extends PubSubService {
   }
 
   private _handleGetRequest(message: CastMessage, event: CastMessage['event']): void {
-    if (!this._client.sendCastRequestResponse || !event) {
+    if (!this._client.sendHubRequestResponse || !event) {
       return;
     }
 
@@ -948,7 +1094,7 @@ export default class HubService extends PubSubService {
         this._servicesManager,
         this._lastImagingStudyOpenContext
       );
-      this._client.sendCastRequestResponse(
+      this._client.sendHubRequestResponse(
         correlationId,
         'STATUS',
         statusPayload,
@@ -982,7 +1128,7 @@ export default class HubService extends PubSubService {
       return;
     }
 
-    this._client.sendCastRequestResponse(
+    this._client.sendHubRequestResponse(
       correlationId,
       typeof context.dataType === 'string' ? context.dataType : dataType,
       {
@@ -1298,19 +1444,30 @@ export default class HubService extends PubSubService {
     this._broadcastHubStatus();
   }
 
-  private async _syncConferenceActive(): Promise<void> {
-    const hubEndpoint = this._client.getHubConfig().hub_endpoint ?? '';
-    const session = this._client.getSessionConfig();
-    if (!hubEndpoint || this._wsState !== 'connected') {
+  private _applyConferenceView(view: CastConferenceView | null): void {
+    this._conferenceView = view;
+    if (!view) {
+      this._conferenceFollowHost = false;
+      this._conferenceFollowChoice = null;
       this._setConferenceActive(false);
       return;
     }
-    const { active, title, participants } = await resolveHubConferenceState(
-      hubEndpoint,
-      session.topic?.trim() ?? '',
-      this._subscriberName.trim() || session.subscriberName?.trim() || ''
+    if (view.selfRole === 'leading') {
+      this._conferenceFollowHost = false;
+      this._conferenceFollowChoice = null;
+    } else if (view.selfRole === 'following') {
+      if (this._conferenceFollowChoice === null) {
+        this._conferenceFollowChoice = true;
+        this._conferenceFollowHost = true;
+      } else {
+        this._conferenceFollowHost = this._conferenceFollowChoice;
+      }
+    }
+    this._setConferenceActive(
+      true,
+      view.title,
+      normalizeConferenceParticipants(view.participants)
     );
-    this._setConferenceActive(active, title, participants);
   }
 
   private _scheduleHubDicomSendLayer(meta: {

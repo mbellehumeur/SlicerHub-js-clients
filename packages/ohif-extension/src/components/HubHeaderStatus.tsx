@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Button,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -7,6 +8,8 @@ import {
 import { useSystem } from '@ohif/core';
 import HubService from '../services/HubService';
 import EvidenceCreatorsDialog from './EvidenceCreatorsDialog';
+import ConferenceDialog from './ConferenceDialog';
+import ConferenceActions from './ConferenceActions';
 import {
   hubHeaderStatusEqual,
   type HubHeaderStatusState,
@@ -39,8 +42,9 @@ function MagicWandIcon({ className }: { className?: string }) {
 }
 
 /**
- * Conferencing mark — same paths as @slicer-hub/client HUB_CONFERENCE_ICON_SVG.
- * Rendered as React SVG (like MagicWand) so OHIF theme fill rules don't paint black interiors.
+ * Conferencing mark — lucide-style users glyph (same paths as
+ * `@slicer-hub/conference-ui` HUB_CONFERENCE_ICON_SVG). Local React SVG so OHIF
+ * theme fill rules don't paint black interiors.
  */
 function ConferencingIcon({ className }: { className?: string }) {
   return (
@@ -100,20 +104,77 @@ function EvidenceCreatorsButton({
   );
 }
 
-function ConferencingButton() {
+function conferenceTooltip(
+  connected: boolean,
+  conferenceActive: boolean,
+  conferenceTitle: string,
+  participantCount: number
+): string {
+  if (!connected) {
+    return 'Conferencing (connect to Hub first)';
+  }
+  if (conferenceActive) {
+    const title = conferenceTitle.trim() || 'Conference';
+    const people =
+      participantCount > 0
+        ? ` · ${participantCount} participant${participantCount === 1 ? '' : 's'}`
+        : '';
+    return `${title}${people}`;
+  }
+  return 'Conferencing';
+}
+
+function ConferencingButton({
+  wsState,
+  conferenceActive,
+  conferenceTitle,
+  conferenceParticipants,
+  onClick,
+}: {
+  wsState: string;
+  conferenceActive: boolean;
+  conferenceTitle: string;
+  conferenceParticipants: string[];
+  onClick: () => void;
+}) {
+  const connected = wsState === 'connected';
+  const connecting = wsState === 'connecting';
+  const colorClass = !connected
+    ? connecting
+      ? 'text-yellow-400'
+      : 'text-muted-foreground opacity-80'
+    : conferenceActive
+      ? 'text-green-400'
+      : 'text-foreground';
+  const tooltip = conferenceTooltip(
+    connected,
+    conferenceActive,
+    conferenceTitle,
+    conferenceParticipants.length
+  );
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
-          type="button"
-          disabled
-          className="inline-flex cursor-not-allowed items-center border-0 bg-transparent p-0 text-muted-foreground opacity-50"
-          aria-label="Conferencing"
-        >
-          <ConferencingIcon className="h-5 w-5" />
-        </button>
+        {/* span keeps tooltip hover when the ghost Button is disabled */}
+        <span className="inline-flex">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            disabled={!connected}
+            className={`hover:bg-muted ${colorClass} ${
+              connecting ? 'animate-pulse' : ''
+            }`}
+            aria-label="Conferencing"
+            aria-pressed={conferenceActive}
+            onClick={onClick}
+          >
+            <ConferencingIcon className="h-5 w-5" />
+          </Button>
+        </span>
       </TooltipTrigger>
-      <TooltipContent side="bottom">Conferencing (unavailable)</TooltipContent>
+      <TooltipContent side="bottom">{tooltip}</TooltipContent>
     </Tooltip>
   );
 }
@@ -125,6 +186,7 @@ function HubHeaderStatus() {
     hubService ? hubService.getHubHeaderStatus() : null
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [conferenceOpen, setConferenceOpen] = useState(false);
 
   const activeDisplaySets =
     servicesManager.services.displaySetService?.activeDisplaySets ?? [];
@@ -155,15 +217,33 @@ function HubHeaderStatus() {
     status.lungScreeningAvailable ||
     status.neuroSegAvailable;
 
+  const conferenceView = hubService.getConferenceView();
+  const followHost = hubService.getConferenceFollowHost();
+
   return (
     <>
-      <div className="mr-1 inline-flex items-center gap-2">
+      <div className="mr-1 inline-flex max-w-[min(100vw,42rem)] flex-wrap items-center gap-1">
         <EvidenceCreatorsButton
           wsState={status.wsState}
           anyOnline={anyOnline}
           onClick={() => setDialogOpen(true)}
         />
-        <ConferencingButton />
+        <ConferencingButton
+          wsState={status.wsState}
+          conferenceActive={status.conferenceActive}
+          conferenceTitle={status.conferenceTitle}
+          conferenceParticipants={status.conferenceParticipants}
+          onClick={() => setConferenceOpen(true)}
+        />
+        {status.conferenceActive ? (
+          <ConferenceActions
+            hubService={hubService}
+            view={conferenceView}
+            followHost={followHost}
+            wsConnected={wsConnected}
+            layout="header"
+          />
+        ) : null}
       </div>
       <EvidenceCreatorsDialog
         open={dialogOpen}
@@ -171,6 +251,12 @@ function HubHeaderStatus() {
         hubService={hubService}
         wsConnected={wsConnected}
         hasOpenStudy={hasOpenStudy}
+      />
+      <ConferenceDialog
+        open={conferenceOpen}
+        onOpenChange={setConferenceOpen}
+        hubService={hubService}
+        wsConnected={wsConnected}
       />
     </>
   );

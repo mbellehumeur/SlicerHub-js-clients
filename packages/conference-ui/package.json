@@ -1,0 +1,41 @@
+{
+  "name": "@slicer-hub/conference-ui",
+  "version": "0.1.0",
+  "description": "Vanilla DOM conference UI for Slicer Hub applications",
+  "type": "module",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/conference-ui"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "main": "./dist/conference-ui.cjs",
+  "module": "./dist/conference-ui.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/conference-ui.js",
+      "require": "./dist/conference-ui.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "vite build && node tools/copy_types.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@slicer-hub/client": "*"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -7,7 +7,7 @@ import {
   fetchHubConferenceTopics,
   findActiveHubConference,
   joinHubConference,
-} from './conference.js';
+} from '@slicer-hub/client';
 import {
   mergeCastConferenceStrings,
 } from './conferenceStrings.js';

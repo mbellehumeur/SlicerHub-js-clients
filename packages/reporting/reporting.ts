@@ -1,11 +1,13 @@
 import {
+  deleteHubConference,
+} from '@slicer-hub/client';
+import {
   createHubConferenceDialog,
   createHubConferenceInviteController,
-  deleteHubConference,
   HUB_CONFERENCE_ICON_SVG,
   shouldShowConferenceInvite,
   showHubInfoToast,
-} from '@slicer-hub/client';
+} from '@slicer-hub/conference-ui';
 import {
   applyHeaderChrome,
   applyReportingChrome,
