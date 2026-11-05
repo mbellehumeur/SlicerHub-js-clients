@@ -42,7 +42,7 @@ export const USER_NAME_KEY = 'pw46.reporting.userName';
 export const USER_HUB_STARTED_AT_KEY = 'pw46.reporting.userName.hubStartedAt';
 export const USER_HUB_ORIGIN_KEY = 'pw46.reporting.userName.hubOrigin';
 
-export type HubKey = 'local' | 'cloud';
+export type HubKey = 'local' | 'cloud' | 'cloudOidc';
 
 export type HubDefinition = {
   label: string;
@@ -58,7 +58,7 @@ const HUB_CREDENTIALS = {
   client_secret: 'client_secret_3d_Slicer',
 } as const;
 
-/** Standalone presets (local dual-server / legacy cloud hostname). */
+/** Standalone presets (local / mock cloud apex / OIDC cloud). */
 export const HUB_DEFINITIONS: Record<HubKey, HubDefinition> = {
   local: {
     label: '3D Slicer local',
@@ -68,13 +68,23 @@ export const HUB_DEFINITIONS: Record<HubKey, HubDefinition> = {
     ...HUB_CREDENTIALS,
   },
   cloud: {
-    label: '3D Slicer cloud',
+    label: '3D Slicer cloud (mock)',
     hubEndpoint:
-      'https://slicerhub-azejffgnb7dve8es.canadaeast-01.azurewebsites.net/api/hub',
+      'https://bellehumeur-engineering.com/api/hub',
     authorizeEndpoint:
-      'https://slicerhub-azejffgnb7dve8es.canadaeast-01.azurewebsites.net/oauth/authorize',
+      'https://bellehumeur-engineering.com/oauth/authorize',
     tokenEndpoint:
-      'https://slicerhub-azejffgnb7dve8es.canadaeast-01.azurewebsites.net/oauth/token',
+      'https://bellehumeur-engineering.com/oauth/token',
+    ...HUB_CREDENTIALS,
+  },
+  cloudOidc: {
+    label: '3D Slicer cloud (OIDC)',
+    hubEndpoint:
+      'https://oidc.bellehumeur-engineering.com/api/hub',
+    authorizeEndpoint:
+      'https://oidc.bellehumeur-engineering.com/oauth/authorize',
+    tokenEndpoint:
+      'https://oidc.bellehumeur-engineering.com/oauth/token',
     ...HUB_CREDENTIALS,
   },
 };

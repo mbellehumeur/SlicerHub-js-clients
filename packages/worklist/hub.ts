@@ -198,14 +198,18 @@ export function createInitialState(): AppState {
   const hubKey =
     (selectFirstMatchingHubKey(
       hubs,
-      ['local', 'cloud'],
+      ['local', 'cloud', 'cloudOidc'],
       pageInCloud
     ) as HubKey) || (pageInCloud ? 'cloud' : 'local');
 
   const params = new URLSearchParams(window.location.search);
   const hubOverride = params.get('hub');
   let resolvedKey = hubKey;
-  if (hubOverride === 'local' || hubOverride === 'cloud') {
+  if (
+    hubOverride === 'local' ||
+    hubOverride === 'cloud' ||
+    hubOverride === 'cloudOidc'
+  ) {
     resolvedKey = hubOverride;
   }
   const urlUserName = String(params.get('userName') || '').trim();
