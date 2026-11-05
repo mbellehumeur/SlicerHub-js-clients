@@ -15,20 +15,22 @@ import {
   SelectValue,
 } from '@ohif/ui-next';
 import HubService from '../services/HubService';
+import ConferenceActions from './ConferenceActions';
 import {
   HUB_CONFERENCE_EXIT_ACK_MS,
   HUB_CONFERENCE_TITLE_PRESETS,
-  conferenceHostTopic,
   createHubConference,
-  deleteHubConference,
   fetchHubConferences,
   fetchHubConferenceTopics,
   findActiveHubConference,
-  isHubConferenceHost,
-  normalizeConferenceParticipants,
-  resolveHubConferenceState,
   type CastConferenceRecord,
+  type CastConferenceView,
 } from '@slicer-hub/client';
+
+type ConferenceTopicEntry = {
+  topic: string;
+  timezone?: string;
+};
 
 type ConferenceDialogProps = {
   open: boolean;
@@ -36,6 +38,40 @@ type ConferenceDialogProps = {
   hubService: HubService;
   wsConnected: boolean;
 };
+
+function topicFromEntry(entry: unknown): string {
+  if (typeof entry === 'string') {
+    return entry.trim();
+  }
+  if (entry && typeof entry === 'object') {
+    return String((entry as { topic?: unknown }).topic ?? '').trim();
+  }
+  return '';
+}
+
+function timezoneFromEntry(entry: unknown): string {
+  if (!entry || typeof entry !== 'object') {
+    return '';
+  }
+  return String((entry as { timezone?: unknown }).timezone ?? '').trim();
+}
+
+function formatTimezoneLabel(timezone: string): string {
+  const tz = timezone.trim();
+  if (!tz) {
+    return '';
+  }
+  try {
+    const parts = new Intl.DateTimeFormat('en', {
+      timeZone: tz,
+      timeZoneName: 'shortOffset',
+    }).formatToParts(new Date());
+    const offset = parts.find(part => part.type === 'timeZoneName')?.value;
+    return offset ? `${tz} (${offset})` : tz;
+  } catch {
+    return tz;
+  }
+}
 
 function ConferenceDialog({
   open,
@@ -48,14 +84,26 @@ function ConferenceDialog({
   const sessionTopic = session.topic?.trim() ?? '';
   const subscriberName =
     hubService.getHubHeaderStatus().subscriberName.trim();
+  const hostUserName = String(session.userName || '').trim();
+  const accessToken = String(
+    hubService.getConnectionState()?.token || ''
+  ).trim();
 
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [statusKind, setStatusKind] = useState<'success' | 'error' | ''>('');
-  const [availableTopics, setAvailableTopics] = useState<string[]>([]);
+  const [availableTopics, setAvailableTopics] = useState<ConferenceTopicEntry[]>(
+    []
+  );
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [conferences, setConferences] = useState<CastConferenceRecord[]>([]);
+  const [conferenceView, setConferenceView] = useState<CastConferenceView | null>(
+    () => hubService.getConferenceView()
+  );
+  const [followHost, setFollowHost] = useState(() =>
+    hubService.getConferenceFollowHost()
+  );
   const [titlePreset, setTitlePreset] = useState('Tumor Board');
   const [customTitle, setCustomTitle] = useState('');
 
@@ -63,14 +111,6 @@ function ConferenceDialog({
     () =>
       findActiveHubConference(sessionTopic, subscriberName, conferences),
     [sessionTopic, subscriberName, conferences]
-  );
-
-  const isHost = useMemo(
-    () =>
-      currentConference
-        ? isHubConferenceHost(sessionTopic, currentConference)
-        : false,
-    [currentConference, sessionTopic]
   );
 
   const showCustomTitle = titlePreset === 'other';
@@ -87,10 +127,18 @@ function ConferenceDialog({
     setLoading(true);
     try {
       const [topics, list] = await Promise.all([
-        fetchHubConferenceTopics(endpoint),
-        wsConnected ? fetchHubConferences(endpoint) : Promise.resolve([]),
+        fetchHubConferenceTopics(endpoint, accessToken),
+        wsConnected
+          ? fetchHubConferences(endpoint, accessToken)
+          : Promise.resolve([]),
       ]);
-      setAvailableTopics(topics);
+      const normalizedTopics: ConferenceTopicEntry[] = (topics || [])
+        .map(entry => ({
+          topic: topicFromEntry(entry),
+          timezone: timezoneFromEntry(entry),
+        }))
+        .filter(entry => entry.topic);
+      setAvailableTopics(normalizedTopics);
       setConferences(list);
       const match = findActiveHubConference(
         sessionTopic,
@@ -100,26 +148,33 @@ function ConferenceDialog({
       if (!match) {
         setSelectedTopics(
           sessionTopic
-            ? topics.filter(
-                (entry) =>
-                  entry === sessionTopic ||
-                  entry.toLowerCase() === sessionTopic.toLowerCase()
-              )
+            ? normalizedTopics
+                .map(entry => entry.topic)
+                .filter(
+                  topic =>
+                    topic === sessionTopic ||
+                    topic.toLowerCase() === sessionTopic.toLowerCase()
+                )
             : []
         );
       }
       if (wsConnected) {
-        const { active, title, participants } = await resolveHubConferenceState(
-          endpoint,
-          sessionTopic,
-          subscriberName
-        );
-        hubService.setConferenceActive(active, title, participants);
+        const view = await hubService.syncConferenceView();
+        setConferenceView(view);
+        setFollowHost(hubService.getConferenceFollowHost());
       }
+    } catch (error) {
+      setStatusKind('error');
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : 'Failed to refresh conference list.'
+      );
     } finally {
       setLoading(false);
     }
   }, [
+    accessToken,
     hubService,
     hubEndpoint,
     sessionTopic,
@@ -134,7 +189,15 @@ function ConferenceDialog({
       return;
     }
     void refreshConferenceState();
-  }, [open, refreshConferenceState]);
+    const { unsubscribe } = hubService.subscribe(
+      HubService.EVENTS.STATUS_CHANGED,
+      () => {
+        setConferenceView(hubService.getConferenceView());
+        setFollowHost(hubService.getConferenceFollowHost());
+      }
+    );
+    return unsubscribe;
+  }, [open, refreshConferenceState, hubService]);
 
   const handleCreate = async () => {
     const endpoint = hubEndpoint.trim();
@@ -167,51 +230,21 @@ function ConferenceDialog({
         endpoint,
         sessionTopic,
         resolvedTitle,
-        selectedTopics
+        selectedTopics,
+        hostUserName,
+        accessToken
       );
       setStatusKind('success');
       setStatusMessage('Conference created.');
       await refreshConferenceState();
-    } catch (error) {
-      setStatusKind('error');
-      setStatusMessage(
-        error instanceof Error ? error.message : 'Failed to create conference.'
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleExit = async () => {
-    if (!currentConference) {
-      return;
-    }
-    const hostTopic = conferenceHostTopic(currentConference);
-    if (!hostTopic) {
-      return;
-    }
-    const hostAction = isHubConferenceHost(sessionTopic, currentConference);
-
-    setBusy(true);
-    setStatusMessage('');
-    setStatusKind('');
-    try {
-      await deleteHubConference(
-        hubEndpoint.trim(),
-        hostTopic,
-        hostAction ? undefined : sessionTopic
-      );
-      await refreshConferenceState();
-      setStatusKind('success');
-      setStatusMessage(hostAction ? 'Conference ended.' : 'Left conference.');
-      await new Promise((resolve) => {
-        setTimeout(resolve, HUB_CONFERENCE_EXIT_ACK_MS);
+      await new Promise(resolve => {
+        setTimeout(resolve, 2000);
       });
       onOpenChange(false);
     } catch (error) {
       setStatusKind('error');
       setStatusMessage(
-        error instanceof Error ? error.message : 'Failed to update conference.'
+        error instanceof Error ? error.message : 'Failed to create conference.'
       );
     } finally {
       setBusy(false);
@@ -228,8 +261,15 @@ function ConferenceDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="text-foreground max-h-[min(90vh,22rem)] max-w-[336px] gap-2 overflow-y-auto p-[18px]">
+    <Dialog isDraggable open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="hub-conference-dialog text-foreground gap-2 overflow-y-auto p-[18px]">
+        <style>{`
+.hub-conference-dialog {
+  width: min(336px, calc(100vw - 24px)) !important;
+  max-width: min(336px, calc(100vw - 24px)) !important;
+  max-height: min(90vh, 22rem);
+}
+`}</style>
         <DialogHeader className="space-y-0">
           <DialogTitle className="text-highlight text-xl font-bold leading-tight">
             Conferencing
@@ -249,46 +289,65 @@ function ConferenceDialog({
           </p>
         ) : null}
 
-        {currentConference ? (
+        {conferenceView || currentConference ? (
           <div className="text-foreground space-y-2">
             <div className="text-xs font-semibold">Manage conference</div>
             <div className="text-foreground space-y-1 text-xs leading-snug">
               <div>
-                <strong>Title:</strong> {currentConference.title || 'N/A'}
+                <strong>Title:</strong>{' '}
+                {conferenceView?.title || currentConference?.title || 'N/A'}
               </div>
               <div>
                 <strong>Host topic:</strong>{' '}
-                {conferenceHostTopic(currentConference) || 'N/A'}
+                {conferenceView?.hostTopic || 'N/A'}
+              </div>
+              <div>
+                <strong>Role:</strong>{' '}
+                {conferenceView?.selfRole === 'leading'
+                  ? 'Leading'
+                  : followHost
+                    ? 'Following'
+                    : 'Skipping'}
+                {conferenceView?.isConferenceOwner ? ' · Owner' : ''}
               </div>
               <div>
                 <strong>Users:</strong>{' '}
-                {(() => {
-                  const attendees = Array.isArray(currentConference.topics)
-                    ? currentConference.topics
-                        .map((value) => String(value).trim())
-                        .filter(Boolean)
-                    : [];
-                  const host = conferenceHostTopic(currentConference);
-                  const users = host
-                    ? [host, ...attendees.filter((entry) => entry !== host)]
-                    : attendees;
-                  return users.length ? users.join(', ') : 'None';
-                })()}
+                {(conferenceView?.participants?.length
+                  ? conferenceView.participants
+                  : []
+                ).join(', ') || 'None'}
               </div>
             </div>
-            <Button
-              className="mb-2 w-full"
-              disabled={!wsConnected || busy}
-              onClick={() => void handleExit()}
-            >
-              {busy
-                ? isHost
-                  ? 'Ending…'
-                  : 'Leaving…'
-                : isHost
-                  ? 'End conference'
-                  : 'Leave conference'}
-            </Button>
+            <ConferenceActions
+              hubService={hubService}
+              view={conferenceView}
+              followHost={followHost}
+              wsConnected={wsConnected}
+              layout="stack"
+              busy={busy}
+              onBusyChange={setBusy}
+              onError={message => {
+                setStatusKind('error');
+                setStatusMessage(message);
+              }}
+              onStatus={message => {
+                setStatusKind('success');
+                setStatusMessage(message);
+                setConferenceView(hubService.getConferenceView());
+                setFollowHost(hubService.getConferenceFollowHost());
+                if (
+                  message === 'Conference ended.' ||
+                  message === 'Left conference.'
+                ) {
+                  void (async () => {
+                    await new Promise(resolve => {
+                      setTimeout(resolve, HUB_CONFERENCE_EXIT_ACK_MS);
+                    });
+                    onOpenChange(false);
+                  })();
+                }
+              }}
+            />
           </div>
         ) : (
           <div className="text-foreground space-y-2">
@@ -342,25 +401,32 @@ function ConferenceDialog({
                 </div>
               ) : (
                 <div className="border-input bg-background max-h-[132px] space-y-1 overflow-y-auto rounded-md border p-2">
-                  {availableTopics.map((entry) => {
-                    const topicId = `hub-conference-topic-${entry.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+                  {availableTopics.map(entry => {
+                    const topic = entry.topic;
+                    const topicId = `hub-conference-topic-${topic.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+                    const tzLabel = formatTimezoneLabel(entry.timezone || '');
                     return (
                       <div
-                        key={entry}
+                        key={topic}
                         className="flex items-center gap-2"
                       >
                         <Checkbox
                           id={topicId}
-                          checked={selectedTopics.includes(entry)}
-                          onCheckedChange={(checked) =>
-                            toggleTopic(entry, checked === true)
+                          checked={selectedTopics.includes(topic)}
+                          onCheckedChange={checked =>
+                            toggleTopic(topic, checked === true)
                           }
                         />
                         <Label
                           htmlFor={topicId}
-                          className="text-foreground cursor-pointer text-xs font-normal leading-snug"
+                          className="text-foreground flex min-w-0 flex-1 cursor-pointer flex-col text-xs font-normal leading-snug"
                         >
-                          {entry}
+                          <span>{topic}</span>
+                          {tzLabel ? (
+                            <span className="text-muted-foreground text-[11px]">
+                              {tzLabel}
+                            </span>
+                          ) : null}
                         </Label>
                       </div>
                     );

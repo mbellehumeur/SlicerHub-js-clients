@@ -13,6 +13,9 @@ export interface HubHeaderStatusState {
   conferenceActive: boolean;
   conferenceTitle: string;
   conferenceParticipants: string[];
+  conferenceFollowHost: boolean;
+  conferenceSelfRole: 'leading' | 'following' | '';
+  isConferenceOwner: boolean;
 }
 
 export function hubStatusTextForWsState(wsState?: string): string {
@@ -40,7 +43,10 @@ export function buildHubHeaderStatus(
   neuroSegJobStatus = '',
   conferenceActive = false,
   conferenceTitle = '',
-  conferenceParticipants: string[] = []
+  conferenceParticipants: string[] = [],
+  conferenceFollowHost = false,
+  conferenceSelfRole: 'leading' | 'following' | '' = '',
+  isConferenceOwner = false
 ): HubHeaderStatusState {
   const trimmedTopic = topic.trim();
   const label = hubLabel.trim() || 'Hub';
@@ -65,6 +71,9 @@ export function buildHubHeaderStatus(
     conferenceParticipants: conferenceActive
       ? conferenceParticipants.map((name) => String(name).trim()).filter(Boolean)
       : [],
+    conferenceFollowHost: conferenceActive ? Boolean(conferenceFollowHost) : false,
+    conferenceSelfRole: conferenceActive ? conferenceSelfRole : '',
+    isConferenceOwner: conferenceActive ? Boolean(isConferenceOwner) : false,
   };
 }
 
@@ -108,6 +117,9 @@ export function hubHeaderStatusEqual(
     a.neuroSegJobStatus === b.neuroSegJobStatus &&
     a.conferenceActive === b.conferenceActive &&
     a.conferenceTitle === b.conferenceTitle &&
-    a.conferenceParticipants.join('\0') === b.conferenceParticipants.join('\0')
+    a.conferenceParticipants.join('\0') === b.conferenceParticipants.join('\0') &&
+    a.conferenceFollowHost === b.conferenceFollowHost &&
+    a.conferenceSelfRole === b.conferenceSelfRole &&
+    a.isConferenceOwner === b.isConferenceOwner
   );
 }
