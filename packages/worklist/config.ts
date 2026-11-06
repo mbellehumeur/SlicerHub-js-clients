@@ -240,6 +240,10 @@ export const VIEWER_OPEN_TITLE_HUB_MIRROR =
   'Open 3D Slicer web mirror (hub-mirror LiveScene stream)';
 export const VIEWER_OPEN_TITLE_HUB_MIRROR_ACTIVE =
   '3D Slicer web mirror is active';
+export const VIEWER_OPEN_TITLE_METAQUEST =
+  'Open MetaQuest mesh viewer (Quest Browser / WebXR)';
+export const VIEWER_OPEN_TITLE_METAQUEST_ACTIVE =
+  'MetaQuest viewer is connected';
 export const VIEWER_OPEN_TITLE_OHIF = 'Open an OHIF viewer instance';
 export const VIEWER_OPEN_TITLE_SLIM = 'Open a Slim viewer instance';
 export const VIEWER_OPEN_TITLE_SCENEVIEWS = 'Scene Views for connected image displays';
@@ -259,6 +263,9 @@ const VIEWER_URLS_LOCAL: Record<ViewerKind, string> = {
 /** Local hub-mirror Four-Up LiveScene client (Hub scene-update + hub payloads). */
 export const HUB_MIRROR_URL_LOCAL =
   'http://localhost:8130/hub-mirror/hub-mirror.html';
+
+/** Local MetaQuest mesh VR client (Hub glb-send + WebXR). */
+export const METAQUEST_URL_LOCAL = 'http://localhost:8170/';
 
 /** @deprecated Prefer resolveViewerUrls() — kept for callers that need the local defaults. */
 export const VIEWER_URLS = VIEWER_URLS_LOCAL;
@@ -398,6 +405,16 @@ export function resolveHubMirrorUrl(
     return HUB_MIRROR_URL_LOCAL;
   }
   return `${location.origin}/hub-mirror/`;
+}
+
+/** MetaQuest mesh VR client URL. */
+export function resolveMetaQuestUrl(
+  location: Location = window.location
+): string {
+  if (!shouldUseSameOriginHub(location)) {
+    return METAQUEST_URL_LOCAL;
+  }
+  return `${location.origin}/metaquest/`;
 }
 
 export function hubOriginFromEndpoint(hubEndpoint: string): string | null {

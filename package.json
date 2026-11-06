@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @slicer-hub/client && npm run build -w @slicer-hub/conference-ui && npm run build -w @slicer-hub/worklist && npm run build -w @slicer-hub/reporting && npm run build -w @slicer-hub/classroom && npm run build -w @slicer-hub/ohif-extension",
+    "build": "npm run build -w @slicer-hub/client && npm run build -w @slicer-hub/conference-ui && npm run build -w @slicer-hub/worklist && npm run build -w @slicer-hub/reporting && npm run build -w @slicer-hub/classroom && npm run build -w @slicer-hub/metaquest && npm run build -w @slicer-hub/ohif-extension",
     "build:client": "npm run build -w @slicer-hub/client",
     "build:conference-ui": "npm run build -w @slicer-hub/conference-ui",
     "build:ohif-extension": "npm run build -w @slicer-hub/ohif-extension",

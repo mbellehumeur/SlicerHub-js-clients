@@ -20,6 +20,8 @@ export const ANNOTATION_DELETE = 'annotation-delete';
 export const DICOM_SEND = 'dicom-send';
 export const NIFTI_SEND = 'nifti-send';
 export const PNG_SEND = 'png-send';
+export const GLB_SEND = 'glb-send';
+export const MESHSCENE_UPDATE = 'meshscene-update';
 export const IDC_CLAUDE_SEND = 'idc-claude-send';
 export const CONFERENCE_CHAT = 'conference-chat';
 export const CONFERENCE_START = 'conference-start';
@@ -116,6 +118,8 @@ export default {
   DICOM_SEND,
   NIFTI_SEND,
   PNG_SEND,
+  GLB_SEND,
+  MESHSCENE_UPDATE,
   IDC_CLAUDE_SEND,
   CONFERENCE_CHAT,
   CONFERENCE_START,

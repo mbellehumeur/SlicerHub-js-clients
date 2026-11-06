@@ -25,6 +25,9 @@ export const HUB_PRODUCT_MATCHERS = Object.freeze({
   /** hub-mirror Four-Up LiveScene stream client (not desktop Image Display). */
   hubMirror: (p) =>
     p === 'SLICERLIVE-HUB-MIRROR' || p.startsWith('SLICERLIVE-HUB-MIRROR'),
+  /** MetaQuest Browser mesh VR viewer (glb-send / meshscene-update). */
+  metaQuest: (p) =>
+    p === 'SLICERLIVE-METAQUEST' || p.startsWith('SLICERLIVE-METAQUEST'),
   mhub: (p) =>
     p === 'MHUB' ||
     p.startsWith('MHUB') ||

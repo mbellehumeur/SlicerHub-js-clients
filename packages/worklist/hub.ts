@@ -56,6 +56,7 @@ import {
   PATIENT_REFERENCE,
   PRODUCT_NAME,
   resolveHubMirrorUrl,
+  resolveMetaQuestUrl,
   resolveViewerUrls,
   setStoredUserName,
   SUBSCRIBE_EVENTS,
@@ -67,6 +68,8 @@ import {
   VIEWER_OPEN_TITLE_SEGROULETTE,
   VIEWER_OPEN_TITLE_HUB_MIRROR,
   VIEWER_OPEN_TITLE_HUB_MIRROR_ACTIVE,
+  VIEWER_OPEN_TITLE_METAQUEST,
+  VIEWER_OPEN_TITLE_METAQUEST_ACTIVE,
   VIEWER_OPEN_TITLE_SLICER,
   VIEWER_OPEN_TITLE_SLICER_INACTIVE,
   ViewerKind,
@@ -404,6 +407,10 @@ const CONNECTED_PRODUCT_BUTTONS: Array<{
     match: (p) => matchesHubProduct(p, 'hubMirror'),
   },
   {
+    id: 'openMetaQuestBtn',
+    match: (p) => matchesHubProduct(p, 'metaQuest'),
+  },
+  {
     // UI label is "DICOM SR"
     id: 'openReportingBtn',
     match: (p) => matchesHubProduct(p, 'reporting'),
@@ -634,6 +641,12 @@ function hasConnectedHubMirror(state: AppState): boolean {
   );
 }
 
+function hasConnectedMetaQuest(state: AppState): boolean {
+  return [...state.connectedApps.values()].some((info) =>
+    matchesHubProduct(info.productName, 'metaQuest')
+  );
+}
+
 function hasConnectedReporting(state: AppState): boolean {
   return [...state.connectedApps.values()].some((info) =>
     matchesHubProduct(info.productName, 'reporting')
@@ -655,6 +668,17 @@ function openHubMirrorButtonTitle(
   if (!slicerOn) return VIEWER_OPEN_TITLE_SLICER_INACTIVE;
   if (hubMirrorOn) return VIEWER_OPEN_TITLE_HUB_MIRROR_ACTIVE;
   return VIEWER_OPEN_TITLE_HUB_MIRROR;
+}
+
+function openMetaQuestButtonTitle(
+  hubOn: boolean,
+  slicerOn: boolean,
+  metaQuestOn: boolean
+): string {
+  if (!hubOn) return VIEWER_OPEN_TITLE_DISABLED;
+  if (!slicerOn) return VIEWER_OPEN_TITLE_SLICER_INACTIVE;
+  if (metaQuestOn) return VIEWER_OPEN_TITLE_METAQUEST_ACTIVE;
+  return VIEWER_OPEN_TITLE_METAQUEST;
 }
 
 function setSlicerDependentViewerButton(
@@ -818,6 +842,7 @@ export function updateConnectedAppButtons(state: AppState): void {
   const hubOn = state.connection === 'connected';
   const slicerOn = hasConnectedThreeDSlicer(state);
   const hubMirrorOn = hasConnectedHubMirror(state);
+  const metaQuestOn = hasConnectedMetaQuest(state);
   const canOpen = hubOn && slicerOn;
   setSlicerDependentViewerButton(
     'openSlicerBtn',
@@ -828,6 +853,11 @@ export function updateConnectedAppButtons(state: AppState): void {
     'openHubMirrorBtn',
     canOpen,
     openHubMirrorButtonTitle(hubOn, slicerOn, hubMirrorOn)
+  );
+  setSlicerDependentViewerButton(
+    'openMetaQuestBtn',
+    canOpen,
+    openMetaQuestButtonTitle(hubOn, slicerOn, metaQuestOn)
   );
   syncThreeDSlicerOrgOption(state);
   updateInferenceServerButtons(state);
@@ -1540,6 +1570,34 @@ export function openHubMirrorViewer(state: AppState): void {
 }
 
 /**
+ * Open MetaQuest mesh VR viewer when 3D Slicer Image Display is connected.
+ * Meshes arrive via Hub glb-send; Quest Browser can enter WebXR.
+ */
+export function openMetaQuestViewer(state: AppState): void {
+  if (state.connection !== 'connected' || !state.client) {
+    console.warn(`${LOG_PREFIX} MetaQuest skipped: not connected`);
+    return;
+  }
+  if (!hasConnectedThreeDSlicer(state)) {
+    console.warn(`${LOG_PREFIX} MetaQuest skipped: 3D Slicer not connected`);
+    return;
+  }
+  const url = new URL(resolveMetaQuestUrl());
+  if (state.topic) {
+    url.searchParams.set('topic', state.topic);
+  }
+  const token = state.client.getConnectionState?.()?.token?.trim();
+  if (token) {
+    url.searchParams.set('id-token', token);
+  }
+  window.open(
+    url.toString(),
+    'hubViewer-metaquest',
+    viewerPopupFeatures('ira')
+  );
+}
+
+/**
  * Auto-open IRA (Viewers → SlicerLive) after ImagingStudy-open when no image
  * display is already active. Skips when desktop 3D Slicer ID is connected.
  * If IRA is already connected or its tab is open, focus that tab.
@@ -1643,6 +1701,7 @@ export function setViewerButtonsEnabled(
     { id: 'openSt444Btn', title: t('chrome:anatomicalPlanes') },
     { id: 'openSlicerBtn', title: VIEWER_OPEN_TITLE_SLICER },
     { id: 'openHubMirrorBtn', title: VIEWER_OPEN_TITLE_HUB_MIRROR },
+    { id: 'openMetaQuestBtn', title: VIEWER_OPEN_TITLE_METAQUEST },
     { id: 'openIraBtn', title: VIEWER_OPEN_TITLE_IRA },
     { id: 'openOhifBtn', title: VIEWER_OPEN_TITLE_OHIF },
     { id: 'openSlimBtn', title: 'Slim' },
@@ -1670,6 +1729,7 @@ export function setViewerButtonsEnabled(
   }
   const slicerOn = Boolean(state && hasConnectedThreeDSlicer(state));
   const hubMirrorOn = Boolean(state && hasConnectedHubMirror(state));
+  const metaQuestOn = Boolean(state && hasConnectedMetaQuest(state));
   const slicerCanOpen = enabled && slicerOn;
   for (const { id, title } of buttons) {
     if (id === 'openSt444Btn') {
@@ -1701,6 +1761,14 @@ export function setViewerButtonsEnabled(
         id,
         slicerCanOpen,
         openHubMirrorButtonTitle(enabled, slicerOn, hubMirrorOn)
+      );
+      continue;
+    }
+    if (id === 'openMetaQuestBtn') {
+      setSlicerDependentViewerButton(
+        id,
+        slicerCanOpen,
+        openMetaQuestButtonTitle(enabled, slicerOn, metaQuestOn)
       );
       continue;
     }

@@ -1,0 +1,23 @@
+{
+  "name": "@slicer-hub/metaquest",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild metaquest.ts --bundle --format=esm --outfile=metaquest.js",
+    "build:watch": "esbuild metaquest.ts --bundle --format=esm --outfile=metaquest.js --watch",
+    "serve": "python -m http.server 8170"
+  },
+  "dependencies": {
+    "@slicer-hub/client": "*",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbellehumeur/SlicerHub-js-clients.git",
+    "directory": "packages/metaquest"
+  }
+}
