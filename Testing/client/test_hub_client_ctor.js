@@ -14,7 +14,7 @@ describe('HubClient constructor', () => {
     const client = new HubClient(
       {
         hub_endpoint: 'http://127.0.0.1:2018/api/hub',
-        authorization_endpoint: 'http://127.0.0.1:2018/oauth/authorize',
+        authorization_endpoint: 'http://127.0.0.1:2018/oauth/login',
         token_endpoint: 'http://127.0.0.1:2018/oauth/token',
         client_id: 'id',
         client_secret: 'secret',

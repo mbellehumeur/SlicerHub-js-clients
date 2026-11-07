@@ -29,7 +29,7 @@ const LOCAL_HUB = {
   name: 'local',
   version: '1.0',
   hub_endpoint: 'http://127.0.0.1:2018/api/hub',
-  authorization_endpoint: 'http://127.0.0.1:2018/oauth/authorize',
+  authorization_endpoint: 'http://127.0.0.1:2018/oauth/login',
   token_endpoint: 'http://127.0.0.1:2018/oauth/token',
   ...HUB_CREDENTIALS,
 };
@@ -49,7 +49,7 @@ function resolveHubConfig(location: Location = globalThis.location) {
       name: 'hub',
       version: '1.0',
       hub_endpoint: `${origin}/api/hub`,
-      authorization_endpoint: `${origin}/oauth/authorize`,
+      authorization_endpoint: `${origin}/oauth/login`,
       token_endpoint: `${origin}/oauth/token`,
       ...HUB_CREDENTIALS,
     };

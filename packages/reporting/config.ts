@@ -63,7 +63,7 @@ export const HUB_DEFINITIONS: Record<HubKey, HubDefinition> = {
   local: {
     label: '3D Slicer local',
     hubEndpoint: 'http://127.0.0.1:2018/api/hub',
-    authorizeEndpoint: 'http://127.0.0.1:2018/oauth/authorize',
+    authorizeEndpoint: 'http://127.0.0.1:2018/oauth/login',
     tokenEndpoint: 'http://127.0.0.1:2018/oauth/token',
     ...HUB_CREDENTIALS,
   },
@@ -72,7 +72,7 @@ export const HUB_DEFINITIONS: Record<HubKey, HubDefinition> = {
     hubEndpoint:
       'https://bellehumeur-engineering.com/api/hub',
     authorizeEndpoint:
-      'https://bellehumeur-engineering.com/oauth/authorize',
+      'https://bellehumeur-engineering.com/oauth/login',
     tokenEndpoint:
       'https://bellehumeur-engineering.com/oauth/token',
     ...HUB_CREDENTIALS,
@@ -82,7 +82,7 @@ export const HUB_DEFINITIONS: Record<HubKey, HubDefinition> = {
     hubEndpoint:
       'https://oidc.bellehumeur-engineering.com/api/hub',
     authorizeEndpoint:
-      'https://oidc.bellehumeur-engineering.com/oauth/authorize',
+      'https://oidc.bellehumeur-engineering.com/oauth/login',
     tokenEndpoint:
       'https://oidc.bellehumeur-engineering.com/oauth/token',
     ...HUB_CREDENTIALS,
@@ -112,7 +112,7 @@ function sameOriginHubDefinition(
   return {
     label,
     hubEndpoint: `${origin}/api/hub`,
-    authorizeEndpoint: `${origin}/oauth/authorize`,
+    authorizeEndpoint: `${origin}/oauth/login`,
     tokenEndpoint: `${origin}/oauth/token`,
     ...HUB_CREDENTIALS,
   };

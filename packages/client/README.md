@@ -26,7 +26,7 @@ import HubClient, {
 const client = new HubClient(
   {
     hub_endpoint: 'http://127.0.0.1:2018/api/hub',
-    authorization_endpoint: 'http://127.0.0.1:2018/oauth/authorize',
+    authorization_endpoint: 'http://127.0.0.1:2018/oauth/login',
     token_endpoint: 'http://127.0.0.1:2018/oauth/token',
     client_id: 'client_id',
     client_secret: 'client_secret',
@@ -35,7 +35,7 @@ const client = new HubClient(
     subscriberName: generateSubscriberName('Worklist'),
     productName: 'WORKLIST',
     topic: 'USER-1',
-    events: ['*'],
+    events: ['imagingstudy-open', 'imagingstudy-close'],
   },
   { autoReconnect: true }
 );
@@ -67,7 +67,7 @@ shim during migration.
 
 | Hub `HUB_AUTH_MODE` | Client behavior |
 |---------------------|-----------------|
-| `mock` (default) | `POST /oauth/authorize` → `getToken(code)` |
+| `mock` (default) | `GET /oauth/login` → JSON tokens (`tokensReady`) |
 | `oidc` | Full-page redirect to `GET /oauth/login?return_to=…`; after IdP → hub callback, tokens arrive in the URL hash. Call `authenticate()` / `connect()` again on load. |
 
 Hub OIDC setup: [SlicerHub `hub/docs/oidc.md`](https://github.com/mbellehumeur/SlicerHub/blob/main/HubInterface/hub/docs/oidc.md).

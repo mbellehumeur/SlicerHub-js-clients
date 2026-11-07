@@ -44,13 +44,18 @@ async function connectClient(label, events, { useAuthenticateOnly = false } = {}
     }
   );
 
-  const { code } = await client.authenticate();
-  if (!code || !String(code).trim()) {
-    throw new Error(`${label}: authenticate returned no code`);
-  }
-  const tokenOk = await client.getToken(code);
-  if (!tokenOk) {
-    throw new Error(`${label}: getToken failed`);
+  const authResult = await client.authenticate();
+  if (authResult?.tokensReady) {
+    // Mock GET /oauth/login already applied tokens.
+  } else {
+    const code = authResult?.code;
+    if (!code || !String(code).trim()) {
+      throw new Error(`${label}: authenticate returned no code`);
+    }
+    const tokenOk = await client.getToken(code);
+    if (!tokenOk) {
+      throw new Error(`${label}: getToken failed`);
+    }
   }
   const status = await client.subscribe();
   if (Number(status) !== 202) {

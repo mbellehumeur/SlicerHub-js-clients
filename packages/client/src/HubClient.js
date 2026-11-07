@@ -102,19 +102,6 @@ export class HubClient {
     return productNameToMessageIdPrefix(product);
   }
 
-  _resolveAuthorizationEndpoint() {
-    const explicit = this._hub.authorization_endpoint;
-    if (typeof explicit === 'string' && explicit.trim()) {
-      return explicit.trim();
-    }
-    try {
-      const tokenUrl = new URL(this._hub.token_endpoint);
-      return `${tokenUrl.origin}/oauth/authorize`;
-    } catch (err) {
-      return '';
-    }
-  }
-
   _resolveHubOrigin() {
     try {
       return new URL(this._hub.hub_endpoint).origin;
@@ -181,11 +168,12 @@ export class HubClient {
     window.history.replaceState(null, '', url);
   }
 
-  _applyOidcSessionTokens(tokens) {
+  _applySessionTokens(tokens) {
     this._hub.token = tokens.access_token;
     if (tokens.id_token) {
       this._hub.lastIdToken = tokens.id_token;
     }
+    // Tokens already minted (OIDC redirect or mock GET /oauth/login).
     this._hub.oidcSession = true;
     if (tokens.user_name) {
       this._session.userName = tokens.user_name;
@@ -193,6 +181,21 @@ export class HubClient {
     if (tokens.topic && !this._config.preserveSessionTopicFromToken) {
       this.setTopic(tokens.topic);
     }
+  }
+
+  /** @deprecated Use _applySessionTokens */
+  _applyOidcSessionTokens(tokens) {
+    this._applySessionTokens(tokens);
+  }
+
+  _resolveLoginUrl(authConfig) {
+    const fromConfig =
+      typeof authConfig?.login_url === 'string' && authConfig.login_url.trim();
+    if (fromConfig) {
+      return fromConfig.trim();
+    }
+    const origin = this._resolveHubOrigin();
+    return origin ? `${origin}/oauth/login` : '';
   }
 
   _websocketClose() {
@@ -303,7 +306,7 @@ export class HubClient {
   async authenticate() {
     const fromHash = this._parseOidcHashTokens();
     if (fromHash) {
-      this._applyOidcSessionTokens(fromHash);
+      this._applySessionTokens(fromHash);
       this._clearOidcHashFromUrl();
       console.debug('HubClient: Applied OIDC session tokens from redirect');
       return {
@@ -320,7 +323,7 @@ export class HubClient {
       return {
         user_name: this._session.userName || '',
         code: '',
-        mode: 'oidc',
+        mode: this._hub.authMode || 'oidc',
         tokensReady: true,
       };
     }
@@ -333,10 +336,7 @@ export class HubClient {
           'HubClient.authenticate: OIDC mode requires a browser environment'
         );
       }
-      const loginBase =
-        (typeof authConfig.login_url === 'string' &&
-          authConfig.login_url.trim()) ||
-        `${this._resolveHubOrigin()}/oauth/login`;
+      const loginBase = this._resolveLoginUrl(authConfig);
       const returnTo = `${window.location.origin}${window.location.pathname}${window.location.search}`;
       const loginUrl = `${loginBase}?return_to=${encodeURIComponent(returnTo)}`;
       console.debug('HubClient: Redirecting to OIDC login', loginUrl);
@@ -349,37 +349,37 @@ export class HubClient {
       };
     }
 
-    const endpoint = this._resolveAuthorizationEndpoint();
-    if (!endpoint) {
+    const loginUrl = this._resolveLoginUrl(authConfig);
+    if (!loginUrl) {
       throw new Error(
-        'HubClient.authenticate: no authorization_endpoint or token_endpoint configured.'
+        'HubClient.authenticate: no login_url or hub origin configured.'
       );
-    }
-    try {
-      const url = new URL(endpoint);
-      console.debug('HubClient: Authorizing at:', `${url.origin}${url.pathname}`);
-    } catch (err) {
-      console.debug('HubClient: Authorizing at hub');
     }
     const productName =
       this._session.productName || this._config.productName || 'UNKNOWN';
-    const formData = new URLSearchParams();
+    const params = new URLSearchParams();
     if (this._hub.lastIdToken) {
-      formData.append('id_token', this._hub.lastIdToken);
+      params.set('id_token', this._hub.lastIdToken);
     } else if (this._session.userName) {
-      formData.append('user_name', this._session.userName);
+      params.set('user_name', this._session.userName);
     }
-    formData.append('client_product_name', productName);
+    params.set('client_product_name', productName);
     if (this._session.topic) {
-      formData.append('topic', this._session.topic);
+      params.set('topic', this._session.topic);
+    }
+    const endpoint = `${loginUrl}?${params.toString()}`;
+    try {
+      const url = new URL(loginUrl);
+      console.debug('HubClient: Mock login at:', `${url.origin}${url.pathname}`);
+    } catch (err) {
+      console.debug('HubClient: Mock login at hub');
     }
 
     let response;
     try {
       response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData,
+        method: 'GET',
+        headers: { Accept: 'application/json' },
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -392,15 +392,24 @@ export class HubClient {
       throw new Error(`HubClient.authenticate failed (HTTP ${response.status})`);
     }
     const data = await response.json();
-    if (typeof data.user_name === 'string' && data.user_name) {
-      this._session.userName = data.user_name;
+    const accessToken =
+      typeof data.access_token === 'string' ? data.access_token : '';
+    if (!accessToken) {
+      throw new Error('HubClient.authenticate: mock login missing access_token');
     }
+    this._applySessionTokens({
+      access_token: accessToken,
+      id_token: typeof data.id_token === 'string' ? data.id_token : '',
+      topic: typeof data.topic === 'string' ? data.topic : '',
+      user_name: typeof data.user_name === 'string' ? data.user_name : '',
+    });
     return {
-      user_name: data.user_name || '',
-      code: data.code || '',
+      user_name: this._session.userName || data.user_name || '',
+      code: '',
       expires_in:
         typeof data.expires_in === 'number' ? data.expires_in : undefined,
       mode: 'mock',
+      tokensReady: true,
     };
   }
 
@@ -413,7 +422,7 @@ export class HubClient {
     }
     const fromHash = this._parseOidcHashTokens();
     if (fromHash) {
-      this._applyOidcSessionTokens(fromHash);
+      this._applySessionTokens(fromHash);
       this._clearOidcHashFromUrl();
       if (this._config.autoStart) {
         this.subscribe();
@@ -612,8 +621,11 @@ export class HubClient {
           return response.status;
         }
         try {
-          const { code } = await this.authenticate();
-          if (code && (await this.getToken(code))) {
+          const authResult = await this.authenticate();
+          const tokensOk = authResult?.tokensReady
+            ? true
+            : !!(authResult?.code && (await this.getToken(authResult.code)));
+          if (tokensOk) {
             return await this.subscribe(true);
           }
         } catch (err) {

@@ -1017,15 +1017,15 @@ export function hubAdminUrl(state: AppState): string {
   return resolveHubAdminUrl(endpoint) || endpoint;
 }
 
-function iraPopupPlacement(): {
+type PopupPlacement = {
   width: number;
   height: number;
   left: number;
   top: number;
-} {
-  // SlicerLive (IRA): ~1.6× wider and ~35% taller than the default viewer popup.
-  const width = 1280;
-  const height = 810;
+};
+
+/** Place a popup beside the worklist (left, then right, then below — never centered on it). */
+function sidePopupPlacement(width: number, height: number): PopupPlacement {
   const gap = 16;
   const availLeft = Number(window.screen.availLeft) || 0;
   const availTop = Number(window.screen.availTop) || 0;
@@ -1036,7 +1036,6 @@ function iraPopupPlacement(): {
   const openerW = window.outerWidth || 800;
   const openerH = window.outerHeight || 600;
 
-  // Prefer left of the worklist; then right; then below — never centered on top of it.
   let left = openerLeft - width - gap;
   let top = openerTop;
   if (left < availLeft) {
@@ -1060,6 +1059,21 @@ function iraPopupPlacement(): {
     left: Math.floor(left),
     top: Math.floor(top),
   };
+}
+
+function iraPopupPlacement(): PopupPlacement {
+  // SlicerLive (IRA): ~1.6× wider and ~35% taller than the default viewer popup.
+  return sidePopupPlacement(1280, 810);
+}
+
+function hubMirrorPopupPlacement(): PopupPlacement {
+  // Hub Mirror: 30% smaller than the IRA popup.
+  return sidePopupPlacement(Math.round(1280 * 0.7), Math.round(810 * 0.7));
+}
+
+function metaQuestPopupPlacement(): PopupPlacement {
+  // MetaQuest: 30% smaller than the IRA popup.
+  return sidePopupPlacement(Math.round(1280 * 0.7), Math.round(810 * 0.7));
 }
 
 /**
@@ -1106,6 +1120,7 @@ const REPORTING_WINDOW_NAME = HUB_REPORTING_WINDOW_NAME;
 const CLASSROOM_WINDOW_NAME = HUB_CLASSROOM_WINDOW_NAME;
 
 let slicerLiveWindow: Window | null = null;
+let hubMirrorWindow: Window | null = null;
 let ohifWindow: Window | null = null;
 let reportingWindow: Window | null = null;
 let classroomWindow: Window | null = null;
@@ -1193,26 +1208,30 @@ function focusExistingOhifWindow(state: AppState): boolean {
   return true;
 }
 
+function popupFeaturesFromPlacement(place: PopupPlacement): string {
+  return [
+    'popup',
+    `width=${place.width}`,
+    `height=${place.height}`,
+    `left=${place.left}`,
+    `top=${place.top}`,
+  ].join(',');
+}
+
 function viewerPopupFeatures(kind: ViewerKind): string {
   const place =
     kind === 'reporting'
       ? reportingPopupPlacement()
       : kind === 'ira'
-        ? iraPopupPlacement() // hub-mirror still uses IRA-sized popup placement
+        ? iraPopupPlacement()
         : {
             width: 800,
             height: 600,
             left: Math.max(0, Math.floor((window.screen.width - 800) / 2)),
             top: Math.max(0, Math.floor((window.screen.height - 600) / 2)),
           };
-  const parts = [
-    'popup',
-    `width=${place.width}`,
-    `height=${place.height}`,
-    `left=${place.left}`,
-    `top=${place.top}`,
-  ];
-  // Keep a Window handle for reporting (and hub-mirror via 'ira' placement).
+  const parts = [popupFeaturesFromPlacement(place)];
+  // Keep a Window handle for reporting / IRA (needed for focus + resize).
   if (kind !== 'reporting' && kind !== 'ira') {
     parts.push('noopener', 'noreferrer');
   }
@@ -1558,14 +1577,15 @@ export function openHubMirrorViewer(state: AppState): void {
   if (token) {
     url.searchParams.set('id-token', token);
   }
+  const place = hubMirrorPopupPlacement();
   const win = window.open(
     url.toString(),
     'hubViewer-hub-mirror',
-    viewerPopupFeatures('ira')
+    popupFeaturesFromPlacement(place)
   );
   if (win) {
-    slicerLiveWindow = win;
-    placeSlicerLiveWindow(win);
+    hubMirrorWindow = win;
+    placePopupWindow(win, place);
   }
 }
 
@@ -1590,10 +1610,11 @@ export function openMetaQuestViewer(state: AppState): void {
   if (token) {
     url.searchParams.set('id-token', token);
   }
+  const place = metaQuestPopupPlacement();
   window.open(
     url.toString(),
     'hubViewer-metaquest',
-    viewerPopupFeatures('ira')
+    popupFeaturesFromPlacement(place)
   );
 }
 

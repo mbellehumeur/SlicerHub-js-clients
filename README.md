@@ -59,6 +59,51 @@ npm run serve:classroom   # http://127.0.0.1:8160
 npm run serve:worklist:watch
 ```
 
+## Client usage (`@slicer-hub/client`)
+
+```javascript
+import HubClient, {
+  generateSubscriberName,
+  requestEventFor,
+} from '@slicer-hub/client';
+
+const client = new HubClient(
+  {
+    hub_endpoint: 'http://127.0.0.1:2018/api/hub',
+    authorization_endpoint: 'http://127.0.0.1:2018/oauth/login',
+    token_endpoint: 'http://127.0.0.1:2018/oauth/token',
+    client_id: 'client_id',
+    client_secret: 'client_secret',
+  },
+  {
+    subscriberName: generateSubscriberName('Worklist'),
+    productName: 'WORKLIST',
+    topic: 'USER-1',
+    events: ['imagingstudy-open', 'imagingstudy-close'],
+  },
+  { autoReconnect: true }
+);
+
+client.onMessage((message) => console.log(message));
+
+// authenticate + token + subscribe (OIDC may redirect in the browser)
+await client.connect();
+
+await client.request({
+  'subscriber.name': client.getSessionConfig().subscriberName,
+  event: {
+    'hub.topic': 'USER-1',
+    'hub.event': requestEventFor('status'),
+    context: { dataType: 'status' },
+  },
+  'target.actor': 'WORKLIST_CLIENT',
+});
+
+await client.close({ hubUnsubscribe: true });
+```
+
+More detail (auth modes, API surface, protocol parity): [`packages/client/README.md`](packages/client/README.md).
+
 ## Testing
 
 Offline unit tests and live hub smokes for `@slicer-hub/client` live under [`Testing/`](Testing/README.md):

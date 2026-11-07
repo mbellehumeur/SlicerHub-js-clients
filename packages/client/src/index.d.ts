@@ -31,7 +31,7 @@ export interface HubRuntimeState {
   lastPublishedMessageID: string;
   /** ``mock`` | ``oidc`` from GET /api/hub/auth/config (when known). */
   authMode?: string;
-  /** True after tokens were applied from an OIDC redirect fragment. */
+  /** True after session tokens were applied (OIDC redirect or mock login JSON). */
   oidcSession?: boolean;
 }
 
@@ -41,7 +41,7 @@ export interface AuthorizeResult {
   expires_in?: number;
   /** Auth mode used for this call (``mock`` or ``oidc``). */
   mode?: 'mock' | 'oidc';
-  /** OIDC: tokens already stored from redirect hash; skip code exchange. */
+  /** Tokens already stored (OIDC hash or mock GET /oauth/login); skip code exchange. */
   tokensReady?: boolean;
   /** OIDC: browser navigation to /oauth/login is in progress. */
   redirecting?: boolean;
@@ -173,14 +173,15 @@ export interface HubClientInstance {
     status: number | string;
   }>;
   /**
-   * Start authorize against the hub. Mock: POST /oauth/authorize.
-   * OIDC: consume hash tokens after redirect, or navigate to /oauth/login.
-   * @throws When no authorize endpoint is configured or the hub rejects.
+   * Authenticate against the hub. Mock: GET /oauth/login → JSON tokens
+   * (``tokensReady``). OIDC: consume hash tokens after redirect, or navigate
+   * to /oauth/login.
+   * @throws When no login URL is configured or the hub rejects.
    */
   authenticate(): Promise<AuthorizeResult>;
   /**
-   * Exchange an authorization code for an access token.
-   * After OIDC redirect, returns true when tokens are already stored.
+   * Exchange an authorization code for an access token (legacy mock shim).
+   * No-op success when session tokens are already stored (mock login / OIDC).
    * @returns ``true`` when a token was stored; ``false`` on failure (does not throw).
    */
   getToken(code: string): Promise<boolean>;
@@ -1057,7 +1058,7 @@ export function isHubConferenceParticipant(
  * const client = new HubClient(
  *   {
  *     hub_endpoint: 'https://host/api/hub',
- *     authorization_endpoint: 'https://host/oauth/authorize',
+ *     authorization_endpoint: 'https://host/oauth/login',
  *     token_endpoint: 'https://host/oauth/token',
  *     client_id: 'client_id',
  *     client_secret: 'client_secret',
