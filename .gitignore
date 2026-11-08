@@ -8,6 +8,7 @@ packages/worklist/worklist.js
 packages/worklist/about.js
 packages/reporting/reporting.js
 packages/classroom/classroom.js
+packages/metaquest/metaquest.js
 
 # caches / env / OS / IDE
 *.tsbuildinfo

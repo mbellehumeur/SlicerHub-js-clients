@@ -11,10 +11,11 @@
     "build:client": "npm run build -w @slicer-hub/client",
     "build:conference-ui": "npm run build -w @slicer-hub/conference-ui",
     "build:ohif-extension": "npm run build -w @slicer-hub/ohif-extension",
-    "build:apps": "npm run build -w @slicer-hub/client && npm run build -w @slicer-hub/worklist && npm run build -w @slicer-hub/reporting && npm run build -w @slicer-hub/classroom",
+    "build:apps": "npm run build -w @slicer-hub/client && npm run build -w @slicer-hub/worklist && npm run build -w @slicer-hub/reporting && npm run build -w @slicer-hub/classroom && npm run build -w @slicer-hub/metaquest",
     "serve:worklist": "npm run build -w @slicer-hub/worklist && npm run serve -w @slicer-hub/worklist",
     "serve:reporting": "npm run build -w @slicer-hub/reporting && npm run serve -w @slicer-hub/reporting",
     "serve:classroom": "npm run build -w @slicer-hub/classroom && npm run serve -w @slicer-hub/classroom",
+    "serve:metaquest": "npm run build -w @slicer-hub/metaquest && npm run serve -w @slicer-hub/metaquest",
     "serve:worklist:watch": "npm run serve:watch -w @slicer-hub/worklist",
     "test": "node --test Testing/client/test_event_names.js Testing/client/test_imaging_study_identity.js Testing/client/test_hub_client_ctor.js",
     "test:live": "node Testing/run_live_smokes.js"
